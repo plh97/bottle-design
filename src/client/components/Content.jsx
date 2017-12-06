@@ -27,7 +27,7 @@ export default class content extends Component {
 
     componentDidMount() {
         //初始化执行一次
-        this.updateCanvas();
+        this.updateCanvasBackground();
 
     }
 
@@ -35,7 +35,8 @@ export default class content extends Component {
         console.log(e);
     }
 
-    updateCanvas() {
+    updateCanvasBackground() {
+        console.log("updateCanvasBackground")
         const ctx = this.refs.canvas.getContext('2d');
         ctx.fillStyle = 'white';
         ctx.fillRect(50, 240, 100, 300);
@@ -43,14 +44,47 @@ export default class content extends Component {
         ctx.strokeRect(50, 240, 100, 300);
     }
 
+    updateCanvasImages() {
+        console.log("updateCanvasImages")
+        //那么我需要什么数据呢？？？
+        //我需要图片的一个[]数组，通过给图片数组排序，得到图片显示顺序，
+        //图片数组中包括图片url以及图片的坐标位置/以及图片的大小，以便于图片时刻重绘
+    }
+        
     handleClick = (e) =>{
+        const canvas = this.refs.canvas;
         if(e.target.dataset.drag){
-            const ctx = this.refs.canvas.getContext('2d');
+            const ctx = canvas.getContext('2d');
             var img = new Image();
             img.onload = ()=>{
                ctx.drawImage(img,60,280,70,70);
+               ctx.strokeStyle = 'blue';
+               ctx.strokeRect(60,280,70,70);
             };
             img.src = e.target.src;
+            canvas.addEventListener("mousedown",(e) => {
+                var mouse = {
+                    x : e.layerX,
+                    y : e.layerY
+                }
+                if(
+                    60<e.layerX &&
+                    e.layerX<130 &&
+                    280<e.layerY &&
+                    e.layerY<350 
+                ){
+                    //你处于需要拖拽的范围
+                    //给canvas添加鼠标移动事件
+                    canvas.addEventListener("mousemove",(e)=>{
+                        ctx.clearRect(0,0,canvas.width,canvas.height);
+                        this.updateCanvasBackground()
+                        //这里再次绘制图片
+                        ctx.drawImage(img,e.layerX,e.layerY,70,70);
+                        ctx.strokeStyle = 'blue';
+                        ctx.strokeRect(e.layerX,e.layerY,70,70);
+                    })
+                }
+            })
         }
     }
 
