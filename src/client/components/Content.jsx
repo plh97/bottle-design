@@ -44,11 +44,19 @@ export default class content extends Component {
         ctx.strokeRect(50, 240, 100, 300);
     }
 
-    updateCanvasImages() {
+    updateCanvasImages(img_url) {
         console.log("updateCanvasImages")
         //那么我需要什么数据呢？？？
         //我需要图片的一个[]数组，通过给图片数组排序，得到图片显示顺序，
         //图片数组中包括图片url以及图片的坐标位置/以及图片的大小，以便于图片时刻重绘
+        const ctx = canvas.getContext('2d');
+        var img = new Image();
+        img.onload = ()=>{
+           ctx.drawImage(img,60,280,70,70);
+           ctx.strokeStyle = 'blue';
+           ctx.strokeRect(60,280,70,70);
+        };
+        img.src = img_url;
     }
         
     handleClick = (e) =>{
