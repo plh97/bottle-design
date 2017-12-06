@@ -39,22 +39,23 @@ export default class content extends Component {
         console.log("updateCanvasBackground")
         const ctx = this.refs.canvas.getContext('2d');
         ctx.fillStyle = 'white';
-        ctx.fillRect(50, 240, 100, 300);
+        ctx.fillRect(170, 240, 100, 300);
         ctx.strokeStyle = 'green';
-        ctx.strokeRect(50, 240, 100, 300);
+        ctx.strokeRect(170, 240, 100, 300);
     }
 
-    updateCanvasImages(img_url) {
-        console.log("updateCanvasImages")
+    updateCanvasImages(img_url,axis) {
+        console.log("updateCanvasImages",img_url,axis)
         //那么我需要什么数据呢？？？
         //我需要图片的一个[]数组，通过给图片数组排序，得到图片显示顺序，
         //图片数组中包括图片url以及图片的坐标位置/以及图片的大小，以便于图片时刻重绘
+        const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
         var img = new Image();
         img.onload = ()=>{
-           ctx.drawImage(img,60,280,70,70);
+           ctx.drawImage(img,axis.x,axis.y,70,70);
            ctx.strokeStyle = 'blue';
-           ctx.strokeRect(60,280,70,70);
+           ctx.strokeRect(axis.x,axis.y,70,70);
         };
         img.src = img_url;
     }
@@ -62,19 +63,19 @@ export default class content extends Component {
     handleClick = (e) =>{
         const canvas = this.refs.canvas;
         if(e.target.dataset.drag){
-            const ctx = canvas.getContext('2d');
-            var img = new Image();
-            img.onload = ()=>{
-               ctx.drawImage(img,60,280,70,70);
-               ctx.strokeStyle = 'blue';
-               ctx.strokeRect(60,280,70,70);
-            };
-            img.src = e.target.src;
+            this.updateCanvasImages(e.target.src,{
+                x:180,
+                y:280
+            })
             canvas.addEventListener("mousedown",(e) => {
-                var mouse = {
-                    x : e.layerX,
-                    y : e.layerY
-                }
+                var x = e.clientX;
+                var y = e.clientY;
+                var rect = canvas.getBoundingClientRect();
+                x -= rect.left;
+                y -= rect.top;
+                console.log(canvas.clientX); // (x, y) 就是鼠标在 canvas 单击时的坐标
+
+                console.log("你点击的区域 是否属于图片范围内",e);
                 if(
                     60<e.layerX &&
                     e.layerX<130 &&
@@ -156,7 +157,7 @@ export default class content extends Component {
                     </div>
                     <div className="content-container-show">
                         <img src="http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000059/19fb8efd-bba9-4fcc-a6e0-82c4d2fba50e.jpg" />
-                        <canvas className="upper-canvas " width="200" height="600" ref="canvas"/>
+                        <canvas className="upper-canvas " width="447.75" height="600" ref="canvas"/>
                     </div>
                     <div className="content-container-designer"></div>
                 </Tigger>
