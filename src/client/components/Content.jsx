@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Layout,Pagination ,  Tabs, Button  } from 'antd'
 import { inject, observer } from "mobx-react"
 
-import Tigger from '../features/Tigger.js'
+import Tigger from '../feature/Trigger.js'
 
 const { Content } = Layout
 const { TabPane } = Tabs;
@@ -26,7 +26,9 @@ export default class content extends Component {
     }
 
     componentDidMount() {
+        //初始化执行一次
         this.updateCanvas();
+
     }
 
     handleImageClick = (e) =>{
@@ -35,6 +37,21 @@ export default class content extends Component {
 
     updateCanvas() {
         const ctx = this.refs.canvas.getContext('2d');
+        ctx.fillStyle = 'white';
+        ctx.fillRect(50, 240, 100, 300);
+        ctx.strokeStyle = 'green';
+        ctx.strokeRect(50, 240, 100, 300);
+    }
+
+    handleClick = (e) =>{
+        if(e.target.dataset.drag){
+            const ctx = this.refs.canvas.getContext('2d');
+            var img = new Image();
+            img.onload = ()=>{
+               ctx.drawImage(img,60,280,70,70);
+            };
+            img.src = e.target.src;
+        }
     }
 
     handlePageChange = (e,f) =>{
@@ -45,7 +62,7 @@ export default class content extends Component {
     render() {
         const {current_page}= this.state
         return (
-            <Content className="content">
+            <Content className="content" onClick={this.handleClick}>
                 <div className="content-navigation">
                     <a href="#">首页</a>
                     <a href="#">定制馆</a>
@@ -69,7 +86,7 @@ export default class content extends Component {
                                 </div>
                                 <div className="material-container-image">
                                     {img_list.filter((img)=> img.id>(current_page-1)*12 && img.id<=(current_page)*12 ).map((img,i)=>(
-                                        <img src={img.url} key={i} alt={`图片素材${img.id}`}/>
+                                        <img data-drag={true} src={img.url} key={i} alt={`图片素材${img.id}`}/>
                                     ))}
                                 </div>
                                 <Pagination className="material-pagination" size="small"simple={true} total={img_list.length} onChange={this.handlePageChange} />
@@ -97,7 +114,7 @@ export default class content extends Component {
                     </div>
                     <div className="content-container-show">
                         <img src="http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000059/19fb8efd-bba9-4fcc-a6e0-82c4d2fba50e.jpg" />
-                        <canvas className="upper-canvas " width="105" height="300" ref="canvas"/>
+                        <canvas className="upper-canvas " width="200" height="600" ref="canvas"/>
                     </div>
                     <div className="content-container-designer"></div>
                 </Tigger>
