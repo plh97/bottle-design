@@ -1,0 +1,117 @@
+@import "../common/commonStyle";
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-top: 2px solid red;
+    flex: none;
+
+    .content-navigation {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        border-bottom: 1px solid #ccc;
+        height: 50px;
+        align-items: center;
+        
+        a {
+            display: flex;
+            cursor: pointer;
+            justify-content: center;
+            justify-content: center;
+            color: #666;
+
+            &:hover {
+                color:red;
+                text-decoration: none;
+            }
+        }
+    }
+    
+    //container 里面的三大区域
+    .content-container {
+        padding-top: 20px;
+        display: flex;
+        height: 690px;
+        margin: 0 auto;
+        width: 1200px;
+        flex-direction: row;
+
+        .content-container-material {
+            flex: 1;
+            width: 100px;
+            height: 567px;
+            display: flex;
+            justify-content: center;
+            align-self: center;
+            
+            .ant-tabs-bar{
+                margin-bottom: 0;
+            }
+            .ant-tabs-content{
+                border-left: 1px solid #ccc;
+                border-right: 1px solid #ccc;
+                border-bottom: 1px solid #ccc;
+                padding: 10px;
+
+                select {
+                    border: 1px solid #ccc;
+                    width: 200px;
+                }
+    
+                .material-container-image {
+                    margin-top: 20px;
+                    height: 481px;
+    
+                    img {
+                        display: inline-block;
+                        float: left;
+                        width: 116px;
+                        height: 110px;
+                        margin: 5px;
+                    }
+                }
+
+                .material-pagination {
+                    display: flex;
+                    justify-content: flex-end;
+
+                    a{
+                        color: black;
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+
+        .content-container-show {
+            width: 100px;
+            flex: 1;
+            height: 567px;
+            display: flex;
+            justify-content: center;
+            align-self: center;
+            position: relative;
+
+            img{
+                height: 100%;
+            }
+
+            .upper-canvas {
+                position: absolute;
+                left: 36%;
+                top: 39%;
+                background-color: #fff;
+            }
+        }
+        .content-container-designer {
+            width: 100px;
+            flex: 1;
+            height: 567px;
+            display: flex;
+            justify-content: center;
+            align-self: center;
+        }
+    }
+        
+}

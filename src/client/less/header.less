@@ -1,0 +1,48 @@
+.header {
+    position: relative;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    height: auto;
+    width: 100vw;
+    
+    .search {
+        display: flex;
+        align-self: center;
+        justify-content: center;
+        height: 30px;
+        width: 500px;
+        
+        input {
+            border: 1px solid red;
+            flex: 2;
+            padding: 3px;
+        }
+        span {
+            display: inline-block;
+            width: 100px;
+            background-color: red;
+            color: #fff;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 23px;
+            height: 100%;
+        }
+    }
+
+    .search-list {
+        height: 25px;
+        width: 500px;
+        line-height: 25px;
+        display: flex;
+        align-self: center;
+        justify-content: start;
+
+        span{
+            font-size: 15px;
+            margin: 0 6px;
+        }
+    }
+}
