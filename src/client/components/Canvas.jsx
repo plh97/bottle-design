@@ -12,7 +12,13 @@ export default class canvas extends Component {
         super()
         this.state={
             click:false,
-            show_material: false
+            show_material: false,
+            scale:{
+                do:false,
+                x:0,
+                y:0,
+                index:0
+            }
         }
     }
 
@@ -100,6 +106,7 @@ export default class canvas extends Component {
             };
             var img_index = null
             var img_close = null
+            var img_scale = null
             graphs.map( (image,i) => {
                 let offset = {
                     x : image.img_axis.x,
@@ -125,6 +132,22 @@ export default class canvas extends Component {
                     mouse.y > offset.y - 10
                 ){
                     img_close = i
+                }else if(
+                    mouse.x < offset.x + image.width + 10 &&
+                    mouse.x > offset.x + image.width - 10 &&
+                    mouse.y < offset.y + image.height + 10 &&
+                    mouse.y > offset.y + image.height - 10
+                ){
+                    //缩放图片
+                    this.setState({
+                        scale: {
+                            do:true,
+                            x:mouse.x-offset.x,
+                            y:mouse.y-offset.y,
+                            index:i
+                        }
+                    })
+                    console.log('缩放图片');
                 }
             });
             
@@ -157,7 +180,8 @@ export default class canvas extends Component {
     handleCanvasMove = (e) => {
         if(screen.availWidth<768) return
         let {
-            click
+            click,
+            scale
         } = this.state
         let {graphs,allHold} = this.props.store
         const canvas = this.refs.canvas;
@@ -184,15 +208,48 @@ export default class canvas extends Component {
             allHold("graphs",a)
             this.updateCanvasBackground()
             this.updateCanvasImages()
+        }else if(graphs.length !== 0 && scale.do){
+            // scale
+            console.log('开始缩放');
+            let a = graphs;
+            a[scale.index].width = mouse.x - a[scale.index].img_axis.x
+            a[scale.index].height = mouse.y - a[scale.index].img_axis.y
+            allHold("graphs",a)
+            this.updateCanvasBackground()
+            this.updateCanvasImages()
         }
     }
 
     handleCanvasUp = (e) => {
         if(screen.availWidth<768) return
         this.setState({
-            click: false
+            click: false,
+            scale:{
+                do:false,
+                x:0,
+                y:0,
+                index:0
+            }
         })
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 
     handleTouchStart = (e) =>{
@@ -244,11 +301,15 @@ export default class canvas extends Component {
                     mouse.y < offset.y + image.height + 10 &&
                     mouse.y > offset.y + image.height - 10
                 ){
-                    img_scale={
-                        i:i,
-                        x:mouse.x-offset.x,
-                        y:mouse.y-offset.y
-                    }
+                    //缩放图片
+                    this.setState({
+                        scale: {
+                            do:true,
+                            x:mouse.x-offset.x,
+                            y:mouse.y-offset.y,
+                            index:i
+                        }
+                    })
                 }
             });
             
@@ -271,16 +332,6 @@ export default class canvas extends Component {
                 allHold("graphs",a)
                 this.updateCanvasBackground()
                 this.updateCanvasImages()
-            }else if(img_scale!==null){
-                //缩放图片
-                //touch move 来干
-                console.log('scale');
-                let a = graphs;
-                a[img_scale.i].width=img_scale.x
-                a[img_scale.i].height=img_scale.y
-                allHold("graphs",a)
-                this.updateCanvasBackground()
-                this.updateCanvasImages()
             }
         }
     }
@@ -288,19 +339,20 @@ export default class canvas extends Component {
     onTouchMove = (e) =>{
         if(screen.availWidth>768) return
         let {
-            click
+            click,
+            scale
         } = this.state
         let {graphs,allHold} = this.props.store
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
         
+        var mouse = {
+            x : e.touches[0].clientX - canvas.getBoundingClientRect().left,
+            y : e.touches[0].clientY - canvas.getBoundingClientRect().top
+        };
         if( graphs.length !== 0 && click ) {
             let graphs_len = graphs["length"]
             let a = graphs
-            var mouse = {
-                x : e.touches[0].clientX - canvas.getBoundingClientRect().left,
-                y : e.touches[0].clientY - canvas.getBoundingClientRect().top
-            };
             //数组里面最后一个图片端点位置
             let offset = {
                 x : graphs[graphs.length-1].img_axis.x,
@@ -316,15 +368,27 @@ export default class canvas extends Component {
             allHold("graphs",a)
             this.updateCanvasBackground()
             this.updateCanvasImages()
-        }else if(graphs.length !== 0 && scale){
+        }else if(graphs.length !== 0 && scale.do){
             // scale
+            let a = graphs;
+            a[scale.index].width = mouse.x - a[scale.index].img_axis.x
+            a[scale.index].height = mouse.y - a[scale.index].img_axis.y
+            allHold("graphs",a)
+            this.updateCanvasBackground()
+            this.updateCanvasImages()
         }
     }
     
     onTouchEnd = (e) =>{
         if(screen.availWidth>768) return
         this.setState({
-            click: false
+            click: false,
+            scale:{
+                do:false,
+                x:0,
+                y:0,
+                index:0
+            }
         })
     }
 
