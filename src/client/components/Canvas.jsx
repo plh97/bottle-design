@@ -12,7 +12,6 @@ export default class canvas extends Component {
         super()
         this.state={
             click:false,
-            drag_img_index:null,
             show_material: false
         }
     }
@@ -41,7 +40,8 @@ export default class canvas extends Component {
         }
     }
 
-    updateCanvasImages = () => {
+    updateCanvasImages = (e) => {
+        console.log(this.refs);
         const {
             graphs,
             img_ref
@@ -49,6 +49,7 @@ export default class canvas extends Component {
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
         graphs.map( graph => {
+            //画图片
             ctx.drawImage(
                 img_ref[`image${graph.img_index}`] , 
                 graph.img_axis.x , 
@@ -56,6 +57,7 @@ export default class canvas extends Component {
                 graph.width , 
                 graph.height
             );
+            //画边框
             ctx.strokeStyle = 'blue';
             ctx.strokeRect(
                 graph.img_axis.x,
@@ -63,12 +65,22 @@ export default class canvas extends Component {
                 graph.width,
                 graph.height
             );
+            //X
             ctx.font="20px Arial";
             ctx.fillStyle = 'black';
             ctx.fillText(
                 "X",
                 graph.img_axis.x + graph.width-5.5,
                 graph.img_axis.y+8
+            );
+            //scale
+            ctx.drawImage(
+                this.refs.scale , 
+                //中间宽度
+                graph.img_axis.x+graph.width -7 , 
+                graph.img_axis.y+graph.height -7 , 
+                14 , 
+                14
             );
         })
     }
@@ -79,7 +91,6 @@ export default class canvas extends Component {
             graphs,
             allHold
         } = this.props.store
-        let {drag_img_index} = this.state
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
         if( graphs.length !== 0 ) {
@@ -87,51 +98,66 @@ export default class canvas extends Component {
                 x : e.clientX - canvas.getBoundingClientRect().left,
                 y : e.clientY - canvas.getBoundingClientRect().top
             };
-            var _index = null
+            var img_index = null
+            var img_close = null
             graphs.map( (image,i) => {
                 let offset = {
                     x : image.img_axis.x,
                     y : image.img_axis.y
                 };
                 if(
-                    mouse.x>offset.x &&
-                    mouse.x<offset.x+image.width &&
-                    mouse.y>offset.y &&
-                    mouse.y<offset.y+image.height 
+                    mouse.x > offset.x &&
+                    mouse.x < offset.x + image.width &&
+                    mouse.y > offset.y &&
+                    mouse.y < offset.y + image.height 
                 ){
                     console.log("你可能处于被点击的地方");
-                    //可以开始处理点击事件，让click=true
-                    //应该在此处将所点击的图片  是第几张图片  i 储存
                     this.setState({
                         click: true,
                         index:i
                     })
-                    _index = i
+                    img_index = i
+                }
+                if(
+                    mouse.x < offset.x + image.width + 10 &&
+                    mouse.x > offset.x + image.width - 10 &&
+                    mouse.y < offset.y + 10 &&
+                    mouse.y > offset.y - 10
+                ){
+                    img_close = i
                 }
             });
+            
+            //关闭图片
+            if(img_close!==null){
+                let a = graphs;
+                a.splice(img_close,1)
+                allHold("graphs",a)
+                this.updateCanvasBackground()
+                this.updateCanvasImages()
+            }
+            
             //此处将第i张图片提到最后
-            let a = graphs;
-            a= [
-                ...a.filter((index,i) => {
-                    console.log(index,i);
-                    return i !== _index
-                }),
-                a[_index]
-            ]
-            allHold("graphs",a)
-            this.updateCanvasBackground()
-            this.updateCanvasImages()
-            console.log("将某一张图片提到最后",drag_img_index);
-
-            // e.preventDefault();
+            if(img_index!=null){
+                let a = graphs;
+                a= [
+                    ...a.filter((index,i) => {
+                        console.log(index,i);
+                        return i !== img_index
+                    }),
+                    a[img_index]
+                ]
+                allHold("graphs",a)
+                this.updateCanvasBackground()
+                this.updateCanvasImages()
+            }
         }
     }
 
     handleCanvasMove = (e) => {
         if(screen.availWidth<768) return
         let {
-            click,
-            drag_img_index
+            click
         } = this.state
         let {graphs,allHold} = this.props.store
         const canvas = this.refs.canvas;
@@ -175,7 +201,6 @@ export default class canvas extends Component {
             graphs,
             allHold
         } = this.props.store
-        let {drag_img_index} = this.state
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
         // window.e = e
@@ -184,7 +209,9 @@ export default class canvas extends Component {
                 x : e.touches[0].clientX - canvas.getBoundingClientRect().left,
                 y : e.touches[0].clientY - canvas.getBoundingClientRect().top
             };
-            let _index = null;
+            var img_index = null
+            var img_close = null
+            var img_scale = null
             graphs.map( (image,i) => {
                 let offset = {
                     x : image.img_axis.x,
@@ -202,37 +229,72 @@ export default class canvas extends Component {
                     this.setState({
                         click: true
                     })
-                    _index = i
+                    img_index = i
+                }else if(
+                    mouse.x < offset.x + image.width + 10 &&
+                    mouse.x > offset.x + image.width - 10 &&
+                    mouse.y < offset.y + 10 &&
+                    mouse.y > offset.y - 10
+                ){
+                    //关闭图片
+                    img_close = i
+                }else if(
+                    mouse.x < offset.x + image.width + 10 &&
+                    mouse.x > offset.x + image.width - 10 &&
+                    mouse.y < offset.y + image.height + 10 &&
+                    mouse.y > offset.y + image.height - 10
+                ){
+                    img_scale={
+                        i:i,
+                        x:mouse.x-offset.x,
+                        y:mouse.y-offset.y
+                    }
                 }
             });
-            //此处将第i张图片提到最后
-            console.log("将某一张图片提到最后1212",_index);
-            let a = graphs;
-            a= [
-                ...a.filter((index,i) => {
-                    console.log(index,i);
-                    return i !== _index
-                }),
-                a[_index]
-            ]
-            allHold("graphs",a)
-            this.updateCanvasBackground()
-            this.updateCanvasImages()
-            // e.preventDefault();
+            
+            if(img_index!=null){
+                //此处将第i张图片提到最后
+                let a = graphs;
+                a= [
+                    ...a.filter((index,i) => {
+                        return i !== img_index
+                    }),
+                    a[img_index]
+                ]
+                allHold("graphs",a)
+                this.updateCanvasBackground()
+                this.updateCanvasImages()
+            }else if(img_close!==null){
+                //关闭图片
+                let a = graphs;
+                a.splice(img_close,1)
+                allHold("graphs",a)
+                this.updateCanvasBackground()
+                this.updateCanvasImages()
+            }else if(img_scale!==null){
+                //缩放图片
+                //touch move 来干
+                console.log('scale');
+                let a = graphs;
+                a[img_scale.i].width=img_scale.x
+                a[img_scale.i].height=img_scale.y
+                allHold("graphs",a)
+                this.updateCanvasBackground()
+                this.updateCanvasImages()
+            }
         }
     }
     
     onTouchMove = (e) =>{
         if(screen.availWidth>768) return
         let {
-            click,
-            drag_img_index
+            click
         } = this.state
         let {graphs,allHold} = this.props.store
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
-        if( graphs.length !== 0 && click ) {
         
+        if( graphs.length !== 0 && click ) {
             let graphs_len = graphs["length"]
             let a = graphs
             var mouse = {
@@ -254,7 +316,7 @@ export default class canvas extends Component {
             allHold("graphs",a)
             this.updateCanvasBackground()
             this.updateCanvasImages()
-        }
+        }else if(graphs.length !== 0 && scale)
     }
     
     onTouchEnd = (e) =>{
@@ -263,18 +325,6 @@ export default class canvas extends Component {
             click: false
         })
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -294,6 +344,8 @@ export default class canvas extends Component {
                     width={`${screen.availWidth > 447 ? 447.75 : screen.availWidth}`} 
                     height="600" 
                     ref="canvas"/>
+                <img ref="spin" style={{display:"none"}} src="http://www.shejiye.com/uploadfile/icon/2017/0203/shejiyeiconbynhlkfdyfv.png" />
+                <img ref="scale" style={{display:"none"}} src="http://www.shejiye.com/uploadfile/icon/2017/0203/shejiyeiconcwl3waofj11.png" />
             </div>
         )
     }
