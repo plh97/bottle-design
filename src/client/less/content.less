@@ -1,118 +1,258 @@
 @import "../common/commonStyle";
-.content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border-top: 2px solid red;
-    flex: none;
 
-    .content-navigation {
+
+
+//pc
+@media screen and (min-width: 480px){
+    .content {
         display: flex;
-        flex-direction: row;
-        justify-content: space-evenly;
-        border-bottom: 1px solid #ccc;
-        height: 50px;
-        align-items: center;
-        
-        a {
+        flex-direction: column;
+        justify-content: center;
+        border-top: 2px solid red;
+        flex: none;
+    
+        .content-navigation {
             display: flex;
-            cursor: pointer;
-            justify-content: center;
-            justify-content: center;
-            color: #666;
-
-            &:hover {
-                color:red;
-                text-decoration: none;
+            flex-direction: row;
+            justify-content: space-evenly;
+            border-bottom: 1px solid #ccc;
+            height: 50px;
+            align-items: center;
+            
+            a {
+                display: flex;
+                cursor: pointer;
+                justify-content: center;
+                justify-content: center;
+                color: #666;
+    
+                &:hover {
+                    color:red;
+                    text-decoration: none;
+                }
             }
+        }
+        
+        //container 里面的三大区域
+        .content-container {
+            padding-top: 20px;
+            display: flex;
+            height: 690px;
+            margin: 0 auto;
+            width: 1200px;
+            flex-direction: row;
+    
+            .content-container-material {
+                flex: 1;
+                width: 100px;
+                height: 600px;
+                display: flex;
+                justify-content: center;
+                align-self: center;
+                
+                .ant-tabs-bar{
+                    margin-bottom: 0;
+                }
+                .ant-tabs-content{
+                    border-left: 1px solid #ccc;
+                    border-right: 1px solid #ccc;
+                    border-bottom: 1px solid #ccc;
+                    padding: 10px;
+    
+                    select {
+                        border: 1px solid #ccc;
+                        width: 200px;
+                    }
+        
+                    .material-container-image {
+                        margin-top: 20px;
+                        height: 481px;
+        
+                        img {
+                            display: inline-block;
+                            float: left;
+                            width: 116px;
+                            height: 110px;
+                            margin: 5px;
+                            cursor: pointer;
+                        }
+                    }
+    
+                    .material-pagination {
+                        display: flex;
+                        justify-content: flex-end;
+    
+                        a{
+                            color: black;
+                            font-weight: bold;
+                        }
+                    }
+                }
+            }
+    
+            .content-container-show {
+                width: 100px;
+                flex: 1;
+                height: 600px;
+                display: flex;
+                justify-content: center;
+                align-self: center;
+                position: relative;
+                overflow: hidden;
+    
+                img{
+                    height: 100%;
+                }
+    
+                .upper-canvas {
+                    position: absolute;
+                    // left: 24%;
+                    // top: 0%;
+                }
+            }
+            .content-container-designer {
+                width: 100px;
+                flex: 1;
+                height: 600px;
+                display: flex;
+                justify-content: center;
+                align-self: center;
+            }
+        }
+
+        .content-footer{
+            display: none;
         }
     }
-    
-    //container 里面的三大区域
-    .content-container {
-        padding-top: 20px;
-        display: flex;
-        height: 690px;
-        margin: 0 auto;
-        width: 1200px;
-        flex-direction: row;
+}
 
-        .content-container-material {
-            flex: 1;
-            width: 100px;
-            height: 600px;
-            display: flex;
-            justify-content: center;
-            align-self: center;
-            
-            .ant-tabs-bar{
-                margin-bottom: 0;
-            }
-            .ant-tabs-content{
-                border-left: 1px solid #ccc;
-                border-right: 1px solid #ccc;
-                border-bottom: 1px solid #ccc;
-                padding: 10px;
 
-                select {
-                    border: 1px solid #ccc;
-                    width: 200px;
-                }
-    
-                .material-container-image {
-                    margin-top: 20px;
-                    height: 481px;
-    
-                    img {
-                        display: inline-block;
-                        float: left;
-                        width: 116px;
-                        height: 110px;
-                        margin: 5px;
-                        cursor: pointer;
-                    }
-                }
 
-                .material-pagination {
-                    display: flex;
-                    justify-content: flex-end;
 
-                    a{
-                        color: black;
-                        font-weight: bold;
-                    }
-                }
-            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//mobile
+@media screen and (max-width: 480px){
+    .content {
+        height:  calc(~'(100vh - 41px)');
+        overflow: hidden;
+        
+        .content-navigation{
+            display: none;
         }
-
-        .content-container-show {
-            width: 100px;
-            flex: 1;
-            height: 600px;
-            display: flex;
-            justify-content: center;
-            align-self: center;
-            position: relative;
-            overflow: hidden;
-
-            img{
+        .content-container {
+            padding-top: 20px;
+            height: calc(~'(100vh - 93px)');
+            margin: 0 auto;
+            width: 100vw;
+    
+            .content-container-material {
+                width: 100vw;
+                height: calc(~'(100vh - 115px)');
+                z-index: 1;
+                display: none;
+                background-color: #fff;
+                left: 0;
+                position: absolute;
+                &.active {
+                    display: block;
+                }
+                
+                .ant-tabs-bar{
+                    margin-bottom: 0;
+                }
+                .ant-tabs-content{
+                    border-left: 1px solid #ccc;
+                    border-right: 1px solid #ccc;
+                    border-bottom: 1px solid #ccc;
+                    padding: 10px;
+    
+                    select {
+                        border: 1px solid #ccc;
+                        width: 200px;
+                    }
+        
+                    .material-container-image {
+                        height: calc(~'(100vh - 218px)');
+                        display: inline-block;
+        
+                        img {
+                            display: inline-block;
+                            float: left;
+                            width: 30%;
+                            height: 27vw;
+                            margin: 5px;
+                            cursor: pointer;
+                        }
+                    }
+    
+                    .material-pagination {
+                        display: flex;
+                        justify-content: flex-end;
+    
+                        a{
+                            color: black;
+                            font-weight: bold;
+                        }
+                    }
+                }
+            }
+    
+            .content-container-show {
+                width: 100vw;
+                height: 100%;
+                position: relative;
+                overflow: hidden;
+    
+                img{
+                    // top: -58%;
+                    // left: -37%;
+                    // width: 180%
+                    width: 100vw;
+                    position: absolute;
+                }
+    
+                .upper-canvas {
+                    position: absolute;
+                    width: 100%;
+                    // left: 24%;
+                    // top: 0%;
+                }
+            }
+            .content-container-designer {
+                width: 100vw;
                 height: 100%;
             }
+        }
+        .content-footer{
+            box-shadow: 0px 0px 10px #bbb;
+            display: flex;
+            height: 52px;
+            flex-direction: row;
 
-            .upper-canvas {
-                position: absolute;
-                // left: 24%;
-                // top: 0%;
+            span{
+                text-align: center;
+                color: #000;
+                display: flex;
+                flex: 1/5;
+                justify-content: center;
+                align-content: center;
             }
         }
-        .content-container-designer {
-            width: 100px;
-            flex: 1;
-            height: 600px;
-            display: flex;
-            justify-content: center;
-            align-self: center;
-        }
     }
-        
 }

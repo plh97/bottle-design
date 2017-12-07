@@ -3,6 +3,7 @@ import { Layout,Pagination ,  Tabs, Button  } from 'antd'
 import { inject, observer } from "mobx-react"
 
 import Tigger from '../feature/Trigger.js'
+import Canvas from './Canvas.jsx'
 
 const { Content } = Layout
 const { TabPane } = Tabs;
@@ -21,89 +22,73 @@ export default class content extends Component {
     constructor(){
         super()
         this.state={
-            current_page:1
-        }
-    }
-
-    componentDidMount() {
-        //初始化执行一次
-        this.updateCanvasBackground();
-
-    }
-
-    handleImageClick = (e) =>{
-        console.log(e);
-    }
-
-    updateCanvasBackground() {
-        console.log("updateCanvasBackground")
-        const ctx = this.refs.canvas.getContext('2d');
-        ctx.fillStyle = 'white';
-        ctx.fillRect(170, 240, 100, 300);
-        ctx.strokeStyle = 'green';
-        ctx.strokeRect(170, 240, 100, 300);
-    }
-
-    updateCanvasImages(img_url,axis) {
-        console.log("updateCanvasImages",img_url,axis)
-        //那么我需要什么数据呢？？？
-        //我需要图片的一个[]数组，通过给图片数组排序，得到图片显示顺序，
-        //图片数组中包括图片url以及图片的坐标位置/以及图片的大小，以便于图片时刻重绘
-        const canvas = this.refs.canvas;
-        const ctx = canvas.getContext('2d');
-        var img = new Image();
-        img.onload = ()=>{
-           ctx.drawImage(img,axis.x,axis.y,70,70);
-           ctx.strokeStyle = 'blue';
-           ctx.strokeRect(axis.x,axis.y,70,70);
-        };
-        img.src = img_url;
-    }
-        
-    handleClick = (e) =>{
-        const canvas = this.refs.canvas;
-        if(e.target.dataset.drag){
-            this.updateCanvasImages(e.target.src,{
-                x:180,
-                y:280
-            })
-            canvas.addEventListener("mousedown",(e) => {
-                var x = e.clientX;
-                var y = e.clientY;
-                var rect = canvas.getBoundingClientRect();
-                x -= rect.left;
-                y -= rect.top;
-                console.log(canvas.clientX); // (x, y) 就是鼠标在 canvas 单击时的坐标
-
-                console.log("你点击的区域 是否属于图片范围内",e);
-                if(
-                    60<e.layerX &&
-                    e.layerX<130 &&
-                    280<e.layerY &&
-                    e.layerY<350 
-                ){
-                    //你处于需要拖拽的范围
-                    //给canvas添加鼠标移动事件
-                    canvas.addEventListener("mousemove",(e)=>{
-                        ctx.clearRect(0,0,canvas.width,canvas.height);
-                        this.updateCanvasBackground()
-                        //这里再次绘制图片
-                        ctx.drawImage(img,e.layerX,e.layerY,70,70);
-                        ctx.strokeStyle = 'blue';
-                        ctx.strokeRect(e.layerX,e.layerY,70,70);
-                    })
-                }
-            })
+            current_page:1,
+            show_material: false
         }
     }
 
     handlePageChange = (e,f) =>{
+        const {
+            allHold
+        } = this.props.store
         this.setState({
             current_page:e
         })
+        allHold("img_ref",this.refs)
     }
+        
+    handleClick = (e) =>{
+        const {
+            graphs,
+            allHold,
+            show_material
+        } = this.props.store
+        let img_index = e.target.dataset.index
+        if(e.target.dataset.drag){
+            let a = graphs;
+            
+            if(screen.width<447.75){
+                let scale_val = screen.width/447.75
+                a.push({
+                    img_index ,
+                    img_axis: {
+                        x:(190+10*(Math.random()*2-1))*scale_val,
+                        y:(340+110*(Math.random()*2-1))*scale_val
+                    },
+                    width:70*scale_val,
+                    height:70*scale_val
+                })
+            }else{
+                a.push({
+                    img_index ,
+                    img_axis: {
+                        x:(190+10*(Math.random()*2-1)),
+                        y:(340+110*(Math.random()*2-1))
+                    },
+                    width:70,
+                    height:70
+                })
+            }
+            allHold("graphs",a)
+            allHold("img_ref",this.refs)
+            this.refs._canvas.wrappedInstance.updateCanvasImages()
+            this.setState({
+                show_material:false
+            })
+        }
+    }
+
+    show_material = (e) => {
+        this.setState({
+            show_material:!this.state.show_material
+        })
+    }
+
     render() {
-        const {current_page}= this.state
+        const {
+            current_page,
+            show_material
+        }= this.state
         return (
             <Content className="content" onClick={this.handleClick}>
                 <div className="content-navigation">
@@ -114,8 +99,9 @@ export default class content extends Component {
                     <a href="#">拼图专区</a>
                     <a href="#">合作代理</a>
                 </div>
-                <Tigger className="content-container">
-                    <div className="content-container-material">
+                <div className="content-container">
+                    <div
+                        className={`${show_material ? "active":""} content-container-material`}>
                         <Tabs type="card">
                             <TabPane tab="定制素材" key="1">
                                 <div className="select">
@@ -129,7 +115,13 @@ export default class content extends Component {
                                 </div>
                                 <div className="material-container-image">
                                     {img_list.filter((img)=> img.id>(current_page-1)*12 && img.id<=(current_page)*12 ).map((img,i)=>(
-                                        <img data-drag={true} src={img.url} key={i} alt={`图片素材${img.id}`}/>
+                                        <img 
+                                            data-index={img.id} 
+                                            data-drag={true} 
+                                            src={img.url} 
+                                            ref={`image${img.id}`}
+                                            key={i} 
+                                            alt={`图片素材${img.id}`}/>
                                     ))}
                                 </div>
                                 <Pagination className="material-pagination" size="small"simple={true} total={img_list.length} onChange={this.handlePageChange} />
@@ -155,12 +147,16 @@ export default class content extends Component {
                             </TabPane>
                         </Tabs>
                     </div>
-                    <div className="content-container-show">
-                        <img src="http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000059/19fb8efd-bba9-4fcc-a6e0-82c4d2fba50e.jpg" />
-                        <canvas className="upper-canvas " width="447.75" height="600" ref="canvas"/>
-                    </div>
+                    <Canvas ref="_canvas"/>
                     <div className="content-container-designer"></div>
-                </Tigger>
+                </div>
+                <div className="content-footer">
+                    <span onClick={this.show_material}>素材<br/>📖</span>
+                    <span>图片<br/>📷</span>
+                    <span>文字<br/>✏️</span>
+                    <span>设计师<br/>🙋‍</span>
+                    <span>预览<br/>👊🏾</span>
+                </div>
             </Content>
         )
     }

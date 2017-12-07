@@ -20,7 +20,7 @@ export default class Root extends Component {
 				<Layout className='root'>
 					<Header/>
 					<Content />
-					<Footer style={{ textAlign: 'center' }}>
+					<Footer className="footer" style={{ textAlign: 'center' }}>
 						Ant Design ©2016 Created by Ant UED
 					</Footer>
 				</Layout>
