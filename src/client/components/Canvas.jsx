@@ -316,7 +316,9 @@ export default class canvas extends Component {
             allHold("graphs",a)
             this.updateCanvasBackground()
             this.updateCanvasImages()
-        }else if(graphs.length !== 0 && scale)
+        }else if(graphs.length !== 0 && scale){
+            // scale
+        }
     }
     
     onTouchEnd = (e) =>{
