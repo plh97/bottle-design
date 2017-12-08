@@ -52,7 +52,8 @@ export default class canvas extends Component {
         //重绘图片数组
         const {
             graphs,
-            img_ref
+            img_ref,
+            edit
         } = this.props.store
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
@@ -77,7 +78,7 @@ export default class canvas extends Component {
                 height
             )
             //画边框
-            if(i==graphs.length-1){
+            if( edit && i==graphs.length-1){
                 ctx.strokeStyle = 'blue';
                 ctx.strokeRect(
                     -width / 2,  
@@ -118,7 +119,8 @@ export default class canvas extends Component {
     handleMove = (e) => {
         let {
             allHold,
-            graphs
+            graphs,
+            mouseDownAxis
         } = this.props.store
         let {
             click,
@@ -127,6 +129,11 @@ export default class canvas extends Component {
         } = this.state
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
+        // const mouse = {
+        //     x : screen.clientX - canvas.getBoundingClientRect().left,
+        //     y : screen.clientY - canvas.getBoundingClientRect().top
+        // };
+
         //集成move事件，因为移动pc   mouse 坐标不一致，所以mouse由move事件统一提供
         //graphs则自己去获取
         if( graphs.length !== 0 && click ) {
@@ -140,8 +147,8 @@ export default class canvas extends Component {
             //永远只移动数组最后一个img{}
             a[graphs_len-1] = Object.assign({},a[graphs_len-1],{
                 img_axis: {
-                    x:e.mouse.x-30,
-                    y:e.mouse.y-30
+                    x:a[graphs_len-1].img_axis.x + e.mouse.x - mouseDownAxis.x,
+                    y:a[graphs_len-1].img_axis.y + e.mouse.y - mouseDownAxis.y
                 },
             })
             allHold("graphs",a)
@@ -149,7 +156,6 @@ export default class canvas extends Component {
             this.updateCanvasImages()
         }else if(graphs.length !== 0 && scale.do){
             // scale
-            console.log('开始缩放');
             let a = graphs;
             a[scale.index].width = e.mouse.x - a[scale.index].img_axis.x
             a[scale.index].height = e.mouse.y - a[scale.index].img_axis.y
@@ -158,7 +164,6 @@ export default class canvas extends Component {
             this.updateCanvasImages()
         }else if(graphs.length !== 0 && spin.do){
             // spin
-            console.log('开始旋转');
             let a = graphs;
             a[spin.index].angle = 20
             let dartX = e.mouse.x - graphs[spin.index].img_axis.x - graphs[spin.index].width/2
@@ -213,22 +218,34 @@ export default class canvas extends Component {
                 x : image.img_axis.x,
                 y : image.img_axis.y
             };
+            //图片中心点
+            let img_center = {
+                x : image.img_axis.x + image.width/2,
+                y : image.img_axis.y + image.height/2
+            };
+            //旋转角度
+            let angle = -image.angle
+            //图片最远值  --- 勾股定理
+            let distancement = Math.sqrt(
+                image.width * image.width + 
+                image.height * image.height
+            )/2
             if(
                 Tool.is_inner(mouse,{
-                    x : offset.x + image.width - 10,
-                    _x : offset.x + image.width + 10,
-                    y : offset.y - 10,
-                    _y : offset.y + 10
+                    x : img_center.x + Math.cos((angle+45)*Math.PI/180) * distancement - 10 ,
+                    _x : img_center.x + Math.cos((angle+45)*Math.PI/180) * distancement + 10 ,
+                    y : img_center.y - Math.sin((angle+45)*Math.PI/180) * distancement - 10 ,
+                    _y : img_center.y - Math.sin((angle+45)*Math.PI/180) * distancement + 10 
                 })
             ){
                 //关闭图片
                 img_close = i
             }else if(
                 Tool.is_inner(mouse,{
-                    x : offset.x + image.width - 10,
-                    _x : offset.x + image.width + 10,
-                    y : offset.y + image.height - 10,
-                    _y : offset.y + image.height + 10
+                    x : img_center.x - Math.cos((angle+135)*Math.PI/180) * distancement - 10 ,
+                    _x : img_center.x - Math.cos((angle+135)*Math.PI/180) * distancement + 10 ,
+                    y : img_center.y + Math.sin((angle+135)*Math.PI/180) * distancement - 10 ,
+                    _y : img_center.y + Math.sin((angle+135)*Math.PI/180) * distancement + 10 ,
                 })
             ){
                 //缩放图片
@@ -240,10 +257,10 @@ export default class canvas extends Component {
                 })
             }else if(
                 Tool.is_inner(mouse,{
-                    x : offset.x + image.width/2 - 10,
-                    _x : offset.x + image.width/2 + 10,
-                    y : offset.y - 10,
-                    _y : offset.y + 10
+                    x : img_center.x + Math.cos((angle+90)*Math.PI/180) * distancement - 10 ,
+                    _x : img_center.x + Math.cos((angle+90)*Math.PI/180) * distancement + 10 ,
+                    y : img_center.y - Math.sin((angle+90)*Math.PI/180) * distancement - 10 ,
+                    _y : img_center.y - Math.sin((angle+90)*Math.PI/180) * distancement + 10 ,
                 })
             ){
                 //旋转图片
@@ -264,6 +281,15 @@ export default class canvas extends Component {
                 })
             ){
                 //点击图片
+                if(!this.state.click){
+                    console.log('store axis');
+                    this.setState({
+                        mouseDownAxis:{
+                            x:mouse.x,
+                            y:mouse.y
+                        }
+                    })
+                }
                 this.setState({
                     click: true
                 })
@@ -319,7 +345,6 @@ export default class canvas extends Component {
 
     handleCanvasUp = (e) => {
         if(screen.availWidth<768) return
-        console.log("up");
         this.setState({
             click: false,
             scale:{
@@ -353,26 +378,7 @@ export default class canvas extends Component {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
 
@@ -519,6 +525,18 @@ export default class canvas extends Component {
         })
     }
 
+    handleMouseOut = (e) => {
+        this.props.store.allHold("edit",false)
+        this.updateCanvasBackground()
+        this.updateCanvasImages()
+    }
+
+    handleMouseOver = (e) => {
+        this.props.store.allHold("edit",true)
+        this.updateCanvasBackground()
+        this.updateCanvasImages()
+    }
+
 
 
     render() {
@@ -535,6 +553,8 @@ export default class canvas extends Component {
                     className="upper-canvas " 
                     width={`${screen.availWidth > 447 ? 447.75 : screen.availWidth}`} 
                     height="600" 
+                    onMouseOut={this.handleMouseOut}
+                    onMouseOver={this.handleMouseOver}
                     ref="canvas"/>
                 <img ref="spin" style={{display:"none"}} src="http://www.shejiye.com/uploadfile/icon/2017/0203/shejiyeiconbynhlkfdyfv.png" />
                 <img ref="scale" style={{display:"none"}} src="http://www.shejiye.com/uploadfile/icon/2017/0203/shejiyeiconcwl3waofj11.png" />

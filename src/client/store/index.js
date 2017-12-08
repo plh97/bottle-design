@@ -6,7 +6,7 @@ class TodoStore {
 	//我的用户信息
 	@observable img_ref = []
 	@observable graphs = []
-
+	@observable edit = true
 	@action allHold = (left, right) => {
 		if (left.split('.').length == 1) {
 			this[left] = right
