@@ -85,6 +85,7 @@ export default class content extends Component {
             }
             allHold("graphs",a)
             allHold("img_ref",this.refs)
+            this.refs._canvas.wrappedInstance.updateCanvasBackground()
             this.refs._canvas.wrappedInstance.updateCanvasImages()
             this.setState({
                 show_material:false
