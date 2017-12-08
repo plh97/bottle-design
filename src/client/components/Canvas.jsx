@@ -21,7 +21,15 @@ export default class canvas extends Component {
             spin:{
                 do:false,
                 index:0
-            }
+            },
+            mouseDownAxis:{
+                x:0 ,
+                y:0
+            },
+            mouseDownImgAxis:{
+                x:0 ,
+                y:0
+            },
         }
     }
 
@@ -115,17 +123,23 @@ export default class canvas extends Component {
         })
     }
 
+
+
+
+
+
     //提取处理移动事件
     handleMove = (e) => {
         let {
             allHold,
-            graphs,
-            mouseDownAxis
+            graphs
         } = this.props.store
         let {
             click,
             scale,
-            spin
+            spin,
+            mouseDownAxis,
+            mouseDownImgAxis
         } = this.state
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
@@ -145,10 +159,14 @@ export default class canvas extends Component {
                 y : a[a.length-1].img_axis.y
             };
             //永远只移动数组最后一个img{}
+            console.log(
+                e.mouse,
+                mouseDownAxis
+            );
             a[graphs_len-1] = Object.assign({},a[graphs_len-1],{
                 img_axis: {
-                    x:a[graphs_len-1].img_axis.x + e.mouse.x - mouseDownAxis.x,
-                    y:a[graphs_len-1].img_axis.y + e.mouse.y - mouseDownAxis.y
+                    x: mouseDownImgAxis.x + (e.mouse.x - mouseDownAxis.x) ,
+                    y: mouseDownImgAxis.y + (e.mouse.y - mouseDownAxis.y)
                 },
             })
             allHold("graphs",a)
@@ -281,15 +299,16 @@ export default class canvas extends Component {
                 })
             ){
                 //点击图片
-                if(!this.state.click){
-                    console.log('store axis');
-                    this.setState({
-                        mouseDownAxis:{
-                            x:mouse.x,
-                            y:mouse.y
-                        }
-                    })
-                }
+                this.setState({
+                    mouseDownAxis:{
+                        x:mouse.x,
+                        y:mouse.y
+                    },
+                    mouseDownImgAxis:{
+                        x:offset.x,
+                        y:offset.y
+                    }
+                })
                 this.setState({
                     click: true
                 })
@@ -459,6 +478,16 @@ export default class canvas extends Component {
                     _y : offset.y + image.height
                 })
             ){
+                this.setState({
+                    mouseDownAxis:{
+                        x:mouse.x,
+                        y:mouse.y
+                    },
+                    mouseDownImgAxis:{
+                        x:offset.x,
+                        y:offset.y
+                    }
+                })
                 //点击图片
                 this.setState({
                     click: true
