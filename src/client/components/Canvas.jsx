@@ -30,10 +30,9 @@ export default class canvas extends Component {
     }
 
     updateCanvasBackground = () => {
-        console.log("重绘背景")
+        //重绘背景
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
-        //清除全部
         ctx.clearRect(0,0,canvas.width,canvas.height);
         if(screen.width<447.75){
             let scale_val = screen.width/447.75
@@ -50,7 +49,7 @@ export default class canvas extends Component {
     }
 
     updateCanvasImages = (e) => {
-        console.log(this.refs);
+        //重绘图片数组
         const {
             graphs,
             img_ref
@@ -65,7 +64,6 @@ export default class canvas extends Component {
             let height = graph.height
             let angle = graph.angle
             let rad = -angle * Math.PI / 180
-
             //画图片
             ctx.save()
             ctx.scale(-1, 1)
@@ -116,6 +114,76 @@ export default class canvas extends Component {
         })
     }
 
+    //提取处理移动事件
+    handleMove = (e) => {
+        let {
+            allHold,
+            graphs
+        } = this.props.store
+        let {
+            click,
+            scale,
+            spin
+        } = this.state
+        const canvas = this.refs.canvas;
+        const ctx = canvas.getContext('2d');
+        //集成move事件，因为移动pc   mouse 坐标不一致，所以mouse由move事件统一提供
+        //graphs则自己去获取
+        if( graphs.length !== 0 && click ) {
+            let graphs_len = graphs["length"]
+            let a = graphs
+            //数组里面最后一个图片端点位置
+            let offset = {
+                x : a[a.length-1].img_axis.x,
+                y : a[a.length-1].img_axis.y
+            };
+            //永远只移动数组最后一个img{}
+            a[graphs_len-1] = Object.assign({},a[graphs_len-1],{
+                img_axis: {
+                    x:e.mouse.x-30,
+                    y:e.mouse.y-30
+                },
+            })
+            allHold("graphs",a)
+            this.updateCanvasBackground()
+            this.updateCanvasImages()
+        }else if(graphs.length !== 0 && scale.do){
+            // scale
+            console.log('开始缩放');
+            let a = graphs;
+            a[scale.index].width = e.mouse.x - a[scale.index].img_axis.x
+            a[scale.index].height = e.mouse.y - a[scale.index].img_axis.y
+            allHold("graphs",a)
+            this.updateCanvasBackground()
+            this.updateCanvasImages()
+        }else if(graphs.length !== 0 && spin.do){
+            // spin
+            console.log('开始旋转');
+            let a = graphs;
+            a[spin.index].angle = 20
+            let dartX = e.mouse.x - graphs[spin.index].img_axis.x - graphs[spin.index].width/2
+            let dartY = e.mouse.y - graphs[spin.index].img_axis.y - graphs[spin.index].height/2
+            a[spin.index].angle = 180*Math.atan2(dartY,dartX)/Math.PI +90
+            allHold("graphs",a)
+            this.updateCanvasBackground()
+            this.updateCanvasImages()
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -124,17 +192,145 @@ export default class canvas extends Component {
 
     handleCanvasDown = (e) => {
         if(screen.availWidth<768) return
-        console.log("Move");
+        let {
+            graphs,
+            allHold
+        } = this.props.store
+        const canvas = this.refs.canvas;
+        const ctx = canvas.getContext('2d');
+        //鼠标位置
+        const mouse = {
+            x : e.clientX - canvas.getBoundingClientRect().left,
+            y : e.clientY - canvas.getBoundingClientRect().top
+        };
+        //var可以实现变量提升，所以用var不用let
+        var img_index = null
+        var img_close = null
+        var img_scale = null
+        graphs.map( (image,i) => {
+            //图片坐标
+            let offset = {
+                x : image.img_axis.x,
+                y : image.img_axis.y
+            };
+            if(
+                Tool.is_inner(mouse,{
+                    x : offset.x + image.width - 10,
+                    _x : offset.x + image.width + 10,
+                    y : offset.y - 10,
+                    _y : offset.y + 10
+                })
+            ){
+                //关闭图片
+                img_close = i
+            }else if(
+                Tool.is_inner(mouse,{
+                    x : offset.x + image.width - 10,
+                    _x : offset.x + image.width + 10,
+                    y : offset.y + image.height - 10,
+                    _y : offset.y + image.height + 10
+                })
+            ){
+                //缩放图片
+                this.setState({
+                    scale: {
+                        do:true,
+                        index:i
+                    }
+                })
+            }else if(
+                Tool.is_inner(mouse,{
+                    x : offset.x + image.width/2 - 10,
+                    _x : offset.x + image.width/2 + 10,
+                    y : offset.y - 10,
+                    _y : offset.y + 10
+                })
+            ){
+                //旋转图片
+                console.log("开始图片的旋转");
+                this.setState({
+                    spin: {
+                        do:true,
+                        index:i
+                    }
+                })
+            }else if(
+                //优先点击图片旋转。关闭。缩放。按钮
+                Tool.is_inner(mouse,{
+                    x : offset.x,
+                    _x : offset.x + image.width,
+                    y : offset.y,
+                    _y : offset.y + image.height
+                })
+            ){
+                //点击图片
+                this.setState({
+                    click: true
+                })
+                img_index = i
+            }
+        })
+
+        if(img_close!==null){
+            //关闭图片
+            let a = graphs;
+            a.splice(img_close,1)
+            allHold("graphs",a)
+            this.updateCanvasBackground()
+            this.updateCanvasImages()
+        }else if(img_index!==null){
+            //此处将第i张图片放到最后，点击事件发生开始     必做
+            let a = graphs;
+            a= [
+                ...a.filter((index,i) => {
+                    return i !== img_index
+                }),
+                a[img_index]
+            ]
+            allHold("graphs",a)
+            this.updateCanvasBackground()
+            this.updateCanvasImages()
+        }
     }
 
     handleCanvasMove = (e) => {
         if(screen.availWidth<768) return
-        console.log("Move");
+        let {
+            click,
+            scale,
+            spin
+        } = this.state
+        let {
+            graphs,
+            allHold
+        } = this.props.store
+        const canvas = this.refs.canvas;
+        const ctx = canvas.getContext('2d');
+        let mouse = {
+            x : e.clientX - canvas.getBoundingClientRect().left,
+            y : e.clientY - canvas.getBoundingClientRect().top
+        }
+        if( graphs.length !== 0 && (click||scale.do||spin.do) ) {
+            this.handleMove({
+                mouse
+            })
+        }
     }
 
     handleCanvasUp = (e) => {
         if(screen.availWidth<768) return
         console.log("up");
+        this.setState({
+            click: false,
+            scale:{
+                do:false,
+                index:0
+            },
+            spin:{
+                do:false,
+                index:0
+            }
+        })
     }
 
 
@@ -154,6 +350,35 @@ export default class canvas extends Component {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
 
     handleTouchStart = (e) =>{
@@ -165,78 +390,96 @@ export default class canvas extends Component {
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
         // window.e = e
-        if( graphs.length !== 0 ) {
-            var mouse = {
-                x : e.touches[0].clientX - canvas.getBoundingClientRect().left,
-                y : e.touches[0].clientY - canvas.getBoundingClientRect().top
+        var mouse = {
+            x : e.touches[0].clientX - canvas.getBoundingClientRect().left,
+            y : e.touches[0].clientY - canvas.getBoundingClientRect().top
+        };
+        var img_index = null
+        var img_close = null
+        var img_scale = null
+        graphs.map( (image,i) => {
+            //图片坐标
+            let offset = {
+                x : image.img_axis.x,
+                y : image.img_axis.y
             };
-            var img_index = null
-            var img_close = null
-            var img_scale = null
-            graphs.map( (image,i) => {
-                let offset = {
-                    x : image.img_axis.x,
-                    y : image.img_axis.y
-                };
-                if(
-                    mouse.x>offset.x &&
-                    mouse.x<offset.x+image.width &&
-                    mouse.y>offset.y &&
-                    mouse.y<offset.y+image.height 
-                ){
-                    //可以开始处理点击事件，让click=true
-                    //应该在此处将所点击的图片  是第几张图片  i 储存
-                    console.log('点击图片');
-                    this.setState({
-                        click: true
-                    })
-                    img_index = i
-                }else if(
-                    mouse.x < offset.x + image.width + 10 &&
-                    mouse.x > offset.x + image.width - 10 &&
-                    mouse.y < offset.y + 10 &&
-                    mouse.y > offset.y - 10
-                ){
-                    //关闭图片
-                    img_close = i
-                }else if(
-                    mouse.x < offset.x + image.width + 10 &&
-                    mouse.x > offset.x + image.width - 10 &&
-                    mouse.y < offset.y + image.height + 10 &&
-                    mouse.y > offset.y + image.height - 10
-                ){
-                    //缩放图片
-                    this.setState({
-                        scale: {
-                            do:true,
-                            x:mouse.x-offset.x,
-                            y:mouse.y-offset.y,
-                            index:i
-                        }
-                    })
-                }
-            });
-            
-            if(img_index!=null){
-                //此处将第i张图片提到最后
-                let a = graphs;
-                a= [
-                    ...a.filter((index,i) => {
-                        return i !== img_index
-                    }),
-                    a[img_index]
-                ]
-                allHold("graphs",a)
-                this.updateCanvasBackground()
-                this.updateCanvasImages()
-            }else if(img_close!==null){
+            if(
+                Tool.is_inner(mouse,{
+                    x : offset.x + image.width - 10,
+                    _x : offset.x + image.width + 10,
+                    y : offset.y - 10,
+                    _y : offset.y + 10
+                })
+            ){
                 //关闭图片
-                let a = graphs;
-                a.splice(img_close,1)
-                allHold("graphs",a)
-                this.updateCanvasBackground()
-                this.updateCanvasImages()
+                img_close = i
+            }else if(
+                Tool.is_inner(mouse,{
+                    x : offset.x + image.width - 10,
+                    _x : offset.x + image.width + 10,
+                    y : offset.y + image.height - 10,
+                    _y : offset.y + image.height + 10
+                })
+            ){
+                //缩放图片
+                this.setState({
+                    scale: {
+                        do:true,
+                        index:i
+                    }
+                })
+            }else if(
+                Tool.is_inner(mouse,{
+                    x : offset.x + image.width/2 - 10,
+                    _x : offset.x + image.width/2 + 10,
+                    y : offset.y - 10,
+                    _y : offset.y + 10
+                })
+            ){
+                //旋转图片
+                console.log("开始图片的旋转");
+                this.setState({
+                    spin: {
+                        do:true,
+                        index:i
+                    }
+                })
+            }else if(
+                //优先点击图片旋转。关闭。缩放。按钮
+                Tool.is_inner(mouse,{
+                    x : offset.x,
+                    _x : offset.x + image.width,
+                    y : offset.y,
+                    _y : offset.y + image.height
+                })
+            ){
+                //点击图片
+                this.setState({
+                    click: true
+                })
+                img_index = i
             }
+        });
+        
+        if(img_close!==null){
+            //关闭图片
+            let a = graphs;
+            a.splice(img_close,1)
+            allHold("graphs",a)
+            this.updateCanvasBackground()
+            this.updateCanvasImages()
+        }else if(img_index!=null){
+            //此处将第i张图片提到最后
+            let a = graphs;
+            a= [
+                ...a.filter((index,i) => {
+                    return i !== img_index
+                }),
+                a[img_index]
+            ]
+            allHold("graphs",a)
+            this.updateCanvasBackground()
+            this.updateCanvasImages()
         }
     }
     
@@ -244,42 +487,24 @@ export default class canvas extends Component {
         if(screen.availWidth>768) return
         let {
             click,
-            scale
+            scale,
+            spin
         } = this.state
-        let {graphs,allHold} = this.props.store
+        let {
+            graphs,
+            allHold
+        } = this.props.store
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
-        var mouse = {
+        let mouse = {
             x : e.touches[0].clientX - canvas.getBoundingClientRect().left,
             y : e.touches[0].clientY - canvas.getBoundingClientRect().top
         };
-        if( graphs.length !== 0 && click ) {
-            let graphs_len = graphs["length"]
-            let a = graphs
-            //数组里面最后一个图片端点位置
-            let offset = {
-                x : graphs[graphs.length-1].img_axis.x,
-                y : graphs[graphs.length-1].img_axis.y
-            };
-            //永远只移动数组最后一个img{}
-            a[graphs_len-1] = Object.assign({},a[graphs_len-1],{
-                img_axis: {
-                    x:mouse.x-30,
-                    y:mouse.y-30
-                },
+        
+        if( graphs.length !== 0 && (click||scale.do||spin.do) ) {
+            this.handleMove({
+                mouse
             })
-            allHold("graphs",a)
-            this.updateCanvasBackground()
-            this.updateCanvasImages()
-        }else if(graphs.length !== 0 && scale.do){
-            // scale
-            console.log('开始缩放');
-            let a = graphs;
-            a[scale.index].width = mouse.x - a[scale.index].img_axis.x
-            a[scale.index].height = mouse.y - a[scale.index].img_axis.y
-            allHold("graphs",a)
-            this.updateCanvasBackground()
-            this.updateCanvasImages()
         }
     }
     

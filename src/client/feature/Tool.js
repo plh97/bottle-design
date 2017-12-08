@@ -15,10 +15,8 @@ class Tool{
             mouse.y > area.y &&
             mouse.y < area._y
         ){
-            console.log("true",mouse,area)
             return true
         }else {
-            console.log("false",mouse,area)
             return false
         }
     }
