@@ -9,10 +9,22 @@ const { Content } = Layout
 const { TabPane } = Tabs;
 
 let img_list = []
-for(let i=1;i<29;i++){
+for(let i=0;i<7;i++){
     img_list.push({
         url:"http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000001/2668f6ca-ca04-4a5c-87de-e82766b4125e.jpg",
-        id:i
+        id:i*4+1
+    })
+    img_list.push({
+        url:"http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000001/a4e0e506-001c-4e1c-8308-a4a9f759bd39.jpg",
+        id:i*4+2
+    })
+    img_list.push({
+        url:"http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000001/83545006-d032-4215-8738-059f44f6e123.jpg",
+        id:i*4+3
+    })
+    img_list.push({
+        url:"http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000001/4857b6ef-d8ca-4ef1-b484-ad01de3ab14e.jpg",
+        id:i*4+4
     })
 }
 
@@ -56,7 +68,8 @@ export default class content extends Component {
                         y:(340+110*(Math.random()*2-1))*scale_val
                     },
                     width:70*scale_val,
-                    height:70*scale_val
+                    height:70*scale_val,
+                    angle:0
                 })
             }else{
                 a.push({
@@ -66,7 +79,8 @@ export default class content extends Component {
                         y:(340+110*(Math.random()*2-1))
                     },
                     width:70,
-                    height:70
+                    height:70,
+                    angle:0
                 })
             }
             allHold("graphs",a)

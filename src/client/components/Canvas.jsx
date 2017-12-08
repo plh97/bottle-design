@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Layout,Pagination ,  Tabs, Button  } from 'antd'
 import { inject, observer } from "mobx-react"
+import Tool from '../feature/Tool.js'
 
 const { Content } = Layout
 const { TabPane } = Tabs;
@@ -15,8 +16,10 @@ export default class canvas extends Component {
             show_material: false,
             scale:{
                 do:false,
-                x:0,
-                y:0,
+                index:0
+            },
+            spin:{
+                do:false,
                 index:0
             }
         }
@@ -54,42 +57,99 @@ export default class canvas extends Component {
         } = this.props.store
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
-        graphs.map( graph => {
+        graphs.map( (graph,i) => {
+
+            let img = img_ref[`image${graph.img_index}`]
+            let x = graph.img_axis.x
+            let y = graph.img_axis.y
+            let width = graph.width
+            let height = graph.height
+            let angle = graph.angle
+            let rad = -angle * Math.PI / 180
+
             //画图片
+            //需要旋转参数
+            ctx.save()
+            ctx.scale(-1, 1)
+            ctx.translate(-width/2-x, y+height/2) 
+            ctx.rotate(rad)
             ctx.drawImage(
-                img_ref[`image${graph.img_index}`] , 
-                graph.img_axis.x , 
-                graph.img_axis.y , 
-                graph.width , 
-                graph.height
-            );
+                img, 
+                -width / 2,  
+                -height / 2, 
+                width, 
+                height
+            )
+
             //画边框
-            ctx.strokeStyle = 'blue';
-            ctx.strokeRect(
-                graph.img_axis.x,
-                graph.img_axis.y,
-                graph.width,
-                graph.height
-            );
-            //X
-            ctx.font="20px Arial";
-            ctx.fillStyle = 'black';
-            ctx.fillText(
-                "X",
-                graph.img_axis.x + graph.width-5.5,
-                graph.img_axis.y+8
-            );
-            //scale
-            ctx.drawImage(
-                this.refs.scale , 
-                //中间宽度
-                graph.img_axis.x+graph.width -7 , 
-                graph.img_axis.y+graph.height -7 , 
-                14 , 
-                14
-            );
+            //需要旋转参数
+            if(i==graphs.length-1){
+                ctx.strokeStyle = 'blue';
+                ctx.strokeRect(
+                    -width / 2,  
+                    -height / 2, 
+                    width, 
+                    height
+                );
+                //X
+                ctx.font="20px Arial";
+                ctx.fillStyle = 'black';
+                ctx.fillText(
+                    "X",
+                    x + width - 5.5,
+                    y + 8
+                );
+                //scale
+                ctx.drawImage(
+                    this.refs.scale , 
+                    //右下角
+                    x + width -7 , 
+                    y + height -7 , 
+                    14 , 
+                    14
+                );
+                //旋转
+                ctx.drawImage(
+                    this.refs.spin , 
+                    //中上
+                    x + width/2 -7 , 
+                    y -7 , 
+                    14 , 
+                    14
+                );
+                ctx.restore()
+            }else {
+                ctx.restore()
+            }
         })
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     handleCanvasDown = (e) => {
         if(screen.availWidth<768) return
@@ -107,6 +167,7 @@ export default class canvas extends Component {
             var img_index = null
             var img_close = null
             var img_scale = null
+            var img_spin = null
             graphs.map( (image,i) => {
                 let offset = {
                     x : image.img_axis.x,
@@ -118,14 +179,12 @@ export default class canvas extends Component {
                     mouse.y > offset.y &&
                     mouse.y < offset.y + image.height 
                 ){
-                    console.log("你可能处于被点击的地方");
+                    console.log("点击图片");
                     this.setState({
-                        click: true,
-                        index:i
+                        click: true
                     })
                     img_index = i
-                }
-                if(
+                }else if(
                     mouse.x < offset.x + image.width + 10 &&
                     mouse.x > offset.x + image.width - 10 &&
                     mouse.y < offset.y + 10 &&
@@ -142,30 +201,34 @@ export default class canvas extends Component {
                     this.setState({
                         scale: {
                             do:true,
-                            x:mouse.x-offset.x,
-                            y:mouse.y-offset.y,
                             index:i
                         }
                     })
                     console.log('缩放图片');
+                }else if(
+                    mouse.x > offset.x + image.width/2 - 10 &&
+                    mouse.x < offset.x + image.width/2 + 10 &&
+                    mouse.y > offset.y - 10 &&
+                    mouse.y < offset.y + 10
+                ){
+                    //旋转图片
+                    this.setState({
+                        spin: {
+                            do:true,
+                            index:i
+                        }
+                    })
+                    img_index = i
+                    console.log('旋转图片');
                 }
             });
-            
-            //关闭图片
-            if(img_close!==null){
-                let a = graphs;
-                a.splice(img_close,1)
-                allHold("graphs",a)
-                this.updateCanvasBackground()
-                this.updateCanvasImages()
-            }
-            
-            //此处将第i张图片提到最后
             if(img_index!=null){
+                //此处将第i张图片提到最后
+                console.log("此处调整图片顺序");
                 let a = graphs;
                 a= [
                     ...a.filter((index,i) => {
-                        console.log(index,i);
+                        console.log("index,i",img_index,i);
                         return i !== img_index
                     }),
                     a[img_index]
@@ -173,6 +236,27 @@ export default class canvas extends Component {
                 allHold("graphs",a)
                 this.updateCanvasBackground()
                 this.updateCanvasImages()
+            }else if(img_close!==null){
+                //关闭图片
+                let a = graphs;
+                a.splice(img_close,1)
+                allHold("graphs",a)
+                this.updateCanvasBackground()
+                this.updateCanvasImages()
+            // }else if(img_spin !== null){
+            //     //旋转梗
+            //     //此处将第i张图片提到最后
+            //     let a = graphs;
+            //     a= [
+            //         ...a.filter((index,i) => {
+            //             console.log("img_spin,i",img_spin,i);
+            //             return i !== img_spin
+            //         }),
+            //         a[img_spin]
+            //     ]
+            //     allHold("graphs",a)
+            //     this.updateCanvasBackground()
+            //     this.updateCanvasImages()
             }
         }
     }
@@ -181,18 +265,19 @@ export default class canvas extends Component {
         if(screen.availWidth<768) return
         let {
             click,
-            scale
+            scale,
+            spin
         } = this.state
         let {graphs,allHold} = this.props.store
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
+        var mouse = {
+            x : e.clientX - canvas.getBoundingClientRect().left,
+            y : e.clientY - canvas.getBoundingClientRect().top
+        };
         if( graphs.length !== 0 && click ) {
             let graphs_len = graphs["length"]
             let a = graphs
-            var mouse = {
-                x : e.clientX - canvas.getBoundingClientRect().left,
-                y : e.clientY - canvas.getBoundingClientRect().top
-            };
             //数组里面最后一个图片端点位置
             let offset = {
                 x : graphs[graphs.length-1].img_axis.x,
@@ -217,6 +302,29 @@ export default class canvas extends Component {
             allHold("graphs",a)
             this.updateCanvasBackground()
             this.updateCanvasImages()
+        }else if(graphs.length !== 0 && spin.do){
+            // spin
+            console.log('开始旋转123123123');
+            let graphs_len = graphs["length"]
+            let a = graphs
+            //数组里面最后一个图片端点位置
+            let offset = {
+                x : graphs[graphs.length-1].img_axis.x,
+                y : graphs[graphs.length-1].img_axis.y
+            };
+            let img = {
+                width : graphs[graphs.length-1].width,
+                height : graphs[graphs.length-1].height
+            };
+
+            let dirtX = mouse.x - offset.x - img.width/2
+            let dirtY = -(mouse.y - offset.y - img.height/2)
+            let angle = Math.atan2(dirtY,dirtX)
+            
+            a[scale.index].angle = (90 - 180*angle/Math.PI )
+            allHold("graphs",a)
+            this.updateCanvasBackground()
+            this.updateCanvasImages()
         }
     }
 
@@ -226,8 +334,10 @@ export default class canvas extends Component {
             click: false,
             scale:{
                 do:false,
-                x:0,
-                y:0,
+                index:0
+            },
+            spin:{
+                do:false,
                 index:0
             }
         })
@@ -250,7 +360,7 @@ export default class canvas extends Component {
 
 
 
-    
+
 
     handleTouchStart = (e) =>{
         if(screen.availWidth>768) return
@@ -345,7 +455,6 @@ export default class canvas extends Component {
         let {graphs,allHold} = this.props.store
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
-        
         var mouse = {
             x : e.touches[0].clientX - canvas.getBoundingClientRect().left,
             y : e.touches[0].clientY - canvas.getBoundingClientRect().top
@@ -370,6 +479,7 @@ export default class canvas extends Component {
             this.updateCanvasImages()
         }else if(graphs.length !== 0 && scale.do){
             // scale
+            console.log('开始缩放');
             let a = graphs;
             a[scale.index].width = mouse.x - a[scale.index].img_axis.x
             a[scale.index].height = mouse.y - a[scale.index].img_axis.y
@@ -385,8 +495,6 @@ export default class canvas extends Component {
             click: false,
             scale:{
                 do:false,
-                x:0,
-                y:0,
                 index:0
             }
         })
@@ -395,7 +503,6 @@ export default class canvas extends Component {
 
 
     render() {
-        console.log(screen.availWidth);
         return (
             <div className="content-container-show">
                 <img src="http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000059/19fb8efd-bba9-4fcc-a6e0-82c4d2fba50e.jpg" />
