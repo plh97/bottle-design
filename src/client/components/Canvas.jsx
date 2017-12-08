@@ -44,6 +44,13 @@ export default class canvas extends Component {
         ctx.clearRect(0,0,canvas.width,canvas.height);
         if(screen.width<447.75){
             let scale_val = screen.width/447.75
+            ctx.drawImage(
+                this.refs.background ,
+                0,
+                0, 
+                screen.width, 
+                screen.height-163
+            )
             ctx.fillStyle = 'white';
             ctx.fillRect(170*scale_val, 240*scale_val, 100*scale_val, 300*scale_val);
             ctx.strokeStyle = 'green';
@@ -571,7 +578,7 @@ export default class canvas extends Component {
     render() {
         return (
             <div className="content-container-show">
-                <img src="http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000059/19fb8efd-bba9-4fcc-a6e0-82c4d2fba50e.jpg" />
+                <img style={{display:"none"}} ref="background" src="http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000059/19fb8efd-bba9-4fcc-a6e0-82c4d2fba50e.jpg" />
                 <canvas 
                     onMouseUp={this.handleCanvasUp} 
                     onMouseMove={this.handleCanvasMove} 

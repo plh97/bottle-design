@@ -99,6 +99,18 @@ export default class content extends Component {
         })
     }
 
+    handlePreview = (e) => {
+        let canvas = document.getElementsByTagName('canvas')[0]
+        
+        console.log(
+            canvas
+        );
+        const dataURL = canvas.toDataURL("image/png");
+        const newWindow=window.open();
+        newWindow.document.write('<img src="'+dataURL+'"/>');
+        newWindow.print();
+    }
+
     render() {
         const {
             current_page,
@@ -170,7 +182,7 @@ export default class content extends Component {
                     <span>图片<br/>📷</span>
                     <span>文字<br/>✏️</span>
                     <span>设计师<br/>🙋‍</span>
-                    <span>预览<br/>👊🏾</span>
+                    <span onClick={this.handlePreview}>预览<br/>👊🏾</span>
                 </div>
             </Content>
         )
