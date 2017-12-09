@@ -1,0 +1,12 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+[branch "master"]
+	remote = https://github.com/pengliheng/taobao.git
+	merge = refs/heads/master
+[user]
+	name = pengliheng

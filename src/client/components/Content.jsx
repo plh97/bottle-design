@@ -58,7 +58,6 @@ export default class content extends Component {
         let img_index = e.target.dataset.index
         if(e.target.dataset.drag){
             let a = graphs;
-            
             if(screen.width<447.75){
                 let scale_val = screen.width/447.75
                 a.push({

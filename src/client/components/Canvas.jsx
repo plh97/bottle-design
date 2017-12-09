@@ -87,6 +87,7 @@ export default class canvas extends Component {
                 height
             )
             ctx.restore()
+            //清除多余的
             ctx.fillRect(
                 0,
                 0,
@@ -219,7 +220,6 @@ export default class canvas extends Component {
     }
 
     handleEdit = (e) => {
-        console.log(">>>edit:",e.edit);
         this.props.store.allHold("edit",e.edit)
         this.updateCanvasBackground()
         this.updateCanvasImages()
@@ -642,7 +642,7 @@ export default class canvas extends Component {
                     style={{display:"none"}} 
                     ref="background" 
                     crossOrigin="anonymous"
-                    src="http://oy82lbvct.bkt.clouddn.com/wine.jpg" />
+                    src="http://oy82lbvct.bkt.clouddn.com/wine_block.png" />
                 <canvas 
                     onMouseOut={this.handleMouseOut}
                     onMouseOver={this.handleMouseOver}
@@ -659,6 +659,10 @@ export default class canvas extends Component {
                     width={`${screen.availWidth > 447 ? 447.75 : screen.availWidth}`} 
                     height="600" 
                     ref="canvas"/>
+                <canvas
+                    crossOrigin="anonymous"
+                    className="lower-canvas " 
+                    ref="canvas_background"/>
                 <img 
                     ref="spin" 
                     crossOrigin="anonymous"
