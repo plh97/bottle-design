@@ -27,9 +27,6 @@ class Canvas {
 		//重绘背景
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-		console.log(
-			( Canvas.height - (Image.width / Canvas.width) * Canvas.height ) / 2
-		);
 		if (Image.fill == "height") {
 			//按图片高度来填充
 			ctx.drawImage(
@@ -49,9 +46,12 @@ class Canvas {
 				Canvas.height + ( Canvas.height - (Image.width / Canvas.width) * Canvas.height )*2  ,
 			)
 		}
-		ctx.fillStyle = 'white';
+		ctx.fillStyle = Block.color;
 		ctx.fillRect( 
-			
+			Canvas*(Blob.x-Blob.width/2),
+			Canvas*(Blob.x+Blob.width/2),
+			Canvas*(Blob.y-Blob.height/2),
+			Canvas*(Blob.y+Blob.height/2)
 		);
 		ctx.strokeStyle = 'black';
 		ctx.strokeRect( 
