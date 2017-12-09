@@ -11,19 +11,19 @@ const { TabPane } = Tabs;
 let img_list = []
 for(let i=0;i<7;i++){
     img_list.push({
-        url:"http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000001/2668f6ca-ca04-4a5c-87de-e82766b4125e.jpg",
+        url:"http://oy82lbvct.bkt.clouddn.com/material1.jpg",
         id:i*4+1
     })
     img_list.push({
-        url:"http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000001/a4e0e506-001c-4e1c-8308-a4a9f759bd39.jpg",
+        url:"http://oy82lbvct.bkt.clouddn.com/material2.jpg",
         id:i*4+2
     })
     img_list.push({
-        url:"http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000001/83545006-d032-4215-8738-059f44f6e123.jpg",
+        url:"http://oy82lbvct.bkt.clouddn.com/material3.jpg",
         id:i*4+3
     })
     img_list.push({
-        url:"http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000001/4857b6ef-d8ca-4ef1-b484-ad01de3ab14e.jpg",
+        url:"http://oy82lbvct.bkt.clouddn.com/material4.jpg",
         id:i*4+4
     })
 }
@@ -100,15 +100,13 @@ export default class content extends Component {
     }
 
     handlePreview = (e) => {
-        let canvas = document.getElementsByTagName('canvas')[0]
-        
-        console.log(
-            canvas
-        );
+        let canvas = this.refs._canvas.wrappedInstance.refs.canvas
         const dataURL = canvas.toDataURL("image/png");
-        const newWindow=window.open();
-        newWindow.document.write('<img src="'+dataURL+'"/>');
-        newWindow.print();
+        let img = document.createElement("img")
+        let a = document.createElement("a")
+        a.href=dataURL
+        a.download=true
+        a.click()
     }
 
     render() {
@@ -145,6 +143,7 @@ export default class content extends Component {
                                         <img 
                                             data-index={img.id} 
                                             data-drag={true} 
+                                            crossOrigin="anonymous"
                                             src={img.url} 
                                             ref={`image${img.id}`}
                                             key={i} 
@@ -154,7 +153,6 @@ export default class content extends Component {
                                 <Pagination className="material-pagination" size="small"simple={true} total={img_list.length} onChange={this.handlePageChange} />
                             </TabPane>
                             <TabPane tab="文字定制" key="2">
-                                <p>Content of Tab Pane 3</p>
                                 <p>Content of Tab Pane 3</p>
                                 <p>Content of Tab Pane 3</p>
                                 <p>Content of Tab Pane 3</p>

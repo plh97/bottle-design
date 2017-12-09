@@ -44,12 +44,13 @@ export default class canvas extends Component {
         ctx.clearRect(0,0,canvas.width,canvas.height);
         if(screen.width<447.75){
             let scale_val = screen.width/447.75
+            //图片依然由dom元素提供
             ctx.drawImage(
                 this.refs.background ,
                 0,
-                0, 
-                screen.width, 
-                screen.height-163
+                0,
+                screen.width,
+                screen.height-183
             )
             ctx.fillStyle = 'white';
             ctx.fillRect(170*scale_val, 240*scale_val, 100*scale_val, 300*scale_val);
@@ -126,6 +127,7 @@ export default class canvas extends Component {
                     14
                 );
             }
+            // ctx.clearRect()
             ctx.restore()
         })
     }
@@ -166,10 +168,6 @@ export default class canvas extends Component {
                 y : a[a.length-1].img_axis.y
             };
             //永远只移动数组最后一个img{}
-            console.log(
-                e.mouse,
-                mouseDownAxis
-            );
             a[graphs_len-1] = Object.assign({},a[graphs_len-1],{
                 img_axis: {
                     x: mouseDownImgAxis.x + (e.mouse.x - mouseDownAxis.x) ,
@@ -198,6 +196,13 @@ export default class canvas extends Component {
             this.updateCanvasBackground()
             this.updateCanvasImages()
         }
+    }
+
+    handleEdit = (e) => {
+        console.log(">>>edit:",e.edit);
+        this.props.store.allHold("edit",e.edit)
+        this.updateCanvasBackground()
+        this.updateCanvasImages()
     }
 
 
@@ -289,7 +294,6 @@ export default class canvas extends Component {
                 })
             ){
                 //旋转图片
-                console.log("开始图片的旋转");
                 this.setState({
                     spin: {
                         do:true,
@@ -331,7 +335,7 @@ export default class canvas extends Component {
             this.updateCanvasBackground()
             this.updateCanvasImages()
         }else if(img_index!==null){
-            //此处将第i张图片放到最后，点击事件发生开始     必做
+            //此处将第i张图片放到最后，点击事件发生开始,必做
             let a = graphs;
             a= [
                 ...a.filter((index,i) => {
@@ -421,36 +425,50 @@ export default class canvas extends Component {
         } = this.props.store
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
-        // window.e = e
+        //鼠标位置
         var mouse = {
             x : e.touches[0].clientX - canvas.getBoundingClientRect().left,
             y : e.touches[0].clientY - canvas.getBoundingClientRect().top
         };
+        //var可以实现变量提升，所以用var不用let
         var img_index = null
         var img_close = null
         var img_scale = null
+        var only_run_once = true
         graphs.map( (image,i) => {
             //图片坐标
             let offset = {
                 x : image.img_axis.x,
                 y : image.img_axis.y
             };
+            //图片中心点
+            let img_center = {
+                x : image.img_axis.x + image.width/2,
+                y : image.img_axis.y + image.height/2
+            };
+            //旋转角度
+            let angle = -image.angle
+            //图片最远值  --- 勾股定理
+            let distancement = Math.sqrt(
+                image.width * image.width + 
+                image.height * image.height
+            )/2
             if(
                 Tool.is_inner(mouse,{
-                    x : offset.x + image.width - 10,
-                    _x : offset.x + image.width + 10,
-                    y : offset.y - 10,
-                    _y : offset.y + 10
+                    x : img_center.x + Math.cos((angle+45)*Math.PI/180) * distancement - 10 ,
+                    _x : img_center.x + Math.cos((angle+45)*Math.PI/180) * distancement + 10 ,
+                    y : img_center.y - Math.sin((angle+45)*Math.PI/180) * distancement - 10 ,
+                    _y : img_center.y - Math.sin((angle+45)*Math.PI/180) * distancement + 10 
                 })
             ){
                 //关闭图片
                 img_close = i
             }else if(
                 Tool.is_inner(mouse,{
-                    x : offset.x + image.width - 10,
-                    _x : offset.x + image.width + 10,
-                    y : offset.y + image.height - 10,
-                    _y : offset.y + image.height + 10
+                    x : img_center.x - Math.cos((angle+135)*Math.PI/180) * distancement - 10 ,
+                    _x : img_center.x - Math.cos((angle+135)*Math.PI/180) * distancement + 10 ,
+                    y : img_center.y + Math.sin((angle+135)*Math.PI/180) * distancement - 10 ,
+                    _y : img_center.y + Math.sin((angle+135)*Math.PI/180) * distancement + 10 ,
                 })
             ){
                 //缩放图片
@@ -462,14 +480,13 @@ export default class canvas extends Component {
                 })
             }else if(
                 Tool.is_inner(mouse,{
-                    x : offset.x + image.width/2 - 10,
-                    _x : offset.x + image.width/2 + 10,
-                    y : offset.y - 10,
-                    _y : offset.y + 10
+                    x : img_center.x + Math.cos((angle+90)*Math.PI/180) * distancement - 10 ,
+                    _x : img_center.x + Math.cos((angle+90)*Math.PI/180) * distancement + 10 ,
+                    y : img_center.y - Math.sin((angle+90)*Math.PI/180) * distancement - 10 ,
+                    _y : img_center.y - Math.sin((angle+90)*Math.PI/180) * distancement + 10 ,
                 })
             ){
                 //旋转图片
-                console.log("开始图片的旋转");
                 this.setState({
                     spin: {
                         do:true,
@@ -485,6 +502,16 @@ export default class canvas extends Component {
                     _y : offset.y + image.height
                 })
             ){
+                if(only_run_once){
+                    this.handleEdit({
+                        edit:true
+                    })
+                    only_run_once = false
+                }
+                this.handleEdit({
+                    edit:true
+                })
+                //点击图片
                 this.setState({
                     mouseDownAxis:{
                         x:mouse.x,
@@ -500,6 +527,13 @@ export default class canvas extends Component {
                     click: true
                 })
                 img_index = i
+            }else{
+                if(only_run_once){
+                    this.handleEdit({
+                        edit:false
+                    })
+                    only_run_once = false
+                }
             }
         });
         
@@ -562,15 +596,24 @@ export default class canvas extends Component {
     }
 
     handleMouseOut = (e) => {
-        this.props.store.allHold("edit",false)
-        this.updateCanvasBackground()
-        this.updateCanvasImages()
+        //只为pc提供服务
+        //pc 通过鼠标移入获取编辑焦点
+        //移动则通过点击是否属于图片而获取焦点////
+        //这个改不了了，要么重构。。。。
+        if(screen.width>768){
+            this.handleEdit({
+                edit:false
+            })
+        }
     }
 
     handleMouseOver = (e) => {
-        this.props.store.allHold("edit",true)
-        this.updateCanvasBackground()
-        this.updateCanvasImages()
+        //只为pc提供服务
+        if(screen.width>768){
+            this.handleEdit({
+                edit:true
+            })
+        }
     }
 
 
@@ -578,22 +621,37 @@ export default class canvas extends Component {
     render() {
         return (
             <div className="content-container-show">
-                <img style={{display:"none"}} ref="background" src="http://www.jaloogn.com/uupload/ushop/admin/custom/material/00000059/19fb8efd-bba9-4fcc-a6e0-82c4d2fba50e.jpg" />
+                <img 
+                    style={{display:"none"}} 
+                    ref="background" 
+                    crossOrigin="anonymous"
+                    src="http://oy82lbvct.bkt.clouddn.com/wine.jpg" />
                 <canvas 
+                    onMouseOut={this.handleMouseOut}
+                    onMouseOver={this.handleMouseOver}
+
                     onMouseUp={this.handleCanvasUp} 
                     onMouseMove={this.handleCanvasMove} 
                     onMouseDown={this.handleCanvasDown}
                     onTouchStart={this.handleTouchStart}
                     onTouchEnd={this.onTouchEnd}
                     onTouchMove={this.onTouchMove}
+
+                    crossOrigin="anonymous"
                     className="upper-canvas " 
                     width={`${screen.availWidth > 447 ? 447.75 : screen.availWidth}`} 
                     height="600" 
-                    onMouseOut={this.handleMouseOut}
-                    onMouseOver={this.handleMouseOver}
                     ref="canvas"/>
-                <img ref="spin" style={{display:"none"}} src="http://www.shejiye.com/uploadfile/icon/2017/0203/shejiyeiconbynhlkfdyfv.png" />
-                <img ref="scale" style={{display:"none"}} src="http://www.shejiye.com/uploadfile/icon/2017/0203/shejiyeiconcwl3waofj11.png" />
+                <img 
+                    ref="spin" 
+                    crossOrigin="anonymous"
+                    style={{display:"none"}} 
+                    src="http://oy82lbvct.bkt.clouddn.com/spin.png" />
+                <img 
+                    ref="scale" 
+                    crossOrigin="anonymous"
+                    style={{display:"none"}} 
+                    src="http://oy82lbvct.bkt.clouddn.com/scale.png" />
             </div>
         )
     }

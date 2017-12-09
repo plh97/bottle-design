@@ -2,6 +2,7 @@
 const Koa = require('koa');
 const path = require('path');
 const json = require('koa-json');
+const cors = require('koa2-cors');
 const koaSend = require('koa-send');
 const logger = require('koa-logger');
 const static = require('koa-static');
@@ -15,6 +16,7 @@ const app = new Koa();
 
 app
     .use(bodyparser())
+    .use(cors())
     .use(json())
     .use(logger())
     .use(static(path.resolve('./dist'), {
