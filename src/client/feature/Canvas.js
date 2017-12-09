@@ -25,19 +25,38 @@ class Canvas {
 
 		console.log('canvas_background', e);
 		//重绘背景
-		const scale_val = screen.width > Adjust ? 1 : screen.width / Adjust
-		ctx.clearRect(0, 0, canvas.width * scale_val, canvas.height * scale_val);
-		ctx.drawImage(
-			Image.element,
-			0,
-			0,
-			Canvas.width * scale_val,
-			Canvas.height * scale_val
-		)
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+		console.log(
+			( Canvas.height - (Image.width / Canvas.width) * Canvas.height ) / 2
+		);
+		if (Image.fill == "height") {
+			//按图片高度来填充
+			ctx.drawImage(
+				Image.element,
+				( Canvas.width - Image.height / Canvas.height * Canvas.width ) / 2,
+				0,
+				Image.height / Canvas.height * Canvas.width ,
+				Canvas.height 
+			)
+		}else if (Image.fill == "width") {
+			//按图片高度来填充
+			ctx.drawImage(
+				Image.element,
+				0 ,
+				(Image.width / Canvas.width) * Canvas.height - Canvas.height  ,
+				Canvas.width,
+				Canvas.height + ( Canvas.height - (Image.width / Canvas.width) * Canvas.height )*2  ,
+			)
+		}
 		ctx.fillStyle = 'white';
-		ctx.fillRect(163 * scale_val, 240 * scale_val, 117 * scale_val, 300 * scale_val);
+		ctx.fillRect( 
+			
+		);
 		ctx.strokeStyle = 'black';
-		ctx.strokeRect(163 * scale_val, 240 * scale_val, 117 * scale_val, 300 * scale_val);
+		ctx.strokeRect( 
+
+		);
 	}
 
 
