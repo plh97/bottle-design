@@ -44,7 +44,7 @@
     
             .content-container-material {
                 flex: 1;
-                width: 100px;
+                // width: 100px;
                 height: 600px;
                 display: flex;
                 justify-content: center;
@@ -91,7 +91,7 @@
             }
     
             .content-container-show {
-                width: 100px;
+                // width: 100px;
                 flex: 1;
                 height: 600px;
                 display: flex;
@@ -100,18 +100,20 @@
                 position: relative;
                 overflow: hidden;
     
-                img{
-                    height: 100%;
-                }
-    
-                .upper-canvas {
+                canvas {
                     position: absolute;
-                    // left: 24%;
-                    // top: 0%;
+                    left: 0%;
+                    top: 0%;
+                    &.canvas_fir {
+                        z-index: 1;
+                    }
+                    &.canvas_background {
+                        z-index: 0;
+                    }
                 }
             }
             .content-container-designer {
-                width: 100px;
+                // width: 100px;
                 flex: 1;
                 height: 600px;
                 display: flex;
@@ -219,15 +221,7 @@
                 position: relative;
                 overflow: hidden;
     
-                img{
-                    // top: -58%;
-                    // left: -37%;
-                    // width: 180%
-                    width: 100vw;
-                    position: absolute;
-                }
-    
-                .upper-canvas {
+                canvas {
                     position: absolute;
                     width: 100%;
                     // left: 24%;

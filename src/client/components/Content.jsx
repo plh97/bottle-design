@@ -34,7 +34,7 @@ export default class content extends Component {
     constructor(){
         super()
         this.state={
-            current_page:1,
+            current_page: 1,
             show_material: false
         }
     }
@@ -53,39 +53,8 @@ export default class content extends Component {
         const {
             graphs,
             allHold,
-            show_material
         } = this.props.store
-        let img_index = e.target.dataset.index
         if(e.target.dataset.drag){
-            let a = graphs;
-            if(screen.width<447.75){
-                let scale_val = screen.width/447.75
-                a.push({
-                    img_index ,
-                    img_axis: {
-                        x:(190+10*(Math.random()*2-1))*scale_val,
-                        y:(340+110*(Math.random()*2-1))*scale_val
-                    },
-                    width:70*scale_val,
-                    height:70*scale_val,
-                    angle:0
-                })
-            }else{
-                a.push({
-                    img_index ,
-                    img_axis: {
-                        x:(190+10*(Math.random()*2-1)),
-                        y:(340+110*(Math.random()*2-1))
-                    },
-                    width:70,
-                    height:70,
-                    angle:0
-                })
-            }
-            allHold("graphs",a)
-            allHold("img_ref",this.refs)
-            this.refs._canvas.wrappedInstance.updateCanvasBackground()
-            this.refs._canvas.wrappedInstance.updateCanvasImages()
             this.setState({
                 show_material:false
             })
@@ -99,12 +68,7 @@ export default class content extends Component {
     }
 
     handlePreview = (e) => {
-        let canvas = this.refs._canvas.wrappedInstance.refs.canvas
-        const dataURL = canvas.toDataURL("image/png");
-        let a = document.createElement("a")
-        a.href=dataURL
-        a.download=true
-        a.click()
+        console.log("handlePreview");
     }
 
     render() {
