@@ -41,27 +41,19 @@ export default class canvas extends Component {
         //重绘背景
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
+        const scale_val = screen.width > 447.75 ? 1 : screen.width / 447.75
         ctx.clearRect(0,0,canvas.width,canvas.height);
-        if(screen.width<447.75){
-            let scale_val = screen.width/447.75
-            //图片依然由dom元素提供
-            ctx.drawImage(
-                this.refs.background ,
-                0,
-                0,
-                screen.width,
-                screen.height-183
-            )
-            ctx.fillStyle = 'white';
-            ctx.fillRect(170*scale_val, 240*scale_val, 100*scale_val, 300*scale_val);
-            ctx.strokeStyle = 'green';
-            ctx.strokeRect(170*scale_val, 240*scale_val, 100*scale_val, 300*scale_val);
-        }else{
-            ctx.fillStyle = 'white';
-            ctx.fillRect(170, 240, 100, 300);
-            ctx.strokeStyle = 'green';
-            ctx.strokeRect(170, 240, 100, 300);
-        }
+        ctx.drawImage(
+            this.refs.background ,
+            0,
+            0,
+            447.75*scale_val,
+            600*scale_val
+        )
+        ctx.fillStyle = 'white';
+        ctx.fillRect(163*scale_val, 240*scale_val, 117*scale_val, 300*scale_val);
+        ctx.strokeStyle = 'black';
+        ctx.strokeRect(163*scale_val, 240*scale_val, 117*scale_val, 300*scale_val);
     }
 
     updateCanvasImages = (e) => {
@@ -81,6 +73,7 @@ export default class canvas extends Component {
             let height = graph.height
             let angle = graph.angle
             let rad = -angle * Math.PI / 180
+            const scale_val = screen.width > 447.75 ? 1 : screen.width / 447.75
             //画图片
             ctx.save()
             ctx.scale(-1, 1)
@@ -93,8 +86,27 @@ export default class canvas extends Component {
                 width, 
                 height
             )
-            //画边框
+            ctx.restore()
+            ctx.fillRect(
+                0,
+                0,
+                161*scale_val,
+                550
+            )
+            ctx.fillRect(
+                279*scale_val,
+                223,
+                1000,
+                550,
+            )
+
             if( edit && i==graphs.length-1){
+                //画边框，需要重新绘制坐标系统，并且保存
+                ctx.save()
+                ctx.scale(-1, 1)
+                ctx.translate(-width/2-x, y+height/2) 
+                ctx.rotate(rad)
+
                 ctx.strokeStyle = 'blue';
                 ctx.strokeRect(
                     -width / 2,  
@@ -126,9 +138,22 @@ export default class canvas extends Component {
                     14 , 
                     14
                 );
+                ctx.restore()
             }
-            // ctx.clearRect()
-            ctx.restore()
+            ctx.lineWidth = 2.9;
+            ctx.strokeStyle = 'black';
+            ctx.beginPath();
+            ctx.moveTo(163*scale_val, 240*scale_val);
+            ctx.lineTo(163*scale_val, 540*scale_val);
+            ctx.stroke();
+            
+            ctx.lineWidth = 2.3;
+            ctx.beginPath();
+            ctx.moveTo(282*scale_val, 240*scale_val);
+            ctx.lineTo(278*scale_val, 540*scale_val);
+            ctx.stroke();
+
+            // ctx.strokeRect(163*scale_val, 240*scale_val, 117*scale_val, 300*scale_val);
         })
     }
 
@@ -152,11 +177,6 @@ export default class canvas extends Component {
         } = this.state
         const canvas = this.refs.canvas;
         const ctx = canvas.getContext('2d');
-        // const mouse = {
-        //     x : screen.clientX - canvas.getBoundingClientRect().left,
-        //     y : screen.clientY - canvas.getBoundingClientRect().top
-        // };
-
         //集成move事件，因为移动pc   mouse 坐标不一致，所以mouse由move事件统一提供
         //graphs则自己去获取
         if( graphs.length !== 0 && click ) {
@@ -597,9 +617,6 @@ export default class canvas extends Component {
 
     handleMouseOut = (e) => {
         //只为pc提供服务
-        //pc 通过鼠标移入获取编辑焦点
-        //移动则通过点击是否属于图片而获取焦点////
-        //这个改不了了，要么重构。。。。
         if(screen.width>768){
             this.handleEdit({
                 edit:false

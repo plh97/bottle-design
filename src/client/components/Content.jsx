@@ -102,7 +102,6 @@ export default class content extends Component {
     handlePreview = (e) => {
         let canvas = this.refs._canvas.wrappedInstance.refs.canvas
         const dataURL = canvas.toDataURL("image/png");
-        let img = document.createElement("img")
         let a = document.createElement("a")
         a.href=dataURL
         a.download=true
