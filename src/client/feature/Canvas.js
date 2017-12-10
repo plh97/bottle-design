@@ -105,6 +105,7 @@ class Canvas {
 	static canvas_layer(
 		canvas,
 		images,
+		is_edit=true,
 		block_show=true,
 		block_prop={
 			x: 0.505,
@@ -121,17 +122,15 @@ class Canvas {
 			width: screen.width > 400 ? 400 : screen.width,
 		}
 	) {
-		console.log('canvas_layer');
+		var store_canvas
 		const ctx = canvas.getContext('2d');
 		//init background
 		ctx.clearRect(0, 0, canvas_prop.width, canvas_prop.height);
 		ctx.save()
-		ctx.scale(-1, 1)
 		ctx.translate(
-			-canvas_prop.width*block_prop.x,
+			canvas_prop.width*block_prop.x,
 			canvas_prop.height*block_prop.y
 		) 
-		ctx.rotate(0)
 		//init block
 		if (block_show) {
 			//白色填充块坐标系
@@ -150,16 +149,109 @@ class Canvas {
 				canvas_prop.height*(block_prop.height)
 			);
 		}
-		//draw images
-
-
-		//clear out of block
-
-		//draw close button
-
-		//draw scale_spin button
-		
 		ctx.restore()
+		
+		//draw images
+		images.map((image,i)=>{
+			const {
+				element,
+				x,y,width,height,angle,scale
+			} = image
+			const rad = angle * Math.PI / 180
+			//坐标系转换
+			ctx.save()
+			ctx.translate(
+				canvas_prop.width*block_prop.x + x,
+				canvas_prop.height*block_prop.y + y
+			) 
+			ctx.scale(scale, scale)
+			ctx.rotate(rad)
+
+            ctx.drawImage(
+                element, 
+                -width/2 ,
+				-height/2 ,
+                width,
+                height
+			)
+			ctx.restore()
+			
+			if(i==images.length-1){
+				ctx.clearRect(
+					0,
+					0,
+					canvas_prop.width*(block_prop.x-block_prop.width/2),
+					canvas_prop.height
+				)
+				ctx.clearRect(
+					0,
+					0,
+					canvas_prop.width,
+					canvas_prop.height*(block_prop.y-block_prop.height/2)
+				)
+				ctx.clearRect(
+					canvas_prop.width*(0.5+block_prop.width/2),
+					0,
+					canvas_prop.width,
+					canvas_prop.height
+				)
+				ctx.clearRect(
+					0,
+					canvas_prop.height*(block_prop.y+block_prop.height/2),
+					canvas_prop.width,
+					canvas_prop.height
+				)
+			}
+			//坐标系转换
+			ctx.save()
+			ctx.translate(
+				canvas_prop.width*block_prop.x + x,
+				canvas_prop.height*block_prop.y + y
+			) 
+			ctx.scale(scale, scale)
+			ctx.rotate(rad)
+			if(is_edit && i==images.length-1){
+				//draw outside border
+                ctx.strokeStyle = 'blue';
+                ctx.strokeRect(
+                    -width / 2,  
+                    -height / 2, 
+                    width, 
+                    height
+                );
+				//draw close button
+				ctx.fillStyle = "rgba(25, 25, 21,0.2)";;
+				ctx.fillRect( 
+                    width/2 - 6.5,
+                    -height/2 -8 ,
+                    13,
+                    16
+				);
+                ctx.font="20px Arial";
+                ctx.fillStyle = 'black';
+                ctx.fillText(
+                    "X",
+                    width/2 - 6.5,
+                    -height/2 +8
+                );
+				//draw scale_spin button
+				ctx.fillStyle = "rgba(25, 25, 21,0.2)";;
+				ctx.fillRect( 
+                    width/2 - 6.5,
+                    height/2 -8 ,
+                    13,
+                    16
+				);
+                ctx.font="17px Arial";
+                ctx.fillStyle = 'black';
+                ctx.fillText(
+                    "🔎",
+                    width/2 -8,
+                    height/2 +8
+                );
+			}
+			ctx.restore()
+		})
 	}
 }
 

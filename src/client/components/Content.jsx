@@ -104,16 +104,21 @@ export default class content extends Component {
                 let scale_val = screen.width>400 ? 1 : screen.width/400
                 a.push({
                     element:e.target ,
-                    x: 0,
-                    y: 0,
+                    x: 0 ,
+                    y: 0 ,
                     width:70*scale_val,
                     height:70*scale_val,
-                    angle:0
+                    angle:0,
+                    scale:1
                 })
                 allHold("images",a)
+                allHold("is_edit",true)
                 canvas_layer(
                     this.refs._canvas.wrappedInstance.refs.canvas_layer,
-                    this.props.store.images
+                    this.props.store.images,
+                    true,
+                    true,
+                    this.props.store.block_props
                 )
             }
         }
@@ -125,13 +130,33 @@ export default class content extends Component {
         })
     }
 
-    handlePreview = (e) => {
-        const canvas = this.refs._canvas.wrappedInstance.refs.canvas_background
-        const dataURL = canvas.toDataURL("image/png");
+    handleDownload = (e) =>{
         const a = document.createElement("a")
-        a.href=dataURL
-        a.download=true
-        a.click()
+        const image = document.createElement("img")
+        const canvas_layer = this.refs._canvas.wrappedInstance.refs.canvas_layer
+        const canvas_background = this.refs._canvas.wrappedInstance.refs.canvas_background
+        const ctx = canvas_background.getContext('2d');
+        const image_src = canvas_layer.toDataURL("image/png");
+        image.src = image_src
+        image.crossOrigin = "anonymous"
+        setTimeout(() => {
+            ctx.drawImage(image, 0, 0, 400,600)
+            const a_href = canvas_background.toDataURL("image/png");
+            a.href=a_href
+            a.download=true
+            a.click()
+        }, 0);
+    }
+
+    handlePreview = (e) => {
+        this.props.store.allHold("is_edit",false)
+        canvas_layer(
+            this.refs._canvas.wrappedInstance.refs.canvas_layer,
+            this.props.store.images,
+            false,
+            false,
+            this.props.store.block_props
+        )
     }
 
     render() {
@@ -200,10 +225,14 @@ export default class content extends Component {
                 </div>
                 <div className="content-footer">
                     <span onClick={this.show_material}>素材<br/>📖</span>
-                    <span>图片<br/>📷</span>
+                    <span
+                        onClick={this.handleDownload}
+                        >图片<br/>📷</span>
                     <span>文字<br/>✏️</span>
                     <span>设计师<br/>🙋‍</span>
-                    <span onClick={this.handlePreview}>预览<br/>👊🏾</span>
+                    <span 
+                        onClick={this.handlePreview}
+                        >预览<br/>👊🏾</span>
                 </div>
             </Content>
         )

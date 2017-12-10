@@ -5,8 +5,19 @@ import { action, useStrict, computed, observable } from "mobx";
 class TodoStore {
 	//我的用户信息
 	@observable image_ref = []
-	@observable images = []
 	@observable is_edit = true
+	@observable images = []
+	//画板相关参数交给mobx处理，接受全局管理
+	@observable block_props = {
+		x: 0.505,
+		y: 0.65,
+		width: 0.28,
+		height: 0.53,
+		color: "white",
+		border: {
+			color:"green"
+		}
+	}
 	@action allHold = (left, right) => {
 		if (left.split('.').length == 1) {
 			this[left] = right
