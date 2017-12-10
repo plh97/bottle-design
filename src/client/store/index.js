@@ -4,9 +4,9 @@ import { action, useStrict, computed, observable } from "mobx";
 // useStrict(true)
 class TodoStore {
 	//我的用户信息
-	@observable img_ref = []
-	@observable graphs = []
-	@observable edit = true
+	@observable image_ref = []
+	@observable images = []
+	@observable is_edit = true
 	@action allHold = (left, right) => {
 		if (left.split('.').length == 1) {
 			this[left] = right

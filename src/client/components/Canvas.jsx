@@ -4,7 +4,7 @@ import { inject, observer } from "mobx-react"
 import Tool from '../feature/Tool.js'
 import {
     canvas_background,
-    canvas_fir
+    canvas_layer
 } from '../feature/Canvas.js'
 
 const { Content } = Layout
@@ -27,32 +27,14 @@ export default class canvas extends Component {
         const background_image = document.createElement("img")
         background_image.src = background
         background_image.onload = () => {
-            //绘制背景图片
-            canvas_background({
-                Canvas: {
-                    element: this.refs.canvas_background , 
-                    
-                    height: screen.height-93 > 600 ? 600 : screen.height-93 ,
-                    width: screen.width > 400 ? 400 : screen.width,
-                },
-                Image: {
-                    //图片居中显示，原始尺寸,fill:按高度/宽度填充
-                    fill:"height",
-                    width: 500,
-                    height: 670,
-                    element: background_image
-                },
-                Block: {
-                    //百分比表示位置
-                    x: 0.5,
-                    y: 0.7,
-                    width: 0.25,
-                    height: 0.5,
-                    show: true,
-                    color: "white",
-                },
-                Adjust: 400
-            })
+            canvas_background(
+                this.refs.canvas_background,
+                background_image
+            )
+            canvas_layer(
+                this.refs.canvas_layer,
+                this.props.store.images
+            )
         }
     }
 
@@ -70,9 +52,9 @@ export default class canvas extends Component {
                     //onTouchMove={this.onTouchMove}
                     height={`${screen.height-93 > 600 ? 600 : screen.height-93}`}
                     width={`${screen.width > 400 ? 400 : screen.width}`}
-                    className="canvas_fir"
+                    className="canvas_layer"
                     crossOrigin="anonymous"
-                    ref="canvas_fir" />
+                    ref="canvas_layer" />
                 <canvas
                     height={`${screen.height-93 > 600 ? 600 : screen.height-93}`}
                     width={`${screen.availWidth > 400 ? 400 : screen.availWidth}`}

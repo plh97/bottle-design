@@ -1,62 +1,64 @@
 'use strict';
 
 class Canvas {
-	static canvas_background(e) {
+	static canvas_background(
+		canvas,
+		image,
+		canvas_prop = {
+			height: screen.height-93 > 600 ? 600 : screen.height-93 ,
+			width: screen.width > 400 ? 400 : screen.width,
+		},
+		image_prop = {
+			fill:"height",
+			width: 500,
+			height: 670,
+		}
+	) {
         /**
-         * 个人工具,
-         * @param  {canvas} 
-         * @return {string|json} get access_token || ''
+         * @param  		{canvas} 
+         * @argument  	{
+		 * 					canvas元素	必要参数
+		 * 					image元素,	必要参数
+		 * 					canvas_prop,  非必要参数
+		 * 					image_prop,		非必要参数
+		 * 				} 
+         * @return 		{string|json} canvas auto to draw background 
          */
-
-		//需要的参数
-		//1.canvas_background 元素本身，画布尺寸，是否显示白板
-		//2.image 元素本身，width,height, 默认居中显示
-		//3.block  白色画板，由背景层提供，需要参数  color,whether show,width,height
-		//4.缩放阙值   
-
-		const {
-			Adjust,
-			Canvas,
-			Block,
-			Image
-		} = e
-		const canvas = Canvas.element;
+		
 		const ctx = canvas.getContext('2d');
-
-		console.log('canvas_background', e);
 		//重绘背景
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-		if (Image.fill == "height") {
-			//按图片高度来填充
+		ctx.clearRect(0, 0, canvas_prop.width, canvas_prop.height);
+		//背景图坐标系
+		ctx.save()
+		ctx.scale(-1, 1)
+		ctx.translate(
+			-canvas_prop.width*0.5,
+			canvas_prop.height*0.5
+		) 
+		ctx.rotate(0)
+		let proportion = (image_prop.width/image_prop.height)/(canvas_prop.width/canvas_prop.height)
+		if (image_prop.fill == "height") {
+			//image height to fill
 			ctx.drawImage(
-				Image.element,
-				( Canvas.width - Image.height / Canvas.height * Canvas.width ) / 2,
-				0,
-				Image.height / Canvas.height * Canvas.width ,
-				Canvas.height 
+				image,
+				-canvas_prop.width/2*proportion,
+				-canvas_prop.height/2,
+				canvas_prop.width*proportion,
+				canvas_prop.height
 			)
-		}else if (Image.fill == "width") {
-			//按图片高度来填充
+			canvas_prop.height
+		}else if (Image_prop.fill == "width") {
+			//image width to fill
 			ctx.drawImage(
-				Image.element,
-				0 ,
-				(Image.width / Canvas.width) * Canvas.height - Canvas.height  ,
-				Canvas.width,
-				Canvas.height + ( Canvas.height - (Image.width / Canvas.width) * Canvas.height )*2  ,
+				image,
+				-canvas_prop.width/2,
+				-canvas_prop.height/2*proportion,
+				canvas_prop.width,
+				canvas_prop.height*proportion
 			)
 		}
-		ctx.fillStyle = Block.color;
-		ctx.fillRect( 
-			Canvas*(Blob.x-Blob.width/2),
-			Canvas*(Blob.x+Blob.width/2),
-			Canvas*(Blob.y-Blob.height/2),
-			Canvas*(Blob.y+Blob.height/2)
-		);
-		ctx.strokeStyle = 'black';
-		ctx.strokeRect( 
+		ctx.restore()
 
-		);
 	}
 
 
@@ -86,9 +88,78 @@ class Canvas {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//图层1
-	static canvas_fir(e) {
-		console.log('canvas_fir');
+	static canvas_layer(
+		canvas,
+		images,
+		block_show=true,
+		block_prop={
+			x: 0.505,
+			y: 0.65,
+			width: 0.28,
+			height: 0.53,
+			color: "white",
+			border: {
+				color:"green"
+			}
+		},
+		canvas_prop = {
+			height: screen.height-93 > 600 ? 600 : screen.height-93 ,
+			width: screen.width > 400 ? 400 : screen.width,
+		}
+	) {
+		console.log('canvas_layer');
+		const ctx = canvas.getContext('2d');
+		//init background
+		ctx.clearRect(0, 0, canvas_prop.width, canvas_prop.height);
+		ctx.save()
+		ctx.scale(-1, 1)
+		ctx.translate(
+			-canvas_prop.width*block_prop.x,
+			canvas_prop.height*block_prop.y
+		) 
+		ctx.rotate(0)
+		//init block
+		if (block_show) {
+			//白色填充块坐标系
+			ctx.fillStyle = block_prop.color;
+			ctx.fillRect( 
+				canvas_prop.width*(-block_prop.width/2),
+				canvas_prop.height*(-block_prop.height/2),
+				canvas_prop.width*(block_prop.width),
+				canvas_prop.height*(block_prop.height)
+			);
+			ctx.strokeStyle = block_prop.border.color;
+			ctx.strokeRect( 
+				canvas_prop.width*(-block_prop.width/2),
+				canvas_prop.height*(-block_prop.height/2),
+				canvas_prop.width*(block_prop.width),
+				canvas_prop.height*(block_prop.height)
+			);
+		}
+		//draw images
+
+
+		//clear out of block
+
+		//draw close button
+
+		//draw scale_spin button
+		
+		ctx.restore()
 	}
 }
 

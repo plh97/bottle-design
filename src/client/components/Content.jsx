@@ -1,13 +1,20 @@
+//package
 import React, { Component } from 'react'
 import { Layout,Pagination ,  Tabs, Button  } from 'antd'
 import { inject, observer } from "mobx-react"
 
-import Tigger from '../feature/Trigger.js'
+//local
 import Canvas from './Canvas.jsx'
+import {
+    canvas_background,
+    canvas_layer
+} from '../feature/Canvas.js'
 
+//app
 const { Content } = Layout
 const { TabPane } = Tabs;
 
+//造数据
 let img_list = []
 for(let i=0;i<7;i++){
     img_list.push({
@@ -48,6 +55,33 @@ export default class content extends Component {
         })
         allHold("img_ref",this.refs)
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
     handleClick = (e) =>{
         const {
@@ -58,6 +92,30 @@ export default class content extends Component {
             this.setState({
                 show_material:false
             })
+            //添加图片
+            const {
+                images,
+                allHold,
+                show_material
+            } = this.props.store
+            let index = e.target.dataset.index
+            if(e.target.dataset.drag){
+                let a = images;
+                let scale_val = screen.width>400 ? 1 : screen.width/400
+                a.push({
+                    element:e.target ,
+                    x: 0,
+                    y: 0,
+                    width:70*scale_val,
+                    height:70*scale_val,
+                    angle:0
+                })
+                allHold("images",a)
+                canvas_layer(
+                    this.refs._canvas.wrappedInstance.refs.canvas_layer,
+                    this.props.store.images
+                )
+            }
         }
     }
 
@@ -68,7 +126,12 @@ export default class content extends Component {
     }
 
     handlePreview = (e) => {
-        console.log("handlePreview");
+        const canvas = this.refs._canvas.wrappedInstance.refs.canvas_background
+        const dataURL = canvas.toDataURL("image/png");
+        const a = document.createElement("a")
+        a.href=dataURL
+        a.download=true
+        a.click()
     }
 
     render() {
@@ -103,11 +166,9 @@ export default class content extends Component {
                                 <div className="material-container-image">
                                     {img_list.filter((img)=> img.id>(current_page-1)*12 && img.id<=(current_page)*12 ).map((img,i)=>(
                                         <img 
-                                            data-index={img.id} 
                                             data-drag={true} 
                                             crossOrigin="anonymous"
                                             src={img.url} 
-                                            ref={`image${img.id}`}
                                             key={i} 
                                             alt={`图片素材${img.id}`}/>
                                     ))}

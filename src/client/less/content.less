@@ -104,7 +104,7 @@
                     position: absolute;
                     left: 0%;
                     top: 0%;
-                    &.canvas_fir {
+                    &.canvas_layer {
                         z-index: 1;
                     }
                     &.canvas_background {
@@ -165,8 +165,8 @@
     
             .content-container-material {
                 width: 100vw;
-                height: calc(~'(100vh - 115px)');
-                z-index: 1;
+                height: inherit;
+                z-index: 2;
                 display: none;
                 background-color: #fff;
                 left: 0;
@@ -179,6 +179,7 @@
                     margin-bottom: 0;
                 }
                 .ant-tabs-content{
+                    height: calc(~'(100vh - 126px)');
                     border-left: 1px solid #ccc;
                     border-right: 1px solid #ccc;
                     border-bottom: 1px solid #ccc;
@@ -194,9 +195,9 @@
                         display: inline-block;
         
                         img {
-                            display: inline-block;
+                            // display: inline-block;
                             float: left;
-                            width: 30%;
+                            width: calc(~'(33vw - 17px)');
                             height: 27vw;
                             margin: 5px;
                             cursor: pointer;
@@ -224,8 +225,13 @@
                 canvas {
                     position: absolute;
                     width: 100%;
-                    // left: 24%;
-                    // top: 0%;
+                    
+                    &.canvas_layer {
+                        z-index: 1;
+                    }
+                    &.canvas_background {
+                        z-index: 0;
+                    }
                 }
             }
             .content-container-designer {
@@ -237,6 +243,9 @@
             box-shadow: 0px 0px 10px #bbb;
             display: flex;
             height: 52px;
+            z-index: 10;
+            position: absolute;
+            width: 100vw;
             flex-direction: row;
 
             span{
