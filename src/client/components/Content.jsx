@@ -106,8 +106,8 @@ export default class content extends Component {
                     element:e.target ,
                     x: 0 ,
                     y: 0 ,
-                    width:70,
-                    height:70,
+                    width:70 * scale_val,
+                    height:70 * scale_val,
                     angle:0,
                     scale:1
                 })

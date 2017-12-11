@@ -70,10 +70,11 @@ class Tool{
 
     static update_last_one(arr,e){
         let new_arr = arr 
-        // console.log("update_last_one",e);
+        let scale = e.scale ? e.scale : 1
         e.x && (new_arr[new_arr.length - 1].x = e.x)
         e.y && (new_arr[new_arr.length - 1].y = e.y)
-        e.scale && (new_arr[new_arr.length - 1].scale = e.scale)
+        e.width && (new_arr[new_arr.length - 1].width = e.width)
+        e.height && (new_arr[new_arr.length - 1].height = e.height)
         e.angle && (new_arr[new_arr.length - 1].angle = e.angle)
         return new_arr
     }
@@ -130,10 +131,10 @@ class Tool{
         image
     ) {
         if (Tool.is_inner(mouse, {
-            x: image.x + image.width / 2 - 10,
-            _x: image.x + image.width / 2 + 10,
-            y: image.y - image.height / 2 - 10,
-            _y: image.y - image.height / 2 + 10
+            x: image.x + image.width / 2 - 20,
+            _x: image.x + image.width / 2 + 20,
+            y: image.y - image.height / 2 - 20,
+            _y: image.y - image.height / 2 + 20
         })) {
             return true
         } else {
@@ -146,19 +147,16 @@ class Tool{
         image
     ) {
         if (Tool.is_inner(mouse, {
-            x: image.x + image.width / 2 - 10,
-            _x: image.x + image.width / 2 + 10,
-            y: image.y + image.height / 2 - 10,
-            _y: image.y + image.height / 2 + 10
+            x: image.x + image.width / 2 - 20,
+            _x: image.x + image.width / 2 + 20,
+            y: image.y + image.height / 2 - 20,
+            _y: image.y + image.height / 2 + 20
         })) {
             return true
         } else {
             return false
         }
     }
-
-
-
 }
 
 module.exports = exports = Tool;

@@ -192,7 +192,7 @@ export default class canvas extends Component {
 
 
     handleTouchStart = (e) => {
-        if(screen.width>768) return
+        if(screen.width > 768) return
         const canvas = this.refs.canvas_layer
         const {
             block_props,
@@ -200,11 +200,21 @@ export default class canvas extends Component {
             allHold,
             is_edit
         } = this.props.store
+        if(images.length == 0) return
         //鼠标位置 >>>  相对于画板正中间,
         const mouse = {
             x : e.touches[0].clientX - canvas.getBoundingClientRect().left - canvas.width * block_props.x,
             y : e.touches[0].clientY - canvas.getBoundingClientRect().top - canvas.height * block_props.y
         };
+        const mouse_angle = {
+            x:images[images.length-1].width/2 * ,
+            y:images[images.length-1].height/2
+        };
+        //mouse_angle  的需求    仅仅给点击旋转。关闭按钮做参数提供
+        console.log(
+            mouse,
+            mouse_angle,
+        );
         const image_last_one = {
             x:images[images.length-1].x,
             y:images[images.length-1].y,
@@ -216,7 +226,7 @@ export default class canvas extends Component {
         /////////////////关闭按钮
         let close_btn = is_close_btn(
             mouse,
-            images[images.length-1],
+            images[images.length-1]
         )
         if (is_edit && close_btn) {
             let new_arr = images;
@@ -231,6 +241,8 @@ export default class canvas extends Component {
         }
         ////////////////////////////////////////////////////
         /////////////////缩放按钮
+        // 所传入的mouse需要经过angle角度转换
+        // 直接改mouse
         let scale_btn = is_scale_btn(
             mouse,
             images[images.length-1],
@@ -249,7 +261,6 @@ export default class canvas extends Component {
             return
         }
         ////////////////////////////////////////////////////
-
         //判断你是否点击的某个图片
         //需要一个函数判断是否属于点击区域
         let new_arr = is_buttom_array(
@@ -338,9 +349,14 @@ export default class canvas extends Component {
             //我需要计算鼠标相对于图片中心点的距离x_y
             let scale_val_x = 1 + relative_displacement.x / (this.state.image_last_one.width/2)
             let scale_val_y = 1 + relative_displacement.y / (this.state.image_last_one.height/2)
-            let angle = 180*Math.atan2(scale_val_x,scale_val_y)/Math.PI
+            let angle = 180 * Math.atan2(scale_val_x,scale_val_y) / Math.PI
+            let scale = Math.sqrt(scale_val_x*scale_val_x+scale_val_y*scale_val_y)
+            console.log(
+                mouse
+            );
             let new_images = update_last_one(images,{
-                scale: Math.sqrt(scale_val_x*scale_val_x+scale_val_y*scale_val_y),
+                width: this.state.image_last_one.width * scale/Math.sqrt(2) ,
+                height: this.state.image_last_one.height * scale/Math.sqrt(2) ,
                 angle:45-angle
             })
             allHold("images",new_images)
