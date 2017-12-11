@@ -30,7 +30,9 @@ export default class canvas extends Component {
                 x:0,
                 y:0
             },
-            press:false
+            press:false,
+            drag:false,
+            scale:false,
         }
     }
 
@@ -203,7 +205,14 @@ export default class canvas extends Component {
             x : e.touches[0].clientX - canvas.getBoundingClientRect().left - canvas.width * block_props.x,
             y : e.touches[0].clientY - canvas.getBoundingClientRect().top - canvas.height * block_props.y
         };
-
+        const image_last_one = {
+            x:images[images.length-1].x,
+            y:images[images.length-1].y,
+            width:images[images.length-1].width,
+            height:images[images.length-1].height,
+            angle:images[images.length-1].angle,
+            scale:images[images.length-1].scale
+        }
         /////////////////关闭按钮
         let close_btn = is_close_btn(
             mouse,
@@ -229,7 +238,13 @@ export default class canvas extends Component {
         if (is_edit && scale_btn) {
             console.log("scale btn");
             this.setState({
-                press:true
+                press:true,
+                scale:true,
+                image_last_one,
+                mouse:{
+                    x : e.touches[0].clientX ,
+                    y : e.touches[0].clientY
+                }
             })
             return
         }
@@ -242,19 +257,14 @@ export default class canvas extends Component {
             images
         )
         if(new_arr == "no change"){
-            const image_last_one = {
-                x:images[images.length-1].x,
-                y:images[images.length-1].y,
-                angle:images[images.length-1].angle,
-                scale:images[images.length-1].scale
-            }
             this.setState({
                 mouse:{
                     x : e.touches[0].clientX ,
                     y : e.touches[0].clientY
                 },
                 image_last_one,
-                press:true
+                press:true,
+                drag:true
             })
             allHold("is_edit",true)
             canvas_layer(
@@ -265,9 +275,7 @@ export default class canvas extends Component {
                 this.props.store.block_props
             )
         }else if(new_arr == "not click image"){
-            console.log(
-                "not click image"
-            );
+            console.log("not click image");
             allHold("is_edit",false)
             canvas_layer(
                 this.refs.canvas_layer,
@@ -300,14 +308,19 @@ export default class canvas extends Component {
             allHold
         } = this.props.store
         //鼠标位置 >>>  相对于画板正中间,
-            const mouse = {
-                x : e.touches[0].clientX ,
-                y : e.touches[0].clientY
-            };
-            const relative_displacement = {
-                x:mouse.x - this.state.mouse.x,
-                y:mouse.y - this.state.mouse.y
-            }
+        const mouse = {
+            x : e.touches[0].clientX ,
+            y : e.touches[0].clientY
+        };
+        const relative_displacement = {
+            x:mouse.x - this.state.mouse.x,
+            y:mouse.y - this.state.mouse.y
+        }
+        const image_center_mouse = {
+            x:relative_displacement.x + this.state.image_last_one.x ,
+            y:relative_displacement.y + this.state.image_last_one.y
+        }
+        if(this.state.drag){
             let new_images = update_last_one(images,{
                 x: this.state.image_last_one.x + relative_displacement.x,
                 y: this.state.image_last_one.y + relative_displacement.y
@@ -321,12 +334,33 @@ export default class canvas extends Component {
                 true,
                 this.props.store.block_props
             )
+        }else if(this.state.scale){
+            //我需要计算鼠标相对于图片中心点的距离x_y
+            let scale_val_x = 1 + relative_displacement.x / (this.state.image_last_one.width/2)
+            let scale_val_y = 1 + relative_displacement.y / (this.state.image_last_one.height/2)
+            let angle = 180*Math.atan2(scale_val_x,scale_val_y)/Math.PI
+            let new_images = update_last_one(images,{
+                scale: Math.sqrt(scale_val_x*scale_val_x+scale_val_y*scale_val_y),
+                angle:45-angle
+            })
+            allHold("images",new_images)
+            allHold("is_edit",true)
+            canvas_layer(
+                this.refs.canvas_layer,
+                this.props.store.images,
+                true,
+                true,
+                this.props.store.block_props
+            )
+        }
     }
 
     onTouchEnd = (e) => {
         if(screen.width>768) return
         this.setState({
-            press:false
+            press:false,
+            scale:false,
+            drag:false,
         })
     }
 

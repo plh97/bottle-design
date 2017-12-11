@@ -70,9 +70,11 @@ class Tool{
 
     static update_last_one(arr,e){
         let new_arr = arr 
-        console.log("update_last_one");
+        // console.log("update_last_one",e);
         e.x && (new_arr[new_arr.length - 1].x = e.x)
         e.y && (new_arr[new_arr.length - 1].y = e.y)
+        e.scale && (new_arr[new_arr.length - 1].scale = e.scale)
+        e.angle && (new_arr[new_arr.length - 1].angle = e.angle)
         return new_arr
     }
 
