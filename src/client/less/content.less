@@ -49,42 +49,68 @@
                 display: flex;
                 justify-content: center;
                 align-self: center;
-                
-                .ant-tabs-bar{
-                    margin-bottom: 0;
-                }
-                .ant-tabs-content{
-                    border-left: 1px solid #ccc;
-                    border-right: 1px solid #ccc;
-                    border-bottom: 1px solid #ccc;
-                    padding: 10px;
-    
-                    select {
-                        border: 1px solid #ccc;
-                        width: 200px;
-                    }
-        
-                    .material-container-image {
-                        margin-top: 20px;
-                        height: 481px;
-        
-                        img {
-                            display: inline-block;
-                            float: left;
-                            width: 116px;
-                            height: 110px;
-                            margin: 5px;
-                            cursor: pointer;
+
+                .ant-tabs {
+                    width: 100%;
+
+                    .ant-tabs-nav{
+                        display: flex;
+                        flex-direction: row;
+
+                        .ant-tabs-tab {
+                            flex: 1;
+                            text-align: center;
                         }
                     }
-    
-                    .material-pagination {
-                        display: flex;
-                        justify-content: flex-end;
-    
-                        a{
-                            color: black;
-                            font-weight: bold;
+
+                    .ant-tabs-bar{
+                        margin-bottom: 0;
+                    }
+                    .ant-tabs-content{
+                        border-left: 1px solid #ccc;
+                        border-right: 1px solid #ccc;
+                        border-bottom: 1px solid #ccc;
+                        padding: 10px;
+        
+                        select {
+                            border: 1px solid #ccc;
+                            width: 200px;
+                        }
+            
+                        .material-container-image {
+                            margin-top: 20px;
+                            height: 481px;
+            
+                            .upload , img {
+                                display: inline-block;
+                                float: left;
+                                width: 116px;
+                                height: 110px;
+                                margin: 5px;
+                                cursor: pointer;
+                            }
+
+                            .upload{
+                                background: #ccc;
+                                color: #fff;
+                                font-size: 172px;
+                                line-height: 72px;
+                                user-select: none;
+
+                                input {
+                                    display: none;
+                                }
+                            }
+                        }
+        
+                        .material-pagination {
+                            display: flex;
+                            justify-content: flex-end;
+        
+                            a{
+                                color: black;
+                                font-weight: bold;
+                            }
                         }
                     }
                 }

@@ -16,24 +16,26 @@ const { TabPane } = Tabs;
 
 //造数据
 let img_list = []
-for(let i=0;i<7;i++){
     img_list.push({
         url:"http://oy82lbvct.bkt.clouddn.com/material1.jpg",
-        id:i*4+1
+        id:1
     })
     img_list.push({
         url:"http://oy82lbvct.bkt.clouddn.com/material2.jpg",
-        id:i*4+2
+        id:2
     })
     img_list.push({
         url:"http://oy82lbvct.bkt.clouddn.com/material3.jpg",
-        id:i*4+3
+        id:3
     })
     img_list.push({
         url:"http://oy82lbvct.bkt.clouddn.com/material4.jpg",
-        id:i*4+4
+        id:4
     })
-}
+    img_list.push({
+        url:"http://oy82lbvct.bkt.clouddn.com/bk1.jpg",
+        id:5
+    })
 
 @inject("store")
 @observer
@@ -55,72 +57,39 @@ export default class content extends Component {
         })
         allHold("img_ref",this.refs)
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         
     handleClick = (e) =>{
+        //添加图片
         const {
-            graphs,
-            allHold,
+            images,
+            allHold
         } = this.props.store
         if(e.target.dataset.drag){
+            let a = images;
+            let scale_val = screen.width>400 ? 1 : screen.width/400
+            a.push({
+                element:e.target ,
+                x: 0 ,
+                y: 0 ,
+                width:70 * scale_val,
+                height:70 * scale_val,
+                angle:0,
+                scale:1
+            })
+            allHold("images",a)
+            allHold("is_edit",true)
+            canvas_layer(
+                this.refs._canvas.wrappedInstance.refs.canvas_layer,
+                this.props.store.images,
+                true,
+                true,
+                this.props.store.block_props
+            )
             this.setState({
                 show_material:false
             })
-            //添加图片
-            const {
-                images,
-                allHold,
-                show_material
-            } = this.props.store
-            let index = e.target.dataset.index
-            if(e.target.dataset.drag){
-                let a = images;
-                let scale_val = screen.width>400 ? 1 : screen.width/400
-                a.push({
-                    element:e.target ,
-                    x: 0 ,
-                    y: 0 ,
-                    width:70 * scale_val,
-                    height:70 * scale_val,
-                    angle:0,
-                    scale:1
-                })
-                allHold("images",a)
-                allHold("is_edit",true)
-                canvas_layer(
-                    this.refs._canvas.wrappedInstance.refs.canvas_layer,
-                    this.props.store.images,
-                    true,
-                    true,
-                    this.props.store.block_props
-                )
-            }
+        }else if(e.target.dataset.addtext){
+            console.log("addtext");
         }
     }
 
@@ -140,12 +109,38 @@ export default class content extends Component {
         image.src = image_src
         image.crossOrigin = "anonymous"
         setTimeout(() => {
-            ctx.drawImage(image, 0, 0, 400,600)
+            ctx.drawImage(
+                image, 
+                0, 0,  
+                screen.width > 400 ? 400 : screen.width ,
+                screen.height-93 > 600 ? 600 : screen.height-93 
+            )
             const a_href = canvas_background.toDataURL("image/png");
             a.href=a_href
             a.download=true
             a.click()
         }, 0);
+    }
+
+    handleUpload = (e) => {
+        let data = new FormData()
+		data.append("smfile", e.target.files[0])
+		fetch('https://sm.ms/api/upload', {
+		  method: 'POST',
+		  body: data
+		}).then(
+			response => response.json()
+		).then(
+			success => {
+				console.log(
+                    success.data
+                );
+                img_list.push({
+                    url:success.data.url,
+                    id:img_list.length
+                })
+			}
+		)
     }
 
     handlePreview = (e) => {
@@ -189,6 +184,12 @@ export default class content extends Component {
                                     </select>
                                 </div>
                                 <div className="material-container-image">
+                                    <span className="upload" onClick={()=>{
+                                        this.refs.upload_image.click()
+                                    }}>
+                                        +
+                                        <input onChange={this.handleUpload} type="file" ref="upload_image"/>
+                                    </span>
                                     {img_list.filter((img)=> img.id>(current_page-1)*12 && img.id<=(current_page)*12 ).map((img,i)=>(
                                         <img 
                                             data-drag={true} 
@@ -225,14 +226,18 @@ export default class content extends Component {
                 </div>
                 <div className="content-footer">
                     <span onClick={this.show_material}>素材<br/>📖</span>
-                    <span
-                        onClick={this.handleDownload}
-                        >图片<br/>📷</span>
-                    <span>文字<br/>✏️</span>
-                    <span>设计师<br/>🙋‍</span>
-                    <span 
-                        onClick={this.handlePreview}
-                        >预览<br/>👊🏾</span>
+                    <span onClick={this.handleDownload}>
+                        图片<br/>📷
+                    </span>
+                    <span data-add_text={true}>
+                        文字<br/>✏️
+                    </span>
+                    <span>
+                        设计师<br/>🙋‍
+                    </span>
+                    <span onClick={this.handlePreview}>
+                        预览<br/>👊🏾
+                    </span>
                 </div>
             </Content>
         )
