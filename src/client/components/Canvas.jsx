@@ -86,59 +86,167 @@ export default class canvas extends Component {
 
 
 
-    //提取处理移动事件
-    handleMove = (e) => {
-        let {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    handleTouch = (e,canvas) => {
+        const {
+            block_props,
+            images,
             allHold,
-            graphs
+            is_edit
         } = this.props.store
+        //因为我只对最后一个图片素材做处理，所以只需要最后一个图片的各种参数
         let {
-            click,
-            scale,
-            spin,
-            mouseDownAxis,
-            mouseDownImgAxis
-        } = this.state
-        const canvas = this.refs.canvas;
-        const ctx = canvas.getContext('2d');
-        //集成move事件，因为移动pc   mouse 坐标不一致，所以mouse由move事件统一提供
-        //graphs则自己去获取
-        if( graphs.length !== 0 && click ) {
-            let graphs_len = graphs["length"]
-            let a = graphs
-            //数组里面最后一个图片端点位置
-            let offset = {
-                x : a[a.length-1].img_axis.x,
-                y : a[a.length-1].img_axis.y
-            };
-            //永远只移动数组最后一个img{}
-            a[graphs_len-1] = Object.assign({},a[graphs_len-1],{
-                img_axis: {
-                    x: mouseDownImgAxis.x + (e.mouse.x - mouseDownAxis.x) ,
-                    y: mouseDownImgAxis.y + (e.mouse.y - mouseDownAxis.y)
-                },
+            angle,
+            width,
+            height,
+            x,
+            y,
+            scale
+        } = images[images.length-1]
+        //鼠标   ==>>>>>    白色画板中心点位置
+        const _mouse = {
+            x: e.clientX - canvas.getBoundingClientRect().left - canvas.width * block_props.x,
+            y: e.clientY - canvas.getBoundingClientRect().top - canvas.height * block_props.y
+        };
+        //鼠标相对于图片位置
+        const mouse = {
+            x: e.clientX - canvas.getBoundingClientRect().left - canvas.width * block_props.x-x,
+            y: e.clientY - canvas.getBoundingClientRect().top - canvas.height * block_props.y-y
+        };
+        const image_last_one = {
+            x,y,
+            width,
+            height,
+            angle,
+            scale
+        }
+        let mouse_image = {
+            dis:  Math.sqrt(mouse.x*mouse.x+mouse.y*mouse.y),
+            angle: 180 - 180 * Math.atan2(mouse.x,mouse.y) / Math.PI - angle
+        }
+        //关闭按钮
+        let close_btn = is_close_btn(
+            mouse_image,
+            image_last_one
+        )
+        if (is_edit && close_btn) {
+            let new_arr = images;
+            new_arr.pop()
+            allHold("images",new_arr)
+            allHold("is_edit",true)
+            canvas_layer(
+                canvas,
+                images
+            )
+            return
+        }
+        let scale_btn = is_scale_btn(
+            mouse_image,
+            image_last_one
+        )
+        if (is_edit && scale_btn) {
+            console.log("scale btn");
+            this.setState({
+                press:true,
+                scale:true,
+                image_last_one,
+                mouse:{
+                    x : e.clientX ,
+                    y : e.clientY
+                }
             })
-            allHold("graphs",a)
-            this.updateCanvasBackground()
-            this.updateCanvasImages()
-        }else if(graphs.length !== 0 && scale.do){
-            // scale
-            let a = graphs;
-            a[scale.index].width = e.mouse.x - a[scale.index].img_axis.x
-            a[scale.index].height = e.mouse.y - a[scale.index].img_axis.y
-            allHold("graphs",a)
-            this.updateCanvasBackground()
-            this.updateCanvasImages()
-        }else if(graphs.length !== 0 && spin.do){
-            // spin
-            let a = graphs;
-            a[spin.index].angle = 20
-            let dartX = e.mouse.x - graphs[spin.index].img_axis.x - graphs[spin.index].width/2
-            let dartY = e.mouse.y - graphs[spin.index].img_axis.y - graphs[spin.index].height/2
-            a[spin.index].angle = 180*Math.atan2(dartY,dartX)/Math.PI +90
-            allHold("graphs",a)
-            this.updateCanvasBackground()
-            this.updateCanvasImages()
+            return
+        }
+        //判断你是否点击的某个图片
+        let new_arr = is_buttom_array(
+            _mouse,
+            images
+        )
+        if(new_arr == "no change"){
+            this.setState({
+                mouse:{
+                    x : e.clientX ,
+                    y : e.clientY
+                },
+                image_last_one,
+                press:true,
+                drag:true
+            })
+            allHold("is_edit",true)
+            canvas_layer(
+                canvas,
+                images,
+                true,
+                true,
+                block_props
+            )
+        }else if(new_arr == "not click image"){
+            console.log("not click image");
+            allHold("is_edit",false)
+            canvas_layer(
+                canvas,
+                images,
+                false
+            )
+            return
+        }else{
+            allHold("images",new_arr)
+            allHold("is_edit",true)
+            canvas_layer(
+                canvas,
+                new_arr,
+                true,
+                true,
+                block_props
+            )
+            return
         }
     }
 
@@ -166,6 +274,71 @@ export default class canvas extends Component {
 
 
 
+
+
+
+
+
+
+    handleMove = (e,canvas) =>{
+        const {
+            block_props,
+            images,
+            allHold
+        } = this.props.store
+        const {x,y} = images[images.length-1]
+        //鼠标位置,
+        const mouse = {
+            x : e.clientX ,
+            y : e.clientY
+        };
+        //鼠标相对位移
+        const relative_displacement = {
+            x:mouse.x - this.state.mouse.x,
+            y:mouse.y - this.state.mouse.y
+        }
+        if(this.state.drag){
+            let new_images = update_last_one(images,{
+                x: this.state.image_last_one.x + relative_displacement.x,
+                y: this.state.image_last_one.y + relative_displacement.y
+            })
+            allHold("images",new_images)
+            allHold("is_edit",true)
+            canvas_layer(
+                canvas,
+                images,
+                true,
+                true,
+                block_props
+            )
+        }else if(this.state.scale){
+            //鼠标  》》》》   图片位置
+            const mouse_image = {
+                x: mouse.x - canvas.getBoundingClientRect().left - canvas.width * block_props.x-x,
+                y: mouse.y - canvas.getBoundingClientRect().top - canvas.height * block_props.y-y
+            };
+            const relative_distantment = Math.sqrt(mouse_image.x*mouse_image.x+mouse_image.y*mouse_image.y)
+            let new_images = update_last_one(images,{
+                width: 2*relative_distantment/Math.sqrt(2) ,
+                height: 2*relative_distantment/Math.sqrt(2) ,
+                angle: 45 - 180 * Math.atan2(mouse_image.x,mouse_image.y) / Math.PI  
+            })
+            allHold("images",new_images)
+            allHold("is_edit",true)
+            canvas_layer(
+                canvas,
+                images,
+                true,
+                true,
+                block_props
+            )
+        }
+    }
+
+
+
+
+    
 
 
 
@@ -193,182 +366,22 @@ export default class canvas extends Component {
 
     handleTouchStart = (e) => {
         if(screen.width > 768) return
-        const canvas = this.refs.canvas_layer
-        const {
-            block_props,
-            images,
-            allHold,
-            is_edit
-        } = this.props.store
-        if(images.length == 0) return
-        //鼠标位置 >>>  相对于画板正中间,
-        const mouse = {
-            x : e.touches[0].clientX - canvas.getBoundingClientRect().left - canvas.width * block_props.x,
-            y : e.touches[0].clientY - canvas.getBoundingClientRect().top - canvas.height * block_props.y
-        };
-        const mouse_angle = {
-            x:images[images.length-1].width/2 * ,
-            y:images[images.length-1].height/2
-        };
-        //mouse_angle  的需求    仅仅给点击旋转。关闭按钮做参数提供
-        console.log(
-            mouse,
-            mouse_angle,
-        );
-        const image_last_one = {
-            x:images[images.length-1].x,
-            y:images[images.length-1].y,
-            width:images[images.length-1].width,
-            height:images[images.length-1].height,
-            angle:images[images.length-1].angle,
-            scale:images[images.length-1].scale
-        }
-        /////////////////关闭按钮
-        let close_btn = is_close_btn(
-            mouse,
-            images[images.length-1]
-        )
-        if (is_edit && close_btn) {
-            let new_arr = images;
-            new_arr.pop()
-            allHold("images",new_arr)
-            allHold("is_edit",true)
-            canvas_layer(
-                this.refs.canvas_layer,
-                this.props.store.images
-            )
-            return
-        }
-        ////////////////////////////////////////////////////
-        /////////////////缩放按钮
-        // 所传入的mouse需要经过angle角度转换
-        // 直接改mouse
-        let scale_btn = is_scale_btn(
-            mouse,
-            images[images.length-1],
-        )
-        if (is_edit && scale_btn) {
-            console.log("scale btn");
-            this.setState({
-                press:true,
-                scale:true,
-                image_last_one,
-                mouse:{
-                    x : e.touches[0].clientX ,
-                    y : e.touches[0].clientY
-                }
-            })
-            return
-        }
-        ////////////////////////////////////////////////////
-        //判断你是否点击的某个图片
-        //需要一个函数判断是否属于点击区域
-        let new_arr = is_buttom_array(
-            mouse,
-            images
-        )
-        if(new_arr == "no change"){
-            this.setState({
-                mouse:{
-                    x : e.touches[0].clientX ,
-                    y : e.touches[0].clientY
-                },
-                image_last_one,
-                press:true,
-                drag:true
-            })
-            allHold("is_edit",true)
-            canvas_layer(
-                this.refs.canvas_layer,
-                this.props.store.images,
-                true,
-                true,
-                this.props.store.block_props
-            )
-        }else if(new_arr == "not click image"){
-            console.log("not click image");
-            allHold("is_edit",false)
-            canvas_layer(
-                this.refs.canvas_layer,
-                this.props.store.images,
-                false
-            )
-            return
-        }else{
-            allHold("images",new_arr)
-            allHold("is_edit",true)
-            canvas_layer(
-                this.refs.canvas_layer,
-                new_arr,
-                true,
-                true,
-                this.props.store.block_props
-            )
-            return
-        }
+        if( this.props.store.images.length == 0) return
+        this.handleTouch({
+            clientX : e.touches[0].clientX ,
+            clientY : e.touches[0].clientY
+        },this.refs.canvas_layer)
     }
 
     onTouchMove = (e) => {
         if(screen.width>768) return
         //如果没有按下鼠标，不需要处理移动事件
         if(!this.state.press) return
-        const canvas = this.refs.canvas_layer
-        const {
-            block_props,
-            images,
-            allHold
-        } = this.props.store
-        //鼠标位置 >>>  相对于画板正中间,
-        const mouse = {
-            x : e.touches[0].clientX ,
-            y : e.touches[0].clientY
-        };
-        const relative_displacement = {
-            x:mouse.x - this.state.mouse.x,
-            y:mouse.y - this.state.mouse.y
-        }
-        const image_center_mouse = {
-            x:relative_displacement.x + this.state.image_last_one.x ,
-            y:relative_displacement.y + this.state.image_last_one.y
-        }
-        if(this.state.drag){
-            let new_images = update_last_one(images,{
-                x: this.state.image_last_one.x + relative_displacement.x,
-                y: this.state.image_last_one.y + relative_displacement.y
-            })
-            allHold("images",new_images)
-            allHold("is_edit",true)
-            canvas_layer(
-                this.refs.canvas_layer,
-                this.props.store.images,
-                true,
-                true,
-                this.props.store.block_props
-            )
-        }else if(this.state.scale){
-            //我需要计算鼠标相对于图片中心点的距离x_y
-            let scale_val_x = 1 + relative_displacement.x / (this.state.image_last_one.width/2)
-            let scale_val_y = 1 + relative_displacement.y / (this.state.image_last_one.height/2)
-            let angle = 180 * Math.atan2(scale_val_x,scale_val_y) / Math.PI
-            let scale = Math.sqrt(scale_val_x*scale_val_x+scale_val_y*scale_val_y)
-            console.log(
-                mouse
-            );
-            let new_images = update_last_one(images,{
-                width: this.state.image_last_one.width * scale/Math.sqrt(2) ,
-                height: this.state.image_last_one.height * scale/Math.sqrt(2) ,
-                angle:45-angle
-            })
-            allHold("images",new_images)
-            allHold("is_edit",true)
-            canvas_layer(
-                this.refs.canvas_layer,
-                this.props.store.images,
-                true,
-                true,
-                this.props.store.block_props
-            )
-        }
+        if(this.props.store.images.length == 0) return
+        this.handleMove({
+            clientX : e.touches[0].clientX ,
+            clientY : e.touches[0].clientY
+        },this.refs.canvas_layer)
     }
 
     onTouchEnd = (e) => {
@@ -380,7 +393,50 @@ export default class canvas extends Component {
         })
     }
 
+
     
+
+
+
+
+    handleCanvasDown = (e) => {
+        if(screen.width < 768) return
+        const {
+            images
+        } = this.props.store
+        if(images.length == 0) return
+        this.handleTouch({
+            clientX : e.clientX ,
+            clientY : e.clientY
+        },this.refs.canvas_layer)
+    }
+
+    handleCanvasMove = (e) => {
+        if(screen.width < 768) return
+        //如果没有按下鼠标，不需要处理移动事件
+        if(!this.state.press) return
+        if(this.props.store.images.length == 0) return
+        this.handleMove({
+            clientX : e.clientX ,
+            clientY : e.clientY
+        },this.refs.canvas_layer)
+    }
+
+    handleCanvasUp = (e) => {
+        if(screen.width < 768) return
+        this.setState({
+            press:false,
+            scale:false,
+            drag:false,
+        })
+    }
+
+
+
+
+
+
+
 
     render() {
         return (
@@ -388,9 +444,10 @@ export default class canvas extends Component {
                 <canvas
                     //onMouseOut={this.handleMouseOut}
                     //onMouseOver={this.handleMouseOver}
-                    //onMouseUp={this.handleCanvasUp}
-                    //onMouseMove={this.handleCanvasMove}
-                    //onMouseDown={this.handleCanvasDown}
+                    onMouseUp={this.handleCanvasUp}
+                    onMouseMove={this.handleCanvasMove}
+                    onMouseDown={this.handleCanvasDown}
+
                     onTouchStart={this.handleTouchStart}
                     onTouchMove={this.onTouchMove}
                     onTouchEnd={this.onTouchEnd}

@@ -18,23 +18,11 @@ class Tool{
         }
     }
     static is_inner_polar(mouse,area){
-        // {
-        //     arguments:{
-        //         mouse:{
-        //             x:"",
-        //             y:""
-        //         },
-        //         polar:{
-        //             angel:"",
-        //             displacement:""
-        //         }
-        //     }
-        // }
         if(
-            mouse.x > area.x &&
-            mouse.x < area._x &&
-            mouse.y > area.y &&
-            mouse.y < area._y
+            mouse.dis > area.dis &&
+            mouse.dis < area._dis &&
+            mouse.angle > area.angle &&
+            mouse.angle < area._angle
         ){
             return true
         }else {
@@ -53,10 +41,11 @@ class Tool{
             return false
         }
     }
-    static mouse_debug(axis){
+    static mouse_debug(axis,monent=3000,color="green"){
         let a = document.createElement("span")
-        a.style.background="red"
+        a.style.background= color
         a.style.position="absolute"
+        a.style.zIndex="999"
         a.style.width="10px"
         a.style.height="10px"
         a.style.borderRadius="10px"
@@ -65,7 +54,7 @@ class Tool{
         document.body.appendChild(a)
         setTimeout(() => {
             a.remove()
-        }, 3000);
+        }, monent);
     }
 
     static update_last_one(arr,e){
@@ -100,12 +89,15 @@ class Tool{
         mouse,
         images
     ){
+        console.log(
+            mouse
+        )
         var loop = true
         var _images = images
         images.reverse().map((image,i)=>{
             //点击范围判断
             if (loop && Tool.is_inner(mouse,{
-                x : image.x - image.width/2,
+                x : image.x- image.width/2,
                 _x : image.x + image.width/2,
                 y : image.y - image.height/2,
                 _y : image.y + image.height/2
@@ -126,15 +118,13 @@ class Tool{
         }
     }
     
-    static is_close_btn(
-        mouse,
-        image
-    ) {
-        if (Tool.is_inner(mouse, {
-            x: image.x + image.width / 2 - 20,
-            _x: image.x + image.width / 2 + 20,
-            y: image.y - image.height / 2 - 20,
-            _y: image.y - image.height / 2 + 20
+    static is_close_btn( mouse,image ) {
+        let distancement = Math.sqrt(image.width * image.width + image.height * image.height)
+        if (Tool.is_inner_polar(mouse, {
+            dis: distancement / 2 - 20,
+            _dis: distancement / 2 + 20,
+            angle: 35,
+            _angle: 55
         })) {
             return true
         } else {
@@ -142,15 +132,13 @@ class Tool{
         }
     }
 
-    static is_scale_btn(
-        mouse,
-        image
-    ) {
-        if (Tool.is_inner(mouse, {
-            x: image.x + image.width / 2 - 20,
-            _x: image.x + image.width / 2 + 20,
-            y: image.y + image.height / 2 - 20,
-            _y: image.y + image.height / 2 + 20
+    static is_scale_btn( mouse,image,) {
+        let distancement = Math.sqrt(image.width * image.width + image.height * image.height)
+        if (Tool.is_inner_polar(mouse, {
+            dis: distancement / 2 - 20,
+            _dis: distancement / 2 + 20,
+            angle: 125,
+            _angle: 135
         })) {
             return true
         } else {
