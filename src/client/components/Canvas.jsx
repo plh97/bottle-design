@@ -9,10 +9,12 @@ import {
     is_scale_btn
 } from '../feature/Tool.js'
 import {
-    canvas_background,
-    canvas_layer,
-    canvas_index_refresh
-} from '../feature/Canvas.js'
+    canvas_layer
+} from '../feature/Canvas_layer.js'
+
+import {
+    canvas_background
+} from '../feature/Canvas_background.js'
 
 const { Content } = Layout
 const { TabPane } = Tabs;
@@ -150,7 +152,7 @@ export default class canvas extends Component {
         //判断你是否点击的某个图片
         let new_arr = is_buttom_array(
             _mouse,
-            images
+            images            
         )
         if(new_arr == "no change"){
             this.setState({
@@ -165,7 +167,7 @@ export default class canvas extends Component {
             allHold("is_edit",true)
             canvas_layer(
                 canvas,
-                images,
+                images,           
                 true,
                 true,
                 block_props

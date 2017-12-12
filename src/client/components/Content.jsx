@@ -5,37 +5,19 @@ import { inject, observer } from "mobx-react"
 
 //local
 import Canvas from './Canvas.jsx'
+
 import {
-    canvas_background,
     canvas_layer
-} from '../feature/Canvas.js'
+} from '../feature/Canvas_layer.js'
+
+import {
+    canvas_background
+} from '../feature/Canvas_background.js'
 
 //app
 const { Content } = Layout
 const { TabPane } = Tabs;
 
-//造数据
-let img_list = []
-    img_list.push({
-        url:"http://oy82lbvct.bkt.clouddn.com/material1.jpg",
-        id:1
-    })
-    img_list.push({
-        url:"http://oy82lbvct.bkt.clouddn.com/material2.jpg",
-        id:2
-    })
-    img_list.push({
-        url:"http://oy82lbvct.bkt.clouddn.com/material3.jpg",
-        id:3
-    })
-    img_list.push({
-        url:"http://oy82lbvct.bkt.clouddn.com/material4.jpg",
-        id:4
-    })
-    img_list.push({
-        url:"http://oy82lbvct.bkt.clouddn.com/bk1.jpg",
-        id:5
-    })
 
 @inject("store")
 @observer
@@ -44,7 +26,25 @@ export default class content extends Component {
         super()
         this.state={
             current_page: 1,
-            show_material: false
+            show_material: false,
+            img_list:[
+                {
+                    url:"http://oy82lbvct.bkt.clouddn.com/material1.jpg",
+                    id:1
+                },{
+                    url:"http://oy82lbvct.bkt.clouddn.com/material2.jpg",
+                    id:2
+                },{
+                    url:"http://oy82lbvct.bkt.clouddn.com/material3.jpg",
+                    id:3
+                },{
+                    url:"http://oy82lbvct.bkt.clouddn.com/material4.jpg",
+                    id:4
+                },{
+                    url:"http://oy82lbvct.bkt.clouddn.com/bk1.jpg",
+                    id:5
+                }
+            ]
         }
     }
 
@@ -74,7 +74,8 @@ export default class content extends Component {
                 width:70 * scale_val,
                 height:70 * scale_val,
                 angle:0,
-                scale:1
+                scale:1,
+                type: "image"
             })
             allHold("images",a)
             allHold("is_edit",true)
@@ -88,8 +89,34 @@ export default class content extends Component {
             this.setState({
                 show_material:false
             })
-        }else if(e.target.dataset.addtext){
-            console.log("addtext");
+        }else if(e.target.dataset.text){
+            let a = images;
+            let scale_val = screen.width > 400 ? 1 : screen.width / 400
+            a.push({
+                content:"点击输入文字" ,
+                x: 0 ,
+                y: 0 ,
+                width:70 * scale_val,
+                height:70 * scale_val,
+                angle:0,
+                scale:1,
+                font:{
+                    color: "red",
+                    size: "15px" ,
+                    weight: "bolder",
+                    family: "Arial",
+                },
+                type: "text"
+            })
+            allHold("images",a)
+            allHold("is_edit",true)
+            canvas_layer(
+                this.refs._canvas.wrappedInstance.refs.canvas_layer,
+                this.props.store.images,
+                true,
+                true,
+                this.props.store.block_props
+            )
         }
     }
 
@@ -115,14 +142,14 @@ export default class content extends Component {
                 screen.width > 400 ? 400 : screen.width ,
                 screen.height-93 > 600 ? 600 : screen.height-93 
             )
-            const a_href = canvas_background.toDataURL("image/png");
-            a.href=a_href
+            a.href = canvas_background.toDataURL("image/png")
             a.download=true
             a.click()
         }, 0);
     }
 
     handleUpload = (e) => {
+        const {img_list} = this.state
         let data = new FormData()
 		data.append("smfile", e.target.files[0])
 		fetch('https://sm.ms/api/upload', {
@@ -132,12 +159,11 @@ export default class content extends Component {
 			response => response.json()
 		).then(
 			success => {
-				console.log(
-                    success.data
-                );
-                img_list.push({
-                    url:success.data.url,
-                    id:img_list.length
+                this.setState({
+                    img_list: [...img_list,{
+                        url:success.data.url,
+                        id:img_list.length
+                    }]
                 })
 			}
 		)
@@ -157,10 +183,15 @@ export default class content extends Component {
     render() {
         const {
             current_page,
-            show_material
+            show_material,
+            img_list
         }= this.state
         return (
-            <Content className="content" onClick={this.handleClick}>
+            <Content 
+                className="content" 
+                onClick={this.handleClick} 
+                // style={{fontSize: screen.width > 400 ? "12px" : `${screen.width/33.333}px`}}
+                >
                 <div className="content-navigation">
                     <a href="#">首页</a>
                     <a href="#">定制馆</a>
@@ -229,7 +260,7 @@ export default class content extends Component {
                     <span onClick={this.handleDownload}>
                         图片<br/>📷
                     </span>
-                    <span data-add_text={true}>
+                    <span data-text={true}>
                         文字<br/>✏️
                     </span>
                     <span>

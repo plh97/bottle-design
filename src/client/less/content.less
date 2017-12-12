@@ -220,13 +220,25 @@
                         height: calc(~'(100vh - 218px)');
                         display: inline-block;
         
-                        img {
-                            // display: inline-block;
+                        .upload , img {
                             float: left;
                             width: calc(~'(33vw - 17px)');
-                            height: 27vw;
+                            height: calc(~'(33vw - 17px)');
                             margin: 5px;
                             cursor: pointer;
+                        }
+
+                        .upload{
+                            background: #ccc;
+                            color: #fff;
+                            text-align: center;
+                            font-size: 91px;
+                            line-height: 72px;
+                            user-select: none;
+
+                            input {
+                                display: none;
+                            }
                         }
                     }
     
