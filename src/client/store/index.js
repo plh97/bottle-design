@@ -11,7 +11,7 @@ class TodoStore {
 	@observable block_props = {
 		x: 0.505,
 		y: 0.65,
-		width: 0.28,
+		width: 0.38,
 		height: 0.53,
 		color: "white",
 		border: {

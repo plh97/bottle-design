@@ -8,10 +8,10 @@ class Canvas {
 		images,
 		is_edit=true,
 		block_show=true,
-		block_prop={
+		block_prop = {
 			x: 0.505,
 			y: 0.65,
-			width: 0.28,
+			width: 0.38,
 			height: 0.53,
 			color: "white",
 			border: {
@@ -61,14 +61,10 @@ class Canvas {
 		//如果最后一个元素图片 image
 		
 		Canvas.canvas_draw_ele (
-			images.filter(ele => ele.type == "image" ),
-			images[images.length-1].type == "image" ? true : false
+			images ,
+			is_edit
 		)
 
-		Canvas.canvas_draw_ele (
-			images.filter(ele => ele.type == "text" ),
-			images[images.length-1].type == "text" ? true : false
-		)
 	}
 
 

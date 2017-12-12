@@ -1,8 +1,6 @@
 'use strict';
 
 class Canvas {
-	
-
 	static canvas_background(
 		canvas,
 		image,
