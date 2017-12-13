@@ -12,7 +12,7 @@ export default {
     maxFileSize: 1024 * 1024 * 5
 };
 export const emoji = '😀 😃 😄 😁 😆 😅 😂 🤣 😊 😇 🙂 🙃 😉 😌 😍 😘 😗 😙 😚 😋 😜 😝 😛 🤑 🤗 🤓 😎 🤡 🤠 😏 😒 😞 😔 😟 😕 🙁 ☹️ 😣 😖 😫 😩 😤 😠 😡 😶 😐 😑 😯 😦 😧 😮 😲 😵 😳 😱 😨 😰 😢 😥 🤤 😭 😓 😪 😴 🙄 🤔 🤥 😬 🤐';
-export const colorList = [
+export const color_list = [
   '#f56a00',
   '#7265e6',
   '#ffbf00',

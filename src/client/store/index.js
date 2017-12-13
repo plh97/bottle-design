@@ -4,7 +4,6 @@ import { action, useStrict, computed, observable } from "mobx";
 // useStrict(true)
 class TodoStore {
 	//我的用户信息
-	@observable image_ref = []
 	@observable is_edit = true
 	@observable images = []
 	@observable texts = []
