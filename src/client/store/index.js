@@ -7,6 +7,7 @@ class TodoStore {
 	@observable image_ref = []
 	@observable is_edit = true
 	@observable images = []
+	@observable texts = []
 	//画板相关参数交给mobx处理，接受全局管理
 	@observable block_props = {
 		x: 0.505,

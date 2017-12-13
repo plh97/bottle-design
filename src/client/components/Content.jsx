@@ -62,8 +62,12 @@ export default class content extends Component {
         //添加图片
         const {
             images,
+            texts,
             allHold
         } = this.props.store
+        console.log(
+            e.target.dataset 
+        );
         if(e.target.dataset.drag){
             let a = images;
             let scale_val = screen.width>400 ? 1 : screen.width/400
@@ -80,7 +84,8 @@ export default class content extends Component {
             allHold("is_edit",true)
             canvas_layer(
                 this.refs._canvas.wrappedInstance.refs.canvas_layer,
-                this.props.store.images,
+                a,
+                this.props.store.texts,
                 true,
                 true,
                 this.props.store.block_props
@@ -88,8 +93,28 @@ export default class content extends Component {
             this.setState({
                 show_material:false
             })
-        }else if(e.target.dataset.addtext){
+        }else if(e.target.dataset.text){
             console.log("addtext");
+            let a = texts;
+            let scale_val = screen.width>400 ? 1 : screen.width/400
+            a.push({
+                element:e.target ,
+                x: 0 ,
+                y: 0 ,
+                width:70 * scale_val,
+                height:70 * scale_val,
+                angle:0
+            })
+            allHold("texts",a)
+            allHold("is_edit",true)
+            canvas_layer(
+                this.refs._canvas.wrappedInstance.refs.canvas_layer,
+                this.props.store.images,
+                a,
+                true,
+                true,
+                this.props.store.block_props
+            )
         }
     }
 
@@ -132,9 +157,6 @@ export default class content extends Component {
 			response => response.json()
 		).then(
 			success => {
-				console.log(
-                    success.data
-                );
                 img_list.push({
                     url:success.data.url,
                     id:img_list.length
@@ -218,6 +240,12 @@ export default class content extends Component {
                                 <p>Content of Tab Pane 3</p>
                                 <p>Content of Tab Pane 3</p>
                                 <p>Content of Tab Pane 3</p>
+                                <p>Content of Tab Pane 3</p>
+                                <p>Content of Tab Pane 3</p>
+                                <p>Content of Tab Pane 3</p>
+                                <p>Content of Tab Pane 3</p>
+                                <p>Content of Tab Pane 3</p>
+                                <p>Content of Tab Pane 3</p>
                             </TabPane>
                         </Tabs>
                     </div>
@@ -229,7 +257,7 @@ export default class content extends Component {
                     <span onClick={this.handleDownload}>
                         图片<br/>📷
                     </span>
-                    <span data-add_text={true}>
+                    <span data-text={true}>
                         文字<br/>✏️
                     </span>
                     <span>

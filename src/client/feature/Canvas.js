@@ -105,6 +105,7 @@ class Canvas {
 	static canvas_layer(
 		canvas,
 		images,
+		texts,
 		is_edit=true,
 		block_show=true,
 		block_prop={
