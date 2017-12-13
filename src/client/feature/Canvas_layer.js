@@ -11,7 +11,7 @@ class Canvas {
 		block_prop = {
 			x: 0.505,
 			y: 0.65,
-			width: 0.38,
+			width: 0.28,
 			height: 0.53,
 			color: "white",
 			border: {

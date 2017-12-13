@@ -146,6 +146,9 @@
                 justify-content: center;
                 align-self: center;
             }
+            .content-container-text-customization{
+                display: none;
+            }
         }
 
         .content-footer{
@@ -275,6 +278,125 @@
             .content-container-designer {
                 width: 100vw;
                 height: 100%;
+            }
+            .content-container-text-customization{
+                &.active {
+                    display: flex;
+                }
+
+                display: none;
+                font-size: 14px;
+                left: 0;
+                z-index: 2;
+                width: 100vw;
+                height:  calc(~'(100vh - 41px)');
+                bottom: 52px;
+                display: none;
+                position: absolute;
+                flex-direction: column;
+
+                div{
+                    height: 66px;
+                    align-items: center;
+                    display: flex;
+                    padding: 10px;
+                    border-bottom: 1px solid #ddd;
+                    background-color: #fff;
+                }
+                
+                .text-customization-mask{
+                    background-color: rgba(0, 0, 0, 0.6);
+                    height: calc(~'(100vh - 305px)');
+                }
+
+                .text-customization-content{
+
+                    span{
+                        width: 40px;
+                    }
+                    input {
+                        flex: 1;
+                        border-radius: 5px;
+                        border: 1px solid #ddd;
+                        height: 35px;
+                        color: #000;
+                        padding: 7px;
+                    }
+
+                    i {
+                        width:35px;
+                        font-size: 24px;
+                        justify-content: flex-end;
+                    }
+                }
+                .text-customization-font{
+
+                    .text-customization-font-title{
+                        width: 40px;
+                    }
+                    .text-customization-font-container{
+                        flex: 1;
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                        overflow-x: scroll;
+
+                        span {
+                            display: inline-block;
+                            background-color: #ccc;
+                            color:#000;
+                            border-radius: 5px;
+                            padding: 5px 20px;
+                            font-size: 10px;
+                            &.active {
+                                color: #fff;
+                                background-color: red;
+                            }
+                        }
+                    }
+                }
+                .text-customization-color{
+
+                    .text-customization-color-title{
+                        width: 40px;
+                    }
+                    .text-customization-color-container{
+                        flex: 1;
+                        display: inline-block;
+                        display: flex;
+                        flex-wrap: nowrap;
+                        // overflow-x: auto;
+                        flex-direction: row;
+                        justify-content: space-between;
+
+                        i {
+                            width: 30px;
+                            height: 30px;
+                            border: 1px solid #ccc;
+                            display: inline-block;
+                            border-radius: 5px;
+                            position: relative;
+
+                            &.active {
+                                &::after{
+                                    content: "";
+                                    display: inline-block;
+                                    border-bottom: 2px solid red;
+                                    width: 28px;
+                                    position: absolute;
+                                    bottom: -9px;
+                                }
+                            }
+                        }
+                    }                
+                }
+                .text-customization-submit{
+                    button{
+                        background-color: red;
+                        width: 100%;
+                        font-weight: bolder;
+                    }
+                }
             }
         }
         .content-footer{

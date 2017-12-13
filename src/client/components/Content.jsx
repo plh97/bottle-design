@@ -1,6 +1,6 @@
 //package
 import React, { Component } from 'react'
-import { Layout,Pagination ,  Tabs, Button  } from 'antd'
+import { Layout,Pagination ,Button ,Tabs ,Icon } from 'antd'
 import { inject, observer } from "mobx-react"
 
 //local
@@ -14,8 +14,10 @@ import {
     canvas_background
 } from '../feature/Canvas_background.js'
 
+import {color_list} from "../../../config/client.js"
+
 //app
-const { Content } = Layout
+const { Content } = Layout;
 const { TabPane } = Tabs;
 
 
@@ -90,39 +92,52 @@ export default class content extends Component {
                 show_material:false
             })
         }else if(e.target.dataset.text){
-            let a = images;
-            let scale_val = screen.width > 400 ? 1 : screen.width / 400
-            a.push({
-                content:"点击输入文字" ,
-                x: 0 ,
-                y: 0 ,
-                width:70 * scale_val,
-                height:70 * scale_val,
-                angle:0,
-                scale:1,
-                font:{
-                    color: "red",
-                    size: "15px" ,
-                    weight: "bolder",
-                    family: "Arial",
-                },
-                type: "text"
+            console.log(
+                this.refs
+            );
+            this.setState({
+                show_text_customization: !this.state.show_text_customization
             })
-            allHold("images",a)
-            allHold("is_edit",true)
-            canvas_layer(
-                this.refs._canvas.wrappedInstance.refs.canvas_layer,
-                this.props.store.images,
-                true,
-                true,
-                this.props.store.block_props
-            )
+
+            // let a = images;
+            // let scale_val = screen.width > 400 ? 1 : screen.width / 400
+            // a.push({
+            //     content:"点击输入文字" ,
+            //     x: 0 ,
+            //     y: 0 ,
+            //     width:70 * scale_val,
+            //     height:70 * scale_val,
+            //     angle:0,
+            //     scale:1,
+            //     font:{
+            //         color: "red",
+            //         size: "15px" ,
+            //         weight: "bolder",
+            //         family: "Arial",
+            //     },
+            //     type: "text"
+            // })
+            // allHold("images",a)
+            // allHold("is_edit",true)
+            // canvas_layer(
+            //     this.refs._canvas.wrappedInstance.refs.canvas_layer,
+            //     this.props.store.images,
+            //     true,
+            //     true,
+            //     this.props.store.block_props
+            // )
         }
     }
-
+    
     show_material = (e) => {
         this.setState({
-            show_material:!this.state.show_material
+            show_material: !this.state.show_material
+        })
+    }
+    
+    show_material = (e) => {
+        this.setState({
+            show_material: !this.state.show_material
         })
     }
 
@@ -182,16 +197,13 @@ export default class content extends Component {
 
     render() {
         const {
+            img_list,
             current_page,
             show_material,
-            img_list
+            show_text_customization
         }= this.state
         return (
-            <Content 
-                className="content" 
-                onClick={this.handleClick} 
-                // style={{fontSize: screen.width > 400 ? "12px" : `${screen.width/33.333}px`}}
-                >
+            <Content className="content" onClick={this.handleClick}>
                 <div className="content-navigation">
                     <a href="#">首页</a>
                     <a href="#">定制馆</a>
@@ -201,8 +213,7 @@ export default class content extends Component {
                     <a href="#">合作代理</a>
                 </div>
                 <div className="content-container">
-                    <div
-                        className={`${show_material ? "active":""} content-container-material`}>
+                    <div className={`${show_material ? "active":""} content-container-material`}>
                         <Tabs type="card">
                             <TabPane tab="定制素材" key="1">
                                 <div className="select">
@@ -254,13 +265,50 @@ export default class content extends Component {
                     </div>
                     <Canvas ref="_canvas"/>
                     <div className="content-container-designer"></div>
+                    <div className={`${show_text_customization ? "active":""} content-container-text-customization`}>
+                        <div className="text-customization-mask"></div>
+                        <div className="text-customization-content">
+                            <span>内容</span>
+                            <input refs="text-input" type="text"/>
+                            <Icon type="close-circle-o" />
+                        </div>
+                        <div className="text-customization-font">
+                            <span className="text-customization-font-title">字体</span>
+                            <span className="text-customization-font-container">
+                                {["宋体","娃娃","胖体","流体"].map((text,i)=>(
+                                    <span 
+                                        refs={`${i==0 ? "text-font":""}`}
+                                        className={`${i==0 ? "active":""}`}
+                                        key={i}>{text}</span>
+                                ))}
+                            </span>
+                        </div>
+                        <div className="text-customization-color">
+                            <span className="text-customization-color-title">颜色</span>
+                            <span className="text-customization-color-container">
+                                {color_list.map((color,i)=>(
+                                    <i 
+                                        refs={`${i==0 ? "text-color":null}`}
+                                        style={{background:color}}
+                                        className={`${i==0 ? "active":""}`}
+                                        key={i}/>
+                                ))}
+                            </span>
+                        </div>
+                        <div className="text-customization-submit">
+                            <Button type="primary">添加</Button>
+                        </div>
+                    </div>
+                    
                 </div>
                 <div className="content-footer">
                     <span onClick={this.show_material}>素材<br/>📖</span>
                     <span onClick={this.handleDownload}>
                         图片<br/>📷
                     </span>
-                    <span data-text={true}>
+                    <span 
+                        //onClick={this.show_text_customization}
+                        data-text={true}>
                         文字<br/>✏️
                     </span>
                     <span>
