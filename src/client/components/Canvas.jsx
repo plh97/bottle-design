@@ -6,6 +6,7 @@ import {
     is_inner,
     is_buttom_array,
     is_close_btn,
+    mouse_debug,
     is_scale_btn
 } from '../feature/Tool.js'
 import {
@@ -15,6 +16,12 @@ import {
 import {
     canvas_background
 } from '../feature/Canvas_background.js'
+import injectTapEventPlugin from "react-tap-event-plugin"
+injectTapEventPlugin()
+import isDblTouchTap from "../feature/isDblTouchTap.js"
+
+
+
 
 const { Content } = Layout
 const { TabPane } = Tabs;
@@ -76,8 +83,6 @@ export default class canvas extends Component {
 
 
 
-    
-
 
     handleTouch = (e,canvas) => {
         const {
@@ -93,32 +98,30 @@ export default class canvas extends Component {
             height,
             x,
             y,
-            scale
+            scale,
+            type            
         } = images[images.length-1]
-        //鼠标   ==>>>>>    白色画板中心点位置
+        //鼠标相对于白板中心位置
         const _mouse = {
-            x: e.clientX - canvas.getBoundingClientRect().left - canvas.width * block_props.x,
+            x: e.clientX - canvas.getBoundingClientRect().left - canvas.width * block_props.x ,
             y: e.clientY - canvas.getBoundingClientRect().top - canvas.height * block_props.y
         };
         //鼠标相对于图片位置
         const mouse = {
-            x: e.clientX - canvas.getBoundingClientRect().left - canvas.width * block_props.x-x,
-            y: e.clientY - canvas.getBoundingClientRect().top - canvas.height * block_props.y-y
+            x: _mouse.x - x,
+            y: _mouse.y - y
         };
         const image_last_one = {
             x,y,
             width,
             height,
             angle,
-            scale
-        }
-        let mouse_image = {
-            dis:  Math.sqrt(mouse.x*mouse.x+mouse.y*mouse.y),
-            angle: 180 - 180 * Math.atan2(mouse.x,mouse.y) / Math.PI - angle
+            scale,
+            type
         }
         //关闭按钮
         let close_btn = is_close_btn(
-            mouse_image,
+            mouse,
             image_last_one
         )
         if (is_edit && close_btn) {
@@ -132,8 +135,9 @@ export default class canvas extends Component {
             )
             return
         }
+        //旋转按钮
         let scale_btn = is_scale_btn(
-            mouse_image,
+            mouse,
             image_last_one
         )
         if (is_edit && scale_btn) {
@@ -152,9 +156,10 @@ export default class canvas extends Component {
         //判断你是否点击的某个图片
         let new_arr = is_buttom_array(
             _mouse,
-            images            
+            images
         )
         if(new_arr == "no change"){
+            console.log("no change")
             this.setState({
                 mouse:{
                     x : e.clientX ,
@@ -167,7 +172,7 @@ export default class canvas extends Component {
             allHold("is_edit",true)
             canvas_layer(
                 canvas,
-                images,           
+                images,
                 true,
                 true,
                 block_props
@@ -182,6 +187,7 @@ export default class canvas extends Component {
             )
             return
         }else{
+            console.log("else");
             allHold("images",new_arr)
             allHold("is_edit",true)
             canvas_layer(
@@ -262,11 +268,17 @@ export default class canvas extends Component {
                 x: mouse.x - canvas.getBoundingClientRect().left - canvas.width * block_props.x-x,
                 y: mouse.y - canvas.getBoundingClientRect().top - canvas.height * block_props.y-y
             };
-            const relative_distantment = Math.sqrt(mouse_image.x*mouse_image.x+mouse_image.y*mouse_image.y)
+            //未知原因，图片比文字比例大一倍
+            const angle_tant = Math.atan2(
+                this.state.image_last_one.width,
+                this.state.image_last_one.height
+            );
+            let text_image = this.state.image_last_one.type=="image"? 1 : 0.5
+            const relative_distantment = Math.sqrt(mouse_image.x*mouse_image.x+mouse_image.y*mouse_image.y)*text_image
             let new_images = update_last_one(images,{
-                width: 2*relative_distantment/Math.sqrt(2) ,
-                height: 2*relative_distantment/Math.sqrt(2) ,
-                angle: 45 - 180 * Math.atan2(mouse_image.x,mouse_image.y) / Math.PI  
+                width: relative_distantment / Math.cos(angle_tant) ,
+                height: relative_distantment / Math.sin(angle_tant) ,
+                angle: 180*angle_tant/Math.PI - 180 * Math.atan2(mouse_image.x,mouse_image.y) / Math.PI  
             })
             allHold("images",new_images)
             allHold("is_edit",true)
@@ -377,7 +389,21 @@ export default class canvas extends Component {
     }
 
 
-
+    handleTouchTap = e => {
+        const {
+            images
+        } = this.props.store
+        if (isDblTouchTap(e)) {
+            console.log('tap dobble')
+            if(images[images.length-1].type == "image"){
+                console.log("编辑图片")
+            }else if(images[images.length-1].type == "text"){
+                console.log("编辑文字")
+                document.getElementById("text-customization-input").value = images[images.length-1].content
+                this.props.show_text()
+            }
+        }
+    }
 
 
 
@@ -387,12 +413,11 @@ export default class canvas extends Component {
         return (
             <div className="content-container-show">
                 <canvas
-                    //onMouseOut={this.handleMouseOut}
-                    //onMouseOver={this.handleMouseOver}
+                    onDoubleClick={this.handleDbClick}
                     onMouseUp={this.handleCanvasUp}
                     onMouseMove={this.handleCanvasMove}
                     onMouseDown={this.handleCanvasDown}
-
+                    onTouchTap = {this.handleTouchTap}
                     onTouchStart={this.handleTouchStart}
                     onTouchMove={this.onTouchMove}
                     onTouchEnd={this.onTouchEnd}

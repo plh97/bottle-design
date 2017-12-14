@@ -7,14 +7,15 @@ import { inject, observer } from "mobx-react"
 import Canvas from './Canvas.jsx'
 
 import {
-    canvas_layer
+    canvas_layer,
+    measureText
 } from '../feature/Canvas_layer.js'
 
 import {
     canvas_background
 } from '../feature/Canvas_background.js'
 
-import {color_list} from "../../../config/client.js"
+import {color_list_rgb} from "../../../config/client.js"
 
 //app
 const { Content } = Layout;
@@ -46,7 +47,13 @@ export default class content extends Component {
                     url:"http://oy82lbvct.bkt.clouddn.com/bk1.jpg",
                     id:5
                 }
-            ]
+            ],
+            text_font_props: {
+                color: "rgb(0, 0, 0)",
+                family: 'Pacifico',
+                size:"15px",
+                weight: "bolder"
+            }
         }
     }
 
@@ -92,50 +99,125 @@ export default class content extends Component {
                 show_material:false
             })
         }else if(e.target.dataset.text){
-            console.log(
-                this.refs
-            );
-            this.setState({
-                show_text_customization: !this.state.show_text_customization
+            let text = this.state.text_font_props
+            text = Object.assign({},text,{
+                content: document.getElementById("text-customization-input").value
             })
-
-            // let a = images;
-            // let scale_val = screen.width > 400 ? 1 : screen.width / 400
-            // a.push({
-            //     content:"点击输入文字" ,
-            //     x: 0 ,
-            //     y: 0 ,
-            //     width:70 * scale_val,
-            //     height:70 * scale_val,
-            //     angle:0,
-            //     scale:1,
-            //     font:{
-            //         color: "red",
-            //         size: "15px" ,
-            //         weight: "bolder",
-            //         family: "Arial",
-            //     },
-            //     type: "text"
-            // })
-            // allHold("images",a)
-            // allHold("is_edit",true)
-            // canvas_layer(
-            //     this.refs._canvas.wrappedInstance.refs.canvas_layer,
-            //     this.props.store.images,
-            //     true,
-            //     true,
-            //     this.props.store.block_props
-            // )
+            if(text.content=="") {
+                let alert_content = document.createElement("span")
+                alert_content.append("请输入文字!！！")
+                alert_content.style.top = "30%"
+                alert_content.style.left = "40%"
+                alert_content.style.color = "#fff"
+                alert_content.style.border = "2px solid #ddd"
+                alert_content.style.zIndex = "999"
+                alert_content.style.padding = "5px"
+                alert_content.style.position = "absolute"
+                alert_content.style.fontWeight = "bolder"
+                alert_content.style.borderRadius = "5px"
+                alert_content.style.backgroundColor = "red"
+                document.body.append(alert_content)
+                setTimeout(()=>{
+                    alert_content.remove()
+                },2000)
+                this.setState({
+                    show_text_customization: false
+                })
+                return
+            }  
+                
+            let a = images;
+            let scale_val = screen.width > 400 ? 1 : screen.width / 400
+            a.push({
+                content: text.content ,
+                x: 0 ,
+                y: 0 ,
+                width:measureText(text).width ,
+                height:measureText(text).height,
+                angle:0,
+                scale:1,
+                font:{
+                    color: text.color,
+                    size: text.size ,
+                    weight: "bolder",
+                    family: text.font_family
+                },
+                type: "text"
+            })
+            allHold("images",a)
+            allHold("is_edit",true)
+            canvas_layer(
+                this.refs._canvas.wrappedInstance.refs.canvas_layer,
+                this.props.store.images,
+                true,
+                true,
+                this.props.store.block_props
+            )
+            this.setState({
+                show_text_customization: false
+            })
+            document.getElementById("text-customization-input").value = ""
+        }
+        
+        switch (e.target.id) {
+            case "text-customization-font":
+                this.setState({
+                    text_font_props: Object.assign({},this.state.text_font_props,{
+                        family: e.target.innerText
+                    })
+                })
+                console.log("此处更改代码，让",this.state.text_font_props);
+                break;
+            case "text-customization-color":
+                this.setState({
+                    text_font_props: Object.assign({},this.state.text_font_props,{
+                        color: e.target.style.background
+                    })
+                })
+                console.log(2,this.state.text_font_props);
+                break;
+            default:
+                break;
         }
     }
     
-    show_material = (e) => {
+    show_text = (e) => {
+        const {
+            images,
+        } = this.props.store
         this.setState({
-            show_material: !this.state.show_material
+            show_text_customization: !this.state.show_text_customization
         })
+        if(images.length>0 && images[images.length-1].type == "text"){
+            //长度大于1，且最后一个数组是数字
+            this.setState({
+                text_font_props: images[images.length-1]
+            })
+        }
+
+        //点击完后，此处处理逻辑，如果
+        // 我的点击有图片就是图片，没有图片采用默认数据
     }
     
     show_material = (e) => {
+        const {
+            images
+        } = this.props.store
+        const text_default_font_props = {
+            color: "#000000",
+            family: 'Pacifico',
+            size:"15px",
+            weight: "bolder"
+        }
+        let text_font_props = text_default_font_props
+        if(images.length > 0){
+            text_font_props = ( is_edit && images[images.length-1].type == 'text' ) ? images[images.length-1].font : text_default_font_props
+        }
+
+        this.setState({
+            text_font_props
+        })
+
         this.setState({
             show_material: !this.state.show_material
         })
@@ -200,8 +282,16 @@ export default class content extends Component {
             img_list,
             current_page,
             show_material,
-            show_text_customization
+            show_text_customization,
+            text_font_props
         }= this.state
+        const {
+            images,
+            is_edit
+        } = this.props.store
+        console.log(
+            text_font_props
+        );
         return (
             <Content className="content" onClick={this.handleClick}>
                 <div className="content-navigation">
@@ -263,22 +353,26 @@ export default class content extends Component {
                             </TabPane>
                         </Tabs>
                     </div>
-                    <Canvas ref="_canvas"/>
+                    <Canvas 
+                        show_text={this.show_text}
+                        ref="_canvas"/>
                     <div className="content-container-designer"></div>
                     <div className={`${show_text_customization ? "active":""} content-container-text-customization`}>
                         <div className="text-customization-mask"></div>
                         <div className="text-customization-content">
                             <span>内容</span>
-                            <input refs="text-input" type="text"/>
-                            <Icon type="close-circle-o" />
+                            <input id="text-customization-input" type="text"/>
+                            <Icon type="close-circle-o" onClick={()=>{
+                                document.getElementById("text-customization-input").value=''
+                            }} />
                         </div>
                         <div className="text-customization-font">
                             <span className="text-customization-font-title">字体</span>
                             <span className="text-customization-font-container">
-                                {["宋体","娃娃","胖体","流体"].map((text,i)=>(
+                                {["Pacifico","Arial","宋体","流体"].map((text,i)=>(
                                     <span 
-                                        refs={`${i==0 ? "text-font":""}`}
-                                        className={`${i==0 ? "active":""}`}
+                                        id="text-customization-font"
+                                        className={`${text==text_font_props.family ? "active":""}`}
                                         key={i}>{text}</span>
                                 ))}
                             </span>
@@ -286,17 +380,18 @@ export default class content extends Component {
                         <div className="text-customization-color">
                             <span className="text-customization-color-title">颜色</span>
                             <span className="text-customization-color-container">
-                                {color_list.map((color,i)=>(
-                                    <i 
-                                        refs={`${i==0 ? "text-color":null}`}
-                                        style={{background:color}}
-                                        className={`${i==0 ? "active":""}`}
+                                {color_list_rgb.map((color,i) => (
+                                    <i style={{background:color}}
+                                        id="text-customization-color"
+                                        className={`${color==text_font_props.color ? "active":""}`}
                                         key={i}/>
                                 ))}
                             </span>
                         </div>
                         <div className="text-customization-submit">
-                            <Button type="primary">添加</Button>
+                            <Button data-text={true} type="primary">
+                                {is_edit ? "修改" : "添加"}
+                            </Button>
                         </div>
                     </div>
                     
@@ -306,14 +401,12 @@ export default class content extends Component {
                     <span onClick={this.handleDownload}>
                         图片<br/>📷
                     </span>
-                    <span 
-                        //onClick={this.show_text_customization}
-                        data-text={true}>
+                    <span onClick={this.show_text}> 
                         文字<br/>✏️
                     </span>
-                    <span>
+                    {/* <span>
                         设计师<br/>🙋‍
-                    </span>
+                    </span> */}
                     <span onClick={this.handlePreview}>
                         预览<br/>👊🏾
                     </span>

@@ -4,7 +4,7 @@ import { action, useStrict, computed, observable } from "mobx";
 // useStrict(true)
 class TodoStore {
 	//我的用户信息
-	@observable is_edit = true
+	@observable is_edit = false
 	@observable images = []
 	@observable texts = []
 	//画板相关参数交给mobx处理，接受全局管理
