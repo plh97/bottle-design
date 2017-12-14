@@ -148,7 +148,6 @@ class Canvas {
 						height
 					)
 					break;
-
 				case "text":
 					//draw text
 					ctx.textAlign = "center"
@@ -159,10 +158,6 @@ class Canvas {
 						content,
 						0,0
 					);
-					image = Object.assign({},image,{
-						width: ctx.measureText(content, `${font.size}/1.6 ${font.family}`).width + 3 ,
-						height: font.size.substring(0,2) *1.3
-					})
 					break;
 				default:
 					break;
@@ -185,45 +180,6 @@ class Canvas {
 			}
 		})
 	}
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -326,7 +282,18 @@ class Canvas {
 
 
 
-
+	static measureText(text){
+		const {
+			canvas_prop,
+			block_prop,
+			ctx
+		} = Canvas
+        let area = {
+            width: ctx.measureText(text.content, `${text.size}/1.6 ${text.font_family}`).width*1.86,
+            height: text.size.substring(0,2) *1.3
+		}
+		return area
+	}
 
 
 
