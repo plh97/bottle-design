@@ -12,10 +12,12 @@ import {
 } from '../feature/Canvas_layer.js'
 
 import {
-    canvas_background
+    canvas_background,
+    canvas_background_3d
 } from '../feature/Canvas_background.js'
 
 import {color_list_rgb} from "../../../config/client.js"
+import Tool from "../feature/Tool.js"
 
 //app
 const { Content } = Layout;
@@ -93,7 +95,6 @@ export default class content extends Component {
             canvas_layer(
                 this.refs._canvas.wrappedInstance.refs.canvas_layer,
                 a,
-                this.props.store.texts,
                 true,
                 true,
                 this.props.store.block_props
@@ -104,65 +105,45 @@ export default class content extends Component {
         }else if(e.target.dataset.text){
             let text = this.state.text_font_props
             //如果没有输入文字，则提示
-            if(text.content=="") {
-                let alert_content = document.createElement("span")
-                alert_content.append("请输入文字!！！")
-                alert_content.style.top = "30%"
-                alert_content.style.left = "40%"
-                alert_content.style.color = "#fff"
-                alert_content.style.border = "2px solid #ddd"
-                alert_content.style.zIndex = "999"
-                alert_content.style.padding = "5px"
-                alert_content.style.position = "absolute"
-                alert_content.style.fontWeight = "bolder"
-                alert_content.style.borderRadius = "5px"
-                alert_content.style.backgroundColor = "red"
-                document.body.append(alert_content)
-                setTimeout(()=>{
-                    alert_content.remove()
-                },2000)
+            let content = document.getElementById("text-customization-input").value
+            if(content=="") {
+                Tool.alert_content({
+                    content:"文字不能为空!",
+                    backgroundColor:"red",
+                    color:"#fff"
+                })
                 this.setState({
                     show_text_customization: false
                 })
                 return
-            }  
+            }
+
             text = Object.assign({},text,{
                 content: document.getElementById("text-customization-input").value
             })
-                
             let a = images;
             let scale_val = screen.width > 400 ? 1 : screen.width / 400
             if(is_edit){
-                console.log('is_edit',is_edit);
                 if(images[images.length-1]&&images[images.length-1].type=="text"){
-                    //当处于可编辑状态
-                    //最后一个为图片
-                    //则修改最后一个数组属性
-                    a[a.length] = {
+                    Object.assign(a[a.length-1],{
                         content: text.content ,
-                        x: 0 ,
-                        y: 0 ,
                         width:measureText(text).width ,
-                        height:measureText(text).height,
-                        angle:0,
-                        scale:1,
+                        height:measureText(text).height + 8,
                         font:{
                             color: text.color,
                             size: text.size ,
                             weight: text.weight,
                             family: text.family
-                        },
-                        type: "text"
-                    }
+                        }
+                    })
                 }
             }else {
-                //
                 a.push({
                     content: text.content ,
                     x: 0 ,
                     y: 0 ,
                     width:measureText(text).width ,
-                    height:measureText(text).height,
+                    height:measureText(text).height + 8,
                     angle:0,
                     scale:1,
                     font:{
@@ -196,7 +177,6 @@ export default class content extends Component {
                         family: e.target.innerText
                     })
                 })
-                console.log("修改family",this.state.text_font_props);
                 break;
             case "text-customization-color":
                 this.setState({
@@ -204,7 +184,6 @@ export default class content extends Component {
                         color: e.target.style.background
                     })
                 })
-                console.log("修改color",this.state.text_font_props);
                 break;
             default:
                 break;
@@ -219,21 +198,20 @@ export default class content extends Component {
         this.setState({
             show_text_customization: !this.state.show_text_customization
         })
-        document.getElementById("text-customization-input").value = ""            
         if (is_edit) {
             //change
             if(images.length>0 && images[images.length-1].type == "text"){
                 //长度大于1，且最后一个数组是数字
-                console.log('将最后一个是文字的写入属性');
                 this.setState({
                     text_font_props: Object.assign({},images[images.length-1].font,{
                         content:images[images.length-1].content
                     })
                 })
+            }else if(images.length>0 && images[images.length-1].type == "image"){
+                //图片
             }
         }else {
             //new
-            console.log('将最后一个是文字的写入属性');            
             this.setState({
                 text_font_props: {
                     color: "rgb(0, 0, 0)",
@@ -242,6 +220,7 @@ export default class content extends Component {
                     weight: "bolder"
                 }
             })
+            document.getElementById("text-customization-input").value = ""            
         }
 
         //点击完后，此处处理逻辑，如果
@@ -252,20 +231,6 @@ export default class content extends Component {
         const {
             images
         } = this.props.store
-        const text_default_font_props = {
-            color: "#000000",
-            family: 'Pacifico',
-            size:"15px",
-            weight: "bolder"
-        }
-        let text_font_props = text_default_font_props
-        if(images.length > 0){
-            text_font_props = ( is_edit && images[images.length-1].type == 'text' ) ? images[images.length-1].font : text_default_font_props
-        }
-
-        this.setState({
-            text_font_props
-        })
 
         this.setState({
             show_material: !this.state.show_material
@@ -317,12 +282,15 @@ export default class content extends Component {
 
     handlePreview = (e) => {
         this.props.store.allHold("is_edit",false)
-        canvas_layer(
-            this.refs._canvas.wrappedInstance.refs.canvas_layer,
-            this.props.store.images,
-            false,
-            false,
-            this.props.store.block_props
+        // canvas_layer(
+        //     this.refs._canvas.wrappedInstance.refs.canvas_layer,
+        //     this.props.store.images,
+        //     false,
+        //     false,
+        //     this.props.store.block_props
+        // )
+        canvas_background_3d(
+            this.refs._canvas.wrappedInstance.refs.canvas_background
         )
     }
 
@@ -338,9 +306,6 @@ export default class content extends Component {
             images,
             is_edit
         } = this.props.store
-        console.log(
-            text_font_props
-        );
         return (
             <Content className="content" onClick={this.handleClick}>
                 <div className="content-navigation">
@@ -445,7 +410,7 @@ export default class content extends Component {
                         </div>
                         <div className="text-customization-submit">
                             <Button data-text={true} type="primary">
-                                {is_edit ? "修改" : "添加"}
+                                {(is_edit&&images[images.length-1].type=="text") ? "修改" : "添加"}
                             </Button>
                         </div>
                     </div>

@@ -74,6 +74,7 @@
     "request-promise": "^4.2.2",
     "scss-loader": "^0.0.1",
     "style-loader": "^0.18.2",
+    "three": "^0.88.0",
     "webpack": "^3.8.1",
     "webpack-dev-middleware": "^1.11.0",
     "webpack-merge": "^4.1.0",

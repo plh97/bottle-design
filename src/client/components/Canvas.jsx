@@ -10,7 +10,8 @@ import {
     is_scale_btn
 } from '../feature/Tool.js'
 import {
-    canvas_layer
+    canvas_layer,
+    isMouseInGraph
 } from '../feature/Canvas_layer.js'
 
 import {
@@ -124,11 +125,15 @@ export default class canvas extends Component {
             mouse,
             image_last_one
         )
+        // let is_inner = isMouseInGraph(mouse)
+        // console.log(
+        //     'is_inner',is_inner
+        // );
         if (is_edit && close_btn) {
             let new_arr = images;
             new_arr.pop()
+            allHold("is_edit",false)
             allHold("images",new_arr)
-            allHold("is_edit",true)
             canvas_layer(
                 canvas,
                 images
@@ -141,7 +146,6 @@ export default class canvas extends Component {
             image_last_one
         )
         if (is_edit && scale_btn) {
-            console.log("scale btn");
             this.setState({
                 press:true,
                 scale:true,
@@ -159,7 +163,6 @@ export default class canvas extends Component {
             images
         )
         if(new_arr == "no change"){
-            console.log("no change")
             this.setState({
                 mouse:{
                     x : e.clientX ,
@@ -178,7 +181,6 @@ export default class canvas extends Component {
                 block_props
             )
         }else if(new_arr == "not click image"){
-            console.log("not click image");
             allHold("is_edit",false)
             canvas_layer(
                 canvas,
@@ -187,7 +189,6 @@ export default class canvas extends Component {
             )
             return
         }else{
-            console.log("else");
             allHold("images",new_arr)
             allHold("is_edit",true)
             canvas_layer(
@@ -396,10 +397,15 @@ export default class canvas extends Component {
         } = this.props.store
         if(images.length==0||!is_edit)return 
         if (isDblTouchTap(e)) {
-            if(is_edit && images[images.length-1].type == "image"){
-            }else if(images[images.length-1].type == "text"){
-                document.getElementById("text-customization-input").value = images[images.length-1].content
-                this.props.show_text()
+            if(is_edit){
+                //编辑
+                if(images[images.length-1].type == "image"){
+                    //图片
+                }else if(images[images.length-1].type == "text"){
+                    //文字
+                    document.getElementById("text-customization-input").value = images[images.length-1].content
+                    this.props.show_text()
+                }
             }
         }
     }

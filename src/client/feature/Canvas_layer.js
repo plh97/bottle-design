@@ -24,12 +24,10 @@ class Canvas {
 		}
 	) {
 		const ctx = canvas.getContext('2d');
-		//将ctx作为全局变量，不用再做参数来传递了。。。
 		Canvas.ctx = ctx
 		Canvas.canvas = canvas
 		Canvas.block_prop = block_prop
 		Canvas.canvas_prop = canvas_prop
-
 		//init background
 		ctx.clearRect(0, 0, canvas_prop.width, canvas_prop.height);
 		ctx.save()
@@ -37,7 +35,6 @@ class Canvas {
 			canvas_prop.width*block_prop.x,
 			canvas_prop.height*block_prop.y
 		) 
-
 		//draw block
 		if (block_show) {
 			//白色填充块坐标系
@@ -57,40 +54,13 @@ class Canvas {
 			);
 		}
 		ctx.restore()
-
 		//如果最后一个元素图片 image
-		
 		Canvas.canvas_draw_ele (
 			images ,
 			is_edit
 		)
 
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -293,6 +263,18 @@ class Canvas {
             height: text.size.substring(0,2) *1.3
 		}
 		return area
+	}
+
+
+
+
+	static isMouseInGraph(mouse){
+		let ctx = Canvas.canvas.getContext("2d")
+		let image = Canvas.images
+		// ctx.rect()
+		//重新话一次图形不就有path咯。真蛋疼
+		console.log("我的鼠标到底在不在图形范围以内呢？？？",image);
+		return true
 	}
 
 

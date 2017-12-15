@@ -3,7 +3,7 @@ class Tool{
     static is_inner(mouse,area,angle=0 ){
         /**
          * 个人工具
-         * @param  {tools} 
+         * @param  {tool} 
          * @return {string|json} get angle || 0
          */
         let __distance__ = Math.sqrt(mouse.x*mouse.x + mouse.y*mouse.y)
@@ -99,10 +99,10 @@ class Tool{
     
     static is_close_btn( mouse,image ) {
         if (Tool.is_inner(mouse, {
-            x : image.width/2 - 20,
+            x : image.width/2 - 10,
             _x : image.width/2 + 20 ,
             y : -image.height/2 - 20,
-            _y : -image.height/2 + 20
+            _y : -image.height/2 + 10
         }, image.angle )) {
             return true
         } else {
@@ -112,9 +112,9 @@ class Tool{
 
     static is_scale_btn( mouse,image,) {
         if (Tool.is_inner(mouse, {
-            x : image.width/2 - 20,
+            x : image.width/2 - 10,
             _x : image.width/2 + 20 ,
-            y : image.height/2 - 20,
+            y : image.height/2 - 10,
             _y : image.height/2 + 20
         }, image.angle )) {
             return true
@@ -124,62 +124,37 @@ class Tool{
     }
 
 
-    ////////////////////////////////////////////////////////////////////////////
 	static measureText(text){
         let canvas = document.createElement("canvas")
         let ctx = canvas.getContext("2d")
-        console.log(
-            text
-        );
-		//draw text
-		// ctx.textAlign = "center"
-		// ctx.textBaseline = "middle"
-		// ctx.font = `${font.weight} ${font.size} ${font.family}`
-		// ctx.fillStyle = font.color;
-		// ctx.fillText(
-		// 	content,
-		// 	0,0
-        // );
         return {
             width:ctx.measureText(text.content, `${text.font_size}/1.6 ${text.font_family}`).width,
             height: 20
         }
-		// image = Object.assign({},image,{
-		// 	width: ctx.measureText(content, `${font.size}/1.6 ${font.family}`).width + 3 ,
-		// 	height: font.size.substring(0,2) *1.3
-		// })
-	}
-
-
-
-
-
-    // static is_inner_polar(mouse,area){
-    //     if(
-    //         mouse.dis > area.dis &&
-    //         mouse.dis < area._dis &&
-    //         mouse.angle > area.angle &&
-    //         mouse.angle < area._angle
-    //     ){
-    //         return true
-    //     }else {
-    //         return false
-    //     }
-    // }
-
+    }
     
-    // static is_inner_point(mouse,point){
-    //     if(
-    //         mouse.x > point.x - point.distancement &&
-    //         mouse.x < point._x + point.distancement &&
-    //         mouse.y > point.y - point.distancement &&
-    //         mouse.y < point._y + point.distancement
-    //     ){
-    //         return true
-    //     }else {
-    //         return false
-    //     }
-    // }
+    static alert_content(style={
+        color:"#fff",
+        backgroundColor:"red",
+        content:"没有任何输入"
+    }){
+        let alert_content = document.createElement("span")
+        alert_content.append(style.content)
+        alert_content.style.top = "30%"
+        alert_content.style.left = "35%"
+        alert_content.style.color = style.color
+        alert_content.style.border = "2px solid #ddd"
+        alert_content.style.zIndex = "999"
+        alert_content.style.padding = "5px"
+        alert_content.style.position = "absolute"
+        alert_content.style.fontWeight = "bolder"
+        alert_content.style.borderRadius = "5px"
+        alert_content.style.backgroundColor = style.backgroundColor
+        document.body.append(alert_content)
+        setTimeout(()=>{
+            alert_content.remove()
+        },2000)
+    }
 }
 
 module.exports = exports = Tool;
