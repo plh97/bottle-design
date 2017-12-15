@@ -281,6 +281,9 @@ export default class content extends Component {
     }
 
     handlePreview = (e) => {
+        const {
+            block_props
+        } = this.props.store
         this.props.store.allHold("is_edit",false)
         // canvas_layer(
         //     this.refs._canvas.wrappedInstance.refs.canvas_layer,
@@ -289,9 +292,23 @@ export default class content extends Component {
         //     false,
         //     this.props.store.block_props
         // )
-        canvas_background_3d(
-            this.refs._canvas.wrappedInstance.refs.canvas_background
-        )
+        const canvas_layer = this.refs._canvas.wrappedInstance.refs.canvas_layer
+        /////直接裁剪是否有隐患。。。裁了再说。。。
+        let ctx = canvas_layer.getContext("2d")
+        ctx.rect(
+            canvas_layer.width*(-block_props.width/2),
+            canvas_layer.height*(-block_props.height/2),
+            canvas_layer.width*(block_props.width),
+            canvas_layer.height*(block_props.height)
+        );
+        ctx.clip();
+        setTimeout(() => {
+            const image_src = canvas_layer.toDataURL("image/png");
+            canvas_background_3d(
+                this.refs._canvas.wrappedInstance.refs.canvas_background,
+                image_src
+            )
+        }, 1000);
     }
 
     render() {

@@ -8,7 +8,7 @@ class Canvas {
 		images,
 		is_edit=true,
 		block_show=true,
-		block_prop = {
+		block_props = {
 			x: 0.505,
 			y: 0.65,
 			width: 0.28,
@@ -18,7 +18,7 @@ class Canvas {
 				color:"green"
 			}
 		},
-		canvas_prop = {
+		canvas_props = {
 			height: screen.height-93 > 600 ? 600 : screen.height-93 ,
 			width: screen.width > 400 ? 400 : screen.width,
 		}
@@ -26,31 +26,31 @@ class Canvas {
 		const ctx = canvas.getContext('2d');
 		Canvas.ctx = ctx
 		Canvas.canvas = canvas
-		Canvas.block_prop = block_prop
-		Canvas.canvas_prop = canvas_prop
+		Canvas.block_props = block_props
+		Canvas.canvas_props = canvas_props
 		//init background
-		ctx.clearRect(0, 0, canvas_prop.width, canvas_prop.height);
+		ctx.clearRect(0, 0, canvas_props.width, canvas_props.height);
 		ctx.save()
 		ctx.translate(
-			canvas_prop.width*block_prop.x,
-			canvas_prop.height*block_prop.y
+			canvas_props.width*block_props.x,
+			canvas_props.height*block_props.y
 		) 
 		//draw block
 		if (block_show) {
 			//白色填充块坐标系
-			ctx.fillStyle = block_prop.color;
+			ctx.fillStyle = block_props.color;
 			ctx.fillRect( 
-				canvas_prop.width*(-block_prop.width/2),
-				canvas_prop.height*(-block_prop.height/2),
-				canvas_prop.width*(block_prop.width),
-				canvas_prop.height*(block_prop.height)
+				canvas_props.width*(-block_props.width/2),
+				canvas_props.height*(-block_props.height/2),
+				canvas_props.width*(block_props.width),
+				canvas_props.height*(block_props.height)
 			);
-			ctx.strokeStyle = block_prop.border.color;
+			ctx.strokeStyle = block_props.border.color;
 			ctx.strokeRect( 
-				canvas_prop.width*(-block_prop.width/2),
-				canvas_prop.height*(-block_prop.height/2),
-				canvas_prop.width*(block_prop.width),
-				canvas_prop.height*(block_prop.height)
+				canvas_props.width*(-block_props.width/2),
+				canvas_props.height*(-block_props.height/2),
+				canvas_props.width*(block_props.width),
+				canvas_props.height*(block_props.height)
 			);
 		}
 		ctx.restore()
@@ -79,8 +79,8 @@ class Canvas {
 		is_edit
 	){
 		const {
-			canvas_prop,
-			block_prop,
+			canvas_props,
+			block_props,
 			ctx
 		} = Canvas
 		//draw images
@@ -100,8 +100,8 @@ class Canvas {
 			//坐标系转换
 			ctx.save()
 			ctx.translate(
-				canvas_prop.width*block_prop.x + x,
-				canvas_prop.height*block_prop.y + y
+				canvas_props.width*block_props.x + x,
+				canvas_props.height*block_props.y + y
 			) 
 			ctx.scale(scale, scale)
 			ctx.rotate(rad)
@@ -137,8 +137,8 @@ class Canvas {
 			if(i==elements.length-1){
 				//清空图像边框以外
 				Canvas.canvas_clear_reserve(
-					canvas_prop,
-					block_prop
+					canvas_props,
+					block_props
 				)
 			}
 			
@@ -167,8 +167,8 @@ class Canvas {
 		//draw edit
 		const {
 			ctx,
-			canvas_prop,
-			block_prop
+			canvas_props,
+			block_props
 		} = Canvas
 		const {
 			x,y,width,height,angle,scale
@@ -177,8 +177,8 @@ class Canvas {
 		//坐标系转换
 		ctx.save()
 		ctx.translate(
-			canvas_prop.width*block_prop.x + x,
-			canvas_prop.height*block_prop.y + y
+			canvas_props.width*block_props.x + x,
+			canvas_props.height*block_props.y + y
 		) 
 		ctx.scale(scale, scale)
 		ctx.rotate(rad)
@@ -254,8 +254,8 @@ class Canvas {
 
 	static measureText(text){
 		const {
-			canvas_prop,
-			block_prop,
+			canvas_props,
+			block_props,
 			ctx
 		} = Canvas
         let area = {
@@ -292,33 +292,33 @@ class Canvas {
 	static canvas_clear_reserve(){
 		const {
 			ctx,
-			block_prop,
-			canvas_prop
+			block_props,
+			canvas_props
 		} = Canvas
 
 		ctx.clearRect(
 			0,
 			0,
-			canvas_prop.width*(block_prop.x-block_prop.width/2),
-			canvas_prop.height
+			canvas_props.width*(block_props.x-block_props.width/2),
+			canvas_props.height
 		)
 		ctx.clearRect(
 			0,
 			0,
-			canvas_prop.width,
-			canvas_prop.height*(block_prop.y-block_prop.height/2)
+			canvas_props.width,
+			canvas_props.height*(block_props.y-block_props.height/2)
 		)
 		ctx.clearRect(
-			canvas_prop.width*(0.5+block_prop.width/2),
+			canvas_props.width*(0.5+block_props.width/2),
 			0,
-			canvas_prop.width,
-			canvas_prop.height
+			canvas_props.width,
+			canvas_props.height
 		)
 		ctx.clearRect(
 			0,
-			canvas_prop.height*(block_prop.y+block_prop.height/2),
-			canvas_prop.width,
-			canvas_prop.height
+			canvas_props.height*(block_props.y+block_props.height/2),
+			canvas_props.width,
+			canvas_props.height
 		)
 	}
 }

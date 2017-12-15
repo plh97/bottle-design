@@ -102,8 +102,10 @@ class Canvas {
 
 
 	static canvas_background_3d(
-		canvas
+		canvas,
+		image_url = require ('../../../assets/images/avatar.gif')
 	){
+		console.log('image_url',image_url);
 		const {
 			Scene, 
 			PerspectiveCamera, 
@@ -114,7 +116,10 @@ class Canvas {
 			Mesh,
 			AmbientLight,
 			PointLight,
-			SphereGeometry
+			SphereGeometry,
+			MeshLamebertMaterial,
+			MeshPhongMaterial,
+			ImageUtils
 		} = THREE;
 
 		const scene = new Scene();
@@ -187,7 +192,9 @@ class Canvas {
 		//圆柱 -----   表面贴图
 		const Cylinder_image = new CylinderGeometry(3.01, 3.01, 14 , 32);
 		//材质
-		const cylinder_material_image = new MeshBasicMaterial({color: "#ddd"});
+		const cylinder_material_image = new MeshBasicMaterial( {
+			map: ImageUtils.loadTexture(image_url) 
+		} );
 		const cylinder_image = new Mesh(Cylinder_image, cylinder_material_image);
 		cylinder_image.position.set(0,0,0);
 //////////////////////////////////////////////////////////////////////////////////////
