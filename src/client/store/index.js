@@ -15,7 +15,7 @@ class TodoStore {
 		height: 0.53,
 		color: "white",
 		border: {
-			color:"green"
+			color:"rgb(31, 31, 31)"
 		}
 	}
 	@action allHold = (left, right) => {

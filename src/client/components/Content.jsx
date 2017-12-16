@@ -22,6 +22,7 @@ import Tool from "../feature/Tool.js"
 //app
 const { Content } = Layout;
 const { TabPane } = Tabs;
+let toggle_show = true
 
 
 @inject("store")
@@ -280,11 +281,42 @@ export default class content extends Component {
 		)
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     handlePreview = (e) => {
         const {
             block_props,
         } = this.props.store
         this.props.store.allHold("is_edit",false)
+        /////莫名原因，该console.log不能删除。。。
+        // console.log(
+        //     Object.assign(
+        //         this.props.store.block_props,{
+        //             width:this.props.store.block_props.width * Math.PI
+        //         }
+        //     )
+        // );
         // canvas_layer(
         //     this.refs._canvas.wrappedInstance.refs.canvas_layer,
         //     this.props.store.images,
@@ -293,48 +325,32 @@ export default class content extends Component {
         //     this.props.store.block_props
         // )
         const canvas_layer = this.refs._canvas.wrappedInstance.refs.canvas_layer
-        /////直接裁剪是否有隐患。。。裁了再说。。。
-        let __canvas__ = document.createElement("canvas")
-        __canvas__.width=screen.width
-        __canvas__.height=(screen.height - 91)
-        let ctx = __canvas__.getContext("2d")
+        let width = (canvas_layer.width * block_props.width + 5) * Math.PI
+        let height = canvas_layer.height * block_props.height + 5
         let image = document.createElement("img")
         image.src = canvas_layer.toDataURL("image/png")
+        image.crossOrigin = "anonymous"
+        let canvas = document.createElement("canvas")
+        canvas.width = width
+        canvas.height = height
+        let ctx = canvas.getContext("2d")
+
         setTimeout(() => {
             ctx.drawImage(
                 image,
-                // -__canvas__.width*(1-block_props.width)/2,
-                // -__canvas__.height*(1-block_props.y+block_props.height/2)+127,
-                0,0,
-                screen.width,
-                screen.height - 91
+                -canvas_layer.width*(1-block_props.width)/2,
+                -canvas_layer.height*(1-block_props.y + 0.03),
+                canvas_layer.width,
+                canvas_layer.height
             )
-            // __canvas__.width *= 0.9
-            // __canvas__.height *= 0.9
-            setTimeout(() => {
-                    
-                const image_src = __canvas__.toDataURL("image/png");
-                console.log(
-                    image.src,
-                );
-                console.log(
-                    "image_src" , image_src ,
-                );
-                console.log(
-                    "__canvas__" , __canvas__
-                );
-            }, 0);
+            const image_src = canvas.toDataURL("image/png");
+            toggle_show = canvas_background_3d(
+                this.refs._canvas.wrappedInstance.refs.canvas_background,
+                image_src,
+                toggle_show
+            )
+            canvas.remove()
         }, 0);
-            
-        
-        // ctx.width
-        // setTimeout(() => {
-        //     const image_src = canvas_layer.toDataURL("image/png");
-        //     canvas_background_3d(
-        //         this.refs._canvas.wrappedInstance.refs.canvas_background,
-        //         image_src
-        //     )
-        // }, 1000);
     }
 
     render() {
