@@ -15,7 +15,7 @@ class Canvas {
 			height: 0.53,
 			color: "white",
 			border: {
-				color:"green"
+				color:"white"
 			}
 		},
 		canvas_props = {

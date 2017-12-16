@@ -22,6 +22,7 @@ import Tool from "../feature/Tool.js"
 //app
 const { Content } = Layout;
 const { TabPane } = Tabs;
+let toggle_show = true
 
 
 @inject("store")
@@ -280,6 +281,29 @@ export default class content extends Component {
 		)
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     handlePreview = (e) => {
         const {
             block_props
@@ -292,23 +316,34 @@ export default class content extends Component {
         //     false,
         //     this.props.store.block_props
         // )
+
         const canvas_layer = this.refs._canvas.wrappedInstance.refs.canvas_layer
-        /////直接裁剪是否有隐患。。。裁了再说。。。
-        let ctx = canvas_layer.getContext("2d")
-        ctx.rect(
-            canvas_layer.width*(-block_props.width/2),
-            canvas_layer.height*(-block_props.height/2),
-            canvas_layer.width*(block_props.width),
-            canvas_layer.height*(block_props.height)
-        );
-        ctx.clip();
+        let width = canvas_layer.width * block_props.width + 5
+        let height = canvas_layer.height * block_props.height + 5
+        let image = document.createElement("img")
+        image.src = canvas_layer.toDataURL("image/png")
+        image.crossOrigin = "anonymous"
+        let canvas = document.createElement("canvas")
+        canvas.width = width
+        canvas.height = height
+        let ctx = canvas.getContext("2d")
+
         setTimeout(() => {
-            const image_src = canvas_layer.toDataURL("image/png");
-            canvas_background_3d(
-                this.refs._canvas.wrappedInstance.refs.canvas_background,
-                image_src
+            ctx.drawImage(
+                image,
+                -canvas_layer.width*(1-block_props.width)/2,
+                -canvas_layer.height*(1-block_props.y + 0.03),
+                canvas_layer.width,
+                canvas_layer.height
             )
-        }, 1000);
+            const image_src = canvas.toDataURL("image/png");
+            toggle_show = canvas_background_3d(
+                this.refs._canvas.wrappedInstance.refs.canvas_background,
+                image_src,
+                toggle_show
+            )
+            canvas.remove()
+        }, 0);
     }
 
     render() {
