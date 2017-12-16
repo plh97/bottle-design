@@ -1,12 +1,5 @@
 'use strict';
-
-
-
 import * as THREE from 'three';
-
-
-
-
 
 class Canvas {
 	static canvas_background(
@@ -77,30 +70,6 @@ class Canvas {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	static canvas_background_3d(
 		canvas,
 		image_url = require ('../../../assets/images/avatar.gif'),
@@ -138,8 +107,6 @@ class Canvas {
 			renderer.domElement.style.zIndex = "2"
 			renderer.domElement.id = "three_toggle_show"
 			document.getElementsByClassName("content-container-show")[0].appendChild(renderer.domElement);
-
-
 
 			// 1.底部半径
 			// 2.顶部半径
