@@ -9,7 +9,8 @@
     "p": "webpack -p --color --env.NODE_ENV=prod --progress",
     "nodemon": "set NODE_ENV=dev&& nodemon src/server/index.js --config nodemonrc.json",
     "pm2": "pm2 start ecosystem.config.js --env prod",
-    "restart": "pm2 reload ecosystem.config.js --env prod"
+    "restart": "pm2 reload ecosystem.config.js --env prod",
+    "local": "lt --host http://penlh.com:2000 --port 80 --subdomain local"
   },
   "pre-commit": [
     "eslint"
