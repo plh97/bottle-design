@@ -309,6 +309,14 @@ export default class content extends Component {
             block_props
         } = this.props.store
         this.props.store.allHold("is_edit",false)
+        /////莫名原因，该console.log不能删除。。。
+        // console.log(
+        //     Object.assign(
+        //         this.props.store.block_props,{
+        //             width:this.props.store.block_props.width * Math.PI
+        //         }
+        //     )
+        // );
         // canvas_layer(
         //     this.refs._canvas.wrappedInstance.refs.canvas_layer,
         //     this.props.store.images,
@@ -316,9 +324,8 @@ export default class content extends Component {
         //     false,
         //     this.props.store.block_props
         // )
-
         const canvas_layer = this.refs._canvas.wrappedInstance.refs.canvas_layer
-        let width = canvas_layer.width * block_props.width + 5
+        let width = (canvas_layer.width * block_props.width + 5) * Math.PI
         let height = canvas_layer.height * block_props.height + 5
         let image = document.createElement("img")
         image.src = canvas_layer.toDataURL("image/png")

@@ -308,18 +308,20 @@ class Canvas {
 			canvas_props.width,
 			canvas_props.height*(block_props.y-block_props.height/2)
 		)
-		ctx.clearRect(
-			canvas_props.width*(0.5+block_props.width/2),
-			0,
-			canvas_props.width,
-			canvas_props.height
-		)
-		ctx.clearRect(
-			0,
-			canvas_props.height*(block_props.y+block_props.height/2),
-			canvas_props.width,
-			canvas_props.height
-		)
+		// setTimeout(() => {
+			ctx.clearRect(
+				canvas_props.width*(0.5+block_props.width/2),
+				0,
+				canvas_props.width,
+				canvas_props.height
+			)
+			ctx.clearRect(
+				0,
+				canvas_props.height*(block_props.y+block_props.height/2),
+				canvas_props.width,
+				canvas_props.height
+			)
+		// }, 0);
 	}
 }
 

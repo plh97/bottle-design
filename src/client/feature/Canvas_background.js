@@ -167,26 +167,26 @@ class Canvas {
 			//圆柱 ---  黑色
 			const _Cylinder = new CylinderGeometry(1, 1, 1.3 , 32);
 			//材质
-			const _cylinder_material = new MeshBasicMaterial({color: "rgb(31, 31, 31)"});
+			const _cylinder_material = new MeshPhongMaterial({color: "rgb(31, 31, 31)"});
 			const _cylinder = new Mesh(_Cylinder, _cylinder_material);
 			_cylinder.position.set(0,11.3,0);
 
 
 
 
-			//椭圆
+			//椭圆 ---  黑色
 			const Cuby = new SphereGeometry( 3, 32, 32);
 			//材质
-			const cuby_material = new MeshBasicMaterial({color: "rgb(31, 31, 31)"});
+			const cuby_material = new MeshPhongMaterial({color: "rgb(31, 31, 31)"});
 			const cuby = new Mesh(Cuby, cuby_material);
 			cuby.position.set(0,8,0);
 
 
 
-			//圆柱
+			//圆柱 ---  黑色
 			const Cylinder = new CylinderGeometry(3, 3, 16 , 32);
 			//材质
-			const cylinder_material = new MeshBasicMaterial({color: "rgb(31, 31, 31)"});
+			const cylinder_material = new MeshPhongMaterial({color: "rgb(31, 31, 31)"});
 			const cylinder = new Mesh(Cylinder, cylinder_material);
 			cylinder.position.set(0,-3,0);
 
@@ -195,9 +195,9 @@ class Canvas {
 			//圆柱 -----   表面贴图
 			const Cylinder_image = new CylinderGeometry(3.01, 3.01, 14 , 32);
 			//材质
-			const cylinder_material_image = new MeshBasicMaterial( {
+			const cylinder_material_image = new MeshBasicMaterial({
 				map: ImageUtils.loadTexture(image_url) 
-			} );
+			});
 			const cylinder_image = new Mesh(Cylinder_image, cylinder_material_image);
 			cylinder_image.position.set(0,0,0);
 	//////////////////////////////////////////////////////////////////////////////////////
