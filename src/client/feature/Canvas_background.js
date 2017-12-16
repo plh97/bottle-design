@@ -135,8 +135,6 @@ class Canvas {
 			renderer.setSize(width, height);
 			renderer.setClearColor( 0xffffff, 1 );
 			//canvas元素style设定
-			renderer.domElement.style.position = "absolute"
-			renderer.domElement.style.top = "0px"
 			renderer.domElement.style.zIndex = "2"
 			renderer.domElement.id = "three_toggle_show"
 			document.getElementsByClassName("content-container-show")[0].appendChild(renderer.domElement);
