@@ -282,7 +282,7 @@ export default class content extends Component {
 
     handlePreview = (e) => {
         const {
-            block_props
+            block_props,
         } = this.props.store
         this.props.store.allHold("is_edit",false)
         // canvas_layer(
@@ -294,21 +294,47 @@ export default class content extends Component {
         // )
         const canvas_layer = this.refs._canvas.wrappedInstance.refs.canvas_layer
         /////直接裁剪是否有隐患。。。裁了再说。。。
-        let ctx = canvas_layer.getContext("2d")
-        ctx.rect(
-            canvas_layer.width*(-block_props.width/2),
-            canvas_layer.height*(-block_props.height/2),
-            canvas_layer.width*(block_props.width),
-            canvas_layer.height*(block_props.height)
-        );
-        ctx.clip();
+        let __canvas__ = document.createElement("canvas")
+        __canvas__.width=screen.width
+        __canvas__.height=(screen.height - 91)
+        let ctx = __canvas__.getContext("2d")
+        let image = document.createElement("img")
+        image.src = canvas_layer.toDataURL("image/png")
         setTimeout(() => {
-            const image_src = canvas_layer.toDataURL("image/png");
-            canvas_background_3d(
-                this.refs._canvas.wrappedInstance.refs.canvas_background,
-                image_src
+            ctx.drawImage(
+                image,
+                // -__canvas__.width*(1-block_props.width)/2,
+                // -__canvas__.height*(1-block_props.y+block_props.height/2)+127,
+                0,0,
+                screen.width,
+                screen.height - 91
             )
-        }, 1000);
+            // __canvas__.width *= 0.9
+            // __canvas__.height *= 0.9
+            setTimeout(() => {
+                    
+                const image_src = __canvas__.toDataURL("image/png");
+                console.log(
+                    image.src,
+                );
+                console.log(
+                    "image_src" , image_src ,
+                );
+                console.log(
+                    "__canvas__" , __canvas__
+                );
+            }, 0);
+        }, 0);
+            
+        
+        // ctx.width
+        // setTimeout(() => {
+        //     const image_src = canvas_layer.toDataURL("image/png");
+        //     canvas_background_3d(
+        //         this.refs._canvas.wrappedInstance.refs.canvas_background,
+        //         image_src
+        //     )
+        // }, 1000);
     }
 
     render() {
