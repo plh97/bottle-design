@@ -71,6 +71,7 @@
                         border-right: 1px solid #ccc;
                         border-bottom: 1px solid #ccc;
                         padding: 10px;
+                        height: 530px;
         
                         select {
                             border: 1px solid #ccc;
@@ -79,12 +80,12 @@
             
                         .material-container-image {
                             margin-top: 20px;
-                            height: 481px;
+                            height: 440px;
             
                             .upload , img {
                                 float: left;
                                 width: 116px;
-                                height: 110px;
+                                height: 116px;
                                 margin: 5px;
                                 cursor: pointer;
                             }
@@ -109,6 +110,51 @@
                             a{
                                 color: black;
                                 font-weight: bold;
+                            }
+                        }
+                    }
+                    //文字定制样式
+                    .text-customization{
+                        display: flex;
+                        flex-direction: column;
+                        
+                        div {
+                            display: flex;
+                            flex-direction: row;
+                            padding: 10px;
+                        }
+                        .text-customization-content{
+                            span {
+                                width: 59px;
+                            }
+                        }
+                        .text-customization-font{
+                            span {
+                                width: 50px;
+                            }
+                        }
+                        .text-customization-color{
+                            justify-content: space-around;
+                            i {
+                                width: 30px;
+                                height: 30px;
+                                border: 1px solid #ccc;
+                                display: inline-block;
+                                border-radius: 5px;
+                                position: relative;
+                            }
+                        }
+                        .text-customization-type{
+                            span {
+                                width: 50px;
+                            }
+                            i {
+                                width: 30px;
+                                height: 30px;
+                                border: 1px solid #ccc;
+                                display: inline-block;
+                                border-radius: 5px;
+                                position: relative;
                             }
                         }
                     }

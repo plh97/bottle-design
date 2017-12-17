@@ -1,8 +1,7 @@
 //package
 import React, { Component } from 'react'
-import { Layout,Pagination ,Button ,Tabs ,Icon } from 'antd'
+import { Layout,Pagination ,Button ,Tabs ,Icon,Input } from 'antd'
 import { inject, observer } from "mobx-react"
-
 //local
 import Canvas from './Canvas.jsx'
 
@@ -22,6 +21,7 @@ import Tool from "../feature/Tool.js"
 //app
 const { Content } = Layout;
 const { TabPane } = Tabs;
+const { TextArea } = Input;
 let toggle_show = true
 
 
@@ -310,13 +310,6 @@ export default class content extends Component {
         } = this.props.store
         this.props.store.allHold("is_edit",false)
         /////莫名原因，该console.log不能删除。。。
-        // console.log(
-        //     Object.assign(
-        //         this.props.store.block_props,{
-        //             width:this.props.store.block_props.width * Math.PI
-        //         }
-        //     )
-        // );
         // canvas_layer(
         //     this.refs._canvas.wrappedInstance.refs.canvas_layer,
         //     this.props.store.images,
@@ -378,7 +371,7 @@ export default class content extends Component {
                 <div className="content-container">
                     <div className={`${show_material ? "active":""} content-container-material`}>
                         <Tabs type="card">
-                            <TabPane tab="定制素材" key="1">
+                            <TabPane className="material-customization" tab="定制素材" key="1">
                                 <div className="select">
                                     场景：
                                     <select name="select">
@@ -406,18 +399,37 @@ export default class content extends Component {
                                 </div>
                                 <Pagination className="material-pagination" size="small"simple={true} total={img_list.length} onChange={this.handlePageChange} />
                             </TabPane>
-                            <TabPane tab="文字定制" key="2">
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
+                            <TabPane className="text-customization" tab="文字定制" key="2">
+                                <div className="text-customization-content">
+                                    <span>内容：</span>
+                                    <TextArea id="text-customization-input-pc" rows={4} />
+                                </div>
+                                <div className="text-customization-font">
+                                    <span>字体：</span>
+                                    <select name="select">
+                                        <option value="value1" defaultValue>Pacifico</option>
+                                        <option value="value2">Arial</option>
+                                        <option value="value3">宋体</option>
+                                        <option value="value3">流体</option>
+                                    </select>
+                                </div>
+                                <div className="text-customization-color">
+                                    <span>颜色：</span>
+                                    {color_list_rgb.map((color,i) => (
+                                        <i style={{background:color}}
+                                            id="text-customization-color"
+                                            className={`${color==text_font_props.color ? "active":""}`}
+                                            key={i}/>
+                                    ))}
+                                </div>
+                                <div className="text-customization-type">
+                                    <span>排版：</span>
+                                    <i>向左对齐</i>
+                                    <i>向右对齐</i>
+                                    <i>居中</i>
+                                    <i>粗体</i>
+                                    <i>斜体</i>
+                                </div>
                             </TabPane>
                             <TabPane tab="图片定制" key="3">
                                 <p>Content of Tab Pane 3</p>
