@@ -15,3 +15,7 @@
 ### canvas is not as easy to use as dom .
 
 ### but another half of me want to learn to use canvas to draw somethings such as an piano music player demo
+
+#Todo List
+- write the pc text customization
+- rewrite the ispointinpath 
