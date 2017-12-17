@@ -306,7 +306,7 @@ export default class content extends Component {
 
     handlePreview = (e) => {
         const {
-            block_props
+            block_props,
         } = this.props.store
         this.props.store.allHold("is_edit",false)
         /////莫名原因，该console.log不能删除。。。

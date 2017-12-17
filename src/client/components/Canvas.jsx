@@ -7,8 +7,10 @@ import {
     is_buttom_array,
     is_close_btn,
     mouse_debug,
-    is_scale_btn
+    is_scale_btn,
+    prevent_wx_scroll
 } from '../feature/Tool.js'
+
 import {
     canvas_layer,
     isMouseInGraph
@@ -236,7 +238,8 @@ export default class canvas extends Component {
         const {
             block_props,
             images,
-            allHold
+            allHold,
+            is_edit
         } = this.props.store
         const {x,y} = images[images.length-1]
         //鼠标位置,
@@ -290,6 +293,10 @@ export default class canvas extends Component {
                 true,
                 block_props
             )
+        }
+
+        if(screen.width<768 && is_edit){
+            prevent_wx_scroll()
         }
     }
 
