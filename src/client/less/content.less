@@ -1,7 +1,5 @@
 @import "../common/commonStyle";
 
-
-
 //pc
 @media screen and (min-width: 480px){
     .content {
@@ -73,13 +71,11 @@
                         padding: 10px;
                         height: 530px;
         
-                        select {
-                            border: 1px solid #ccc;
-                            width: 200px;
+                        .select {
+                            padding: 5px;
                         }
             
                         .material-container-image {
-                            margin-top: 20px;
                             height: 440px;
             
                             .upload , img {
@@ -118,43 +114,95 @@
                         display: flex;
                         flex-direction: column;
                         
-                        div {
+                        .text-customization {
                             display: flex;
                             flex-direction: row;
                             padding: 10px;
-                        }
-                        .text-customization-content{
-                            span {
-                                width: 59px;
+                            height: 50px;
+                            .title {
+                                align-items: center;
+                                width: 50px;
+                                display: flex;
                             }
                         }
-                        .text-customization-font{
-                            span {
-                                width: 50px;
+                        .text-customization-content{
+                            height: 100px;
+                            align-items: flex-start;
+                            .title {
+                                width: 59px;
                             }
                         }
                         .text-customization-color{
                             justify-content: space-around;
-                            i {
-                                width: 30px;
+
+                            .choice{
+                                flex: 1;
                                 height: 30px;
-                                border: 1px solid #ccc;
-                                display: inline-block;
-                                border-radius: 5px;
-                                position: relative;
+                                display: flex;
+                                flex-direction: row;
+                                justify-content: space-between;
+                                align-items: center;
+                                padding: 0px;
+
+                                i {
+                                    cursor: pointer;
+                                    width: 30px;
+                                    height: 30px;
+                                    border: 1px solid #ccc;
+                                    display: inline-block;
+                                    border-radius: 5px;
+                                    position: relative;
+
+                                    &.active {
+                                        &::after{
+                                            content: "";
+                                            display: inline-block;
+                                            border-bottom: 2px solid red;
+                                            width: 28px;
+                                            position: absolute;
+                                            bottom: -9px;
+                                        }
+                                    }
+                                }
                             }
                         }
                         .text-customization-type{
-                            span {
-                                width: 50px;
-                            }
-                            i {
-                                width: 30px;
+                            .choice {
+                                flex: 1;
                                 height: 30px;
-                                border: 1px solid #ccc;
-                                display: inline-block;
-                                border-radius: 5px;
-                                position: relative;
+                                display: flex;
+                                flex-direction: row;
+                                justify-content: space-between;
+                                align-items: center;
+                                padding: 0px;
+
+                                svg,i,span,del{
+                                    cursor: pointer;
+                                    padding: 5px;
+                                    font-size: 26px;
+                                    background-color: #666;
+                                    color: #fff;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    width: 30px;
+                                    height: 30px;
+                                    &.underline{
+                                        text-decoration: underline;
+                                    }
+                                    &.linethrough{
+                                        text-decoration: line-through;
+                                    }
+                                    &:hover{
+                                        background-color: #851f1f;
+                                    }
+                                }
+                            }
+                        }
+                        .text-customization-submit{
+                            button{
+                                width:100%;
+                                background-color: #851f1f;
                             }
                         }
                     }

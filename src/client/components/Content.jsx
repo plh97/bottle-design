@@ -1,7 +1,20 @@
 //package
 import React, { Component } from 'react'
-import { Layout,Pagination ,Button ,Tabs ,Icon,Input } from 'antd'
+import { 
+    Layout,
+    Pagination ,
+    Button ,
+    Tabs ,
+    Icon,
+    Input,
+    InputNumber ,
+    Select
+} from 'antd'
 import { inject, observer } from "mobx-react"
+import IconAlignCenter from 'react-icons/lib/fa/align-center';
+import IconAlignLeft from 'react-icons/lib/fa/align-left';
+import IconAlignRight from 'react-icons/lib/fa/align-right';
+
 //local
 import Canvas from './Canvas.jsx'
 
@@ -22,6 +35,7 @@ import Tool from "../feature/Tool.js"
 const { Content } = Layout;
 const { TabPane } = Tabs;
 const { TextArea } = Input;
+const { Option } = Select;
 let toggle_show = true
 
 
@@ -55,7 +69,8 @@ export default class content extends Component {
                 color: "rgb(0, 0, 0)",
                 family: 'Pacifico',
                 size:"15px",
-                weight: "bolder"
+                weight: "bolder",
+                textAlign: "center"
             }
         }
     }
@@ -106,7 +121,7 @@ export default class content extends Component {
         }else if(e.target.dataset.text){
             let text = this.state.text_font_props
             //如果没有输入文字，则提示
-            let content = document.getElementById("text-customization-input").value
+            let content = document.getElementById("text-customization-input").value || document.getElementById("text-customization-input-pc").value
             if(content=="") {
                 Tool.alert_content({
                     content:"文字不能为空!",
@@ -118,10 +133,7 @@ export default class content extends Component {
                 })
                 return
             }
-
-            text = Object.assign({},text,{
-                content: document.getElementById("text-customization-input").value
-            })
+            text = Object.assign({},text,{content})
             let a = images;
             let scale_val = screen.width > 400 ? 1 : screen.width / 400
             if(is_edit){
@@ -169,6 +181,7 @@ export default class content extends Component {
                 show_text_customization: false
             })
             document.getElementById("text-customization-input").value = ""
+            document.getElementById("text-customization-input-pc").value = ""
         }
         
         switch (e.target.id) {
@@ -309,14 +322,6 @@ export default class content extends Component {
             block_props,
         } = this.props.store
         this.props.store.allHold("is_edit",false)
-        /////莫名原因，该console.log不能删除。。。
-        // canvas_layer(
-        //     this.refs._canvas.wrappedInstance.refs.canvas_layer,
-        //     this.props.store.images,
-        //     false,
-        //     false,
-        //     this.props.store.block_props
-        // )
         const canvas_layer = this.refs._canvas.wrappedInstance.refs.canvas_layer
         let width = (canvas_layer.width * block_props.width + 5) * Math.PI
         let height = canvas_layer.height * block_props.height + 5
@@ -374,12 +379,12 @@ export default class content extends Component {
                             <TabPane className="material-customization" tab="定制素材" key="1">
                                 <div className="select">
                                     场景：
-                                    <select name="select">
-                                        <option value="value1" defaultValue>婚庆</option>
-                                        <option value="value2">生日聚会</option>
-                                        <option value="value3">企业定制</option>
-                                        <option value="value3">节日/纪念日</option>
-                                    </select>
+                                    <Select defaultValue="婚庆" style={{ width: 120 }}>
+                                        <Option value="婚庆">婚庆</Option>
+                                        <Option value="生日聚会">生日聚会</Option>
+                                        <Option value="企业定制">企业定制</Option>
+                                        <Option value="节日/纪念日">节日/纪念日</Option>
+                                    </Select>
                                 </div>
                                 <div className="material-container-image">
                                     <span className="upload" onClick={()=>{
@@ -400,35 +405,53 @@ export default class content extends Component {
                                 <Pagination className="material-pagination" size="small"simple={true} total={img_list.length} onChange={this.handlePageChange} />
                             </TabPane>
                             <TabPane className="text-customization" tab="文字定制" key="2">
-                                <div className="text-customization-content">
-                                    <span>内容：</span>
+                                <div className="text-customization text-customization-content">
+                                    <span className="title">内容：</span>
                                     <TextArea id="text-customization-input-pc" rows={4} />
                                 </div>
-                                <div className="text-customization-font">
-                                    <span>字体：</span>
-                                    <select name="select">
-                                        <option value="value1" defaultValue>Pacifico</option>
-                                        <option value="value2">Arial</option>
-                                        <option value="value3">宋体</option>
-                                        <option value="value3">流体</option>
-                                    </select>
+                                <div className="text-customization text-customization-font">
+                                    <span className="title">字体：</span>
+                                    <Select defaultValue={text_font_props.family} style={{ width: 120 }}>
+                                        <Option value="Pacifico">Pacifico</Option>
+                                        <Option value="Arial">Arial</Option>
+                                        <Option value="宋体">宋体</Option>
+                                        <Option value="流体">流体</Option>
+                                    </Select>
                                 </div>
-                                <div className="text-customization-color">
-                                    <span>颜色：</span>
-                                    {color_list_rgb.map((color,i) => (
-                                        <i style={{background:color}}
-                                            id="text-customization-color"
-                                            className={`${color==text_font_props.color ? "active":""}`}
-                                            key={i}/>
-                                    ))}
+                                <div className="text-customization text-customization-size">
+                                    <span className="title">大小：</span>
+                                    <InputNumber max = {30} min = {8}
+                                        defaultValue = {text_font_props.size.replace(/px/g,'')}
+                                        formatter={value => `${value}px`}
+                                        parser={value => value.replace(/[^\d]/g,'')}/>
                                 </div>
-                                <div className="text-customization-type">
-                                    <span>排版：</span>
-                                    <i>向左对齐</i>
-                                    <i>向右对齐</i>
-                                    <i>居中</i>
-                                    <i>粗体</i>
-                                    <i>斜体</i>
+                                <div className="text-customization text-customization-color">
+                                    <span className="title">颜色：</span>
+                                    <span className="choice">
+                                        {color_list_rgb.map((color,i) => (
+                                            <i style={{background:color}}
+                                                id="text-customization-color"
+                                                className={`${color==text_font_props.color ? "active":""}`}
+                                                key={i}/>
+                                        ))}
+                                    </span>
+                                </div>
+                                <div className="text-customization text-customization-type">
+                                    <span className="title">排版：</span>
+                                    <span className="choice">
+                                        <IconAlignLeft tittle="居左对齐"/>
+                                        <IconAlignCenter title="居中对齐" />
+                                        <IconAlignRight title="居右对齐" />
+                                        <span title="粗体">B</span>
+                                        <i title="斜体">I</i>
+                                        <span title="中划线" className="linethrough">D</span>
+                                        <span title="下划线" className="underline">U</span>
+                                    </span>
+                                </div>
+                                <div className="text-customization text-customization-submit">
+                                    <Button data-text={true} type="primary">
+                                        {(is_edit&&images[images.length-1].type=="text") ? "修改" : "添加"}
+                                    </Button>
                                 </div>
                             </TabPane>
                             <TabPane tab="图片定制" key="3">

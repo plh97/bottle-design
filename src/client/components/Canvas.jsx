@@ -24,8 +24,6 @@ injectTapEventPlugin()
 import isDblTouchTap from "../feature/isDblTouchTap.js"
 
 
-
-
 const { Content } = Layout
 const { TabPane } = Tabs;
 
