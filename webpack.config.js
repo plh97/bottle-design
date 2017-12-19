@@ -8,7 +8,17 @@ const
 	CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = (env)=> {
-	console.log('NODE_ENV: ', env.NODE_ENV) // 'local'
+	let _path_ = path.resolve(
+		'../../tool',
+		'mall',
+		'src',
+		'main',
+		'web',
+		'static',
+		'embed',
+		'react-canvas'
+	)
+	console.log('NODE_ENV: ', env.NODE_ENV, _path_) // 'local'
 	return merge(env.NODE_ENV == 'dev' ? devWebpackConfig : prodWebpackConfig, {
 		entry: {
 			'app': [
@@ -25,6 +35,9 @@ module.exports = (env)=> {
 		output: {
 			filename: "[name].[hash].js",
 			chunkFilename: '[name].[chunkhash].js',
+			//打包到公司项目
+			// path: _path_,
+			//打包到dist
 			path: path.join(__dirname, "dist"),
 			publicPath: "/",
 		},
@@ -32,10 +45,11 @@ module.exports = (env)=> {
 			rules: [
 				{
 					test: /(\.less|\.css)$/,
-					use: ExtractTextPlugin.extract({
-						fallback: 'style-loader',
-						use: ['css-loader', 'less-loader']
-					})
+					// use: ExtractTextPlugin.extract({
+					// 	fallback: 'style-loader',
+					// 	use: ['css-loader', 'less-loader']
+					// }),
+					use:[ 'style-loader', 'css-loader',"less-loader" ]
 				}, {
 					test: /\.(png|svg|jpg|gif)$/,
 					use: [

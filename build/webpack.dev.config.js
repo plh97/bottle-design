@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack')
+const ManifestPlugin = require('webpack-manifest-plugin');
 
 module.exports = {
 	plugins: [
@@ -8,6 +9,7 @@ module.exports = {
 			favicon: './favicon.png',
 			template: './assets/template/index.ejs',
 		}),
-		new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify('dev')})
+		new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify('dev')}),
+		new ManifestPlugin()
 	]
 }

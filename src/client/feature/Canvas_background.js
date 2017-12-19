@@ -72,7 +72,7 @@ class Canvas {
 
 	static canvas_background_3d(
 		canvas,
-		image_url = require ('../../../assets/images/avatar.gif'),
+		image_url,
 		toggle_show=true
 	){
 		if(toggle_show){
@@ -94,8 +94,9 @@ class Canvas {
 			} = THREE;
 
 			const scene = new Scene();
-			let width = screen.width
-			let height = screen.height-94
+			
+			let width = screen.width > 400 ? 400 : screen.width
+			let height = screen.height-93 > 600 ? 600 : screen.height-93
 			let PI = Math.PI
 			const camera = new PerspectiveCamera(75, width/height, 0.1, 1000);
 			const renderer = new WebGLRenderer();
@@ -184,7 +185,8 @@ class Canvas {
 			scene.add(cylinder);
 
 			camera.position.z = 20;
-			camera.position.y = 2;
+			camera.position.y = 1.5;
+			cylinder.rotation.y = -1.8;
 			function render(){
 				requestAnimationFrame(render);
 				

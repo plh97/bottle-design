@@ -11,9 +11,9 @@ import {
     Select
 } from 'antd'
 import { inject, observer } from "mobx-react"
-import IconAlignCenter from 'react-icons/lib/fa/align-center';
 import IconAlignLeft from 'react-icons/lib/fa/align-left';
 import IconAlignRight from 'react-icons/lib/fa/align-right';
+import IconAlignCenter from 'react-icons/lib/fa/align-center';
 
 //local
 import Canvas from './Canvas.jsx'
@@ -365,14 +365,6 @@ export default class content extends Component {
         } = this.props.store
         return (
             <Content className="content" onClick={this.handleClick}>
-                <div className="content-navigation">
-                    <a href="#">首页</a>
-                    <a href="#">定制馆</a>
-                    <a href="#">定制馆</a>
-                    <a href="#">砍价专区</a>
-                    <a href="#">拼图专区</a>
-                    <a href="#">合作代理</a>
-                </div>
                 <div className="content-container">
                     <div className={`${show_material ? "active":""} content-container-material`}>
                         <Tabs type="card">
@@ -470,7 +462,10 @@ export default class content extends Component {
                     <Canvas 
                         show_text={this.show_text}
                         ref="_canvas"/>
-                    <div className="content-container-designer"></div>
+                    <div className="content-container-designer">
+                        <Button onClick={this.handlePreview} className="btn-3d">3D效果</Button>
+                        <Button className="btn-2d">预览效果</Button>
+                    </div>
                     <div className={`${show_text_customization ? "active":""} content-container-text-customization`}>
                         <div className="text-customization-mask"></div>
                         <div className="text-customization-content">

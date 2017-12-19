@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
 const webpack = require('webpack')
 
 module.exports = {
@@ -7,11 +8,16 @@ module.exports = {
 			title: '酒龙仓',
 			favicon: './favicon.png',
 			template: './assets/template/index.ejs',
-			minify: {
-				removeComments: true,
-				collapseWhitespace: true
-			}
+			// template: './assets/template/index-embed.ejs.html',
+			// minify: {
+			// 	removeComments: true,
+			// 	collapseWhitespace: true
+			// }
 		}),
-		new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify('pro')})
+		new webpack.optimize.UglifyJsPlugin(),
+		new webpack.DefinePlugin({
+			'process.env.NODE_ENV': JSON.stringify('pro')
+		}),
+		new ManifestPlugin()
 	],
 }

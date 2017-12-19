@@ -1,4 +1,4 @@
-@import "../common/commonStyle";
+// @import "../common/commonStyle";
 
 //pc
 @media screen and (min-width: 480px){
@@ -6,37 +6,35 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        border-top: 2px solid red;
+        // border-top: 2px solid red;
         flex: none;
     
-        .content-navigation {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-evenly;
-            border-bottom: 1px solid #ccc;
-            height: 50px;
-            align-items: center;
+        // .content-navigation {
+        //     display: flex;
+        //     flex-direction: row;
+        //     justify-content: space-evenly;
+        //     border-bottom: 1px solid #ccc;
+        //     height: 50px;
+        //     align-items: center;
             
-            a {
-                display: flex;
-                cursor: pointer;
-                justify-content: center;
-                justify-content: center;
-                color: #666;
+        //     a {
+        //         display: flex;
+        //         cursor: pointer;
+        //         justify-content: center;
+        //         justify-content: center;
+        //         color: #666;
     
-                &:hover {
-                    color:red;
-                    text-decoration: none;
-                }
-            }
-        }
+        //         &:hover {
+        //             color:red;
+        //             text-decoration: none;
+        //         }
+        //     }
+        // }
         
         //container 里面的三大区域
         .content-container {
-            padding-top: 20px;
             display: flex;
             height: 690px;
-            margin: 0 auto;
             width: 1200px;
             flex-direction: row;
     
@@ -236,8 +234,22 @@
                 flex: 1;
                 height: 600px;
                 display: flex;
-                justify-content: center;
+                justify-content: flex-start;
                 align-self: center;
+                flex-direction: column;
+                
+                button {
+                    margin: 15px;
+                    color: #fff;
+                    width: 265px;
+                    height: 45px;
+                    line-height: 45px;
+                    text-align: center;
+                    background-color: #ec1a23;
+                    border: 1px solid #ec1a23;
+                    color: #fff;
+                    cursor: pointer;
+                }
             }
             .content-container-text-customization{
                 display: none;
@@ -314,7 +326,7 @@
         }
         .content-container {
             // padding-top: 20px;
-            height: calc(~'(100vh - 93px)');
+            height: calc(~'(100vh - 52px)');
             margin: 0 auto;
             width: 100vw;
     
