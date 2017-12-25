@@ -66,11 +66,11 @@ export default class content extends Component {
                 }
             ],
             text_font_props: {
-                color: "rgb(0, 0, 0)",
-                family: 'Pacifico',
                 size:"15px",
+                color: "rgb(0,0,0)",
                 weight: "bolder",
-                textAlign: "center"
+                family: 'Pacifico',
+                textAlign: "center",
             }
         }
     }
@@ -252,7 +252,7 @@ export default class content extends Component {
     }
 
     handleDownload = (e) =>{
-        const a = document.createElement("a")
+        // const a = document.createElement("a")
         const image = document.createElement("img")
         const canvas_layer = this.refs._canvas.wrappedInstance.refs.canvas_layer
         const canvas_background = this.refs._canvas.wrappedInstance.refs.canvas_background
@@ -267,9 +267,14 @@ export default class content extends Component {
                 screen.width > 400 ? 400 : screen.width ,
                 screen.height-93 > 600 ? 600 : screen.height-93 
             )
-            a.href = canvas_background.toDataURL("image/png")
-            a.download=true
-            a.click()
+            canvas_background.crossOrigin = "anonymous"
+            // a.href = canvas_background.toDataURL("image/png")
+            window.canvas_image_base64 = canvas_background.toDataURL("image/png")
+            canvas_background.toBlob(function(blob){
+                window.canvas_image_blob = blob
+            })
+            // a.download=true
+            // a.click()
         }, 0);
     }
 
@@ -386,8 +391,7 @@ export default class content extends Component {
                                         <input onChange={this.handleUpload} type="file" ref="upload_image"/>
                                     </span>
                                     {img_list.filter((img)=> img.id>(current_page-1)*12 && img.id<=(current_page)*12 ).map((img,i)=>(
-                                        <img 
-                                            data-drag={true} 
+                                        <img data-drag={true} 
                                             crossOrigin="anonymous"
                                             src={img.url} 
                                             key={i} 
@@ -463,8 +467,8 @@ export default class content extends Component {
                         show_text={this.show_text}
                         ref="_canvas"/>
                     <div className="content-container-designer">
-                        <Button onClick={this.handlePreview} className="btn-3d">3D效果</Button>
-                        <Button className="btn-2d">预览效果</Button>
+                        <Button onClick={this.handlePreview} className="btn-3d">预    览</Button>
+                        <Button onClick={this.handleDownload} className="btn-2d">返回购买</Button>
                     </div>
                     <div className={`${show_text_customization ? "active":""} content-container-text-customization`}>
                         <div className="text-customization-mask"></div>
@@ -479,8 +483,7 @@ export default class content extends Component {
                             <span className="text-customization-font-title">字体</span>
                             <span className="text-customization-font-container">
                                 {["Pacifico","Arial","宋体","流体"].map((text,i)=>(
-                                    <span 
-                                        id="text-customization-font"
+                                    <span id="text-customization-font"
                                         className={`${text==text_font_props.family ? "active":""}`}
                                         key={i}>{text}</span>
                                 ))}
@@ -507,9 +510,6 @@ export default class content extends Component {
                 </div>
                 <div className="content-footer">
                     <span onClick={this.show_material}>素材<br/>📖</span>
-                    <span onClick={this.handleDownload}>
-                        图片<br/>📷
-                    </span>
                     <span onClick={this.show_text}> 
                         文字<br/>✏️
                     </span>
@@ -518,6 +518,9 @@ export default class content extends Component {
                     </span> */}
                     <span onClick={this.handlePreview}>
                         预览<br/>👊🏾
+                    </span>
+                    <span onClick={this.handleDownload}>
+                        返回定制<br/>📷
                     </span>
                 </div>
             </Content>
