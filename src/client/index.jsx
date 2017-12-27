@@ -3,8 +3,6 @@ import React, { Component } from 'react'
 import { render } from 'react-dom'
 import { Route, Redirect, } from 'react-router'
 import { Provider, observer } from "mobx-react"
-import { Layout } from "antd";
-// const { Footer } = Layout;
 
 //local
 import Content from "./components/Content.jsx"
@@ -16,9 +14,7 @@ export default class Root extends Component {
 	render() {
 		return (
 			<Provider store={store}>
-				<Layout className='root'>
-					<Content />
-				</Layout>
+				<Content />
 			</Provider>
 		)
 	}

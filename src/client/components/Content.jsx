@@ -1,19 +1,18 @@
 //package
 import React, { Component } from 'react'
 import { 
-    Layout,
     Pagination ,
     Button ,
     Tabs ,
-    Icon,
     Input,
-    InputNumber ,
-    Select
 } from 'antd'
 import { inject, observer } from "mobx-react"
 import IconAlignLeft from 'react-icons/lib/fa/align-left';
 import IconAlignRight from 'react-icons/lib/fa/align-right';
 import IconAlignCenter from 'react-icons/lib/fa/align-center';
+// import VConsole from 'vconsole'
+// var vConsole = new VConsole();
+//   console.log('Hello world');
 
 //local
 import Canvas from './Canvas.jsx'
@@ -32,10 +31,8 @@ import {color_list_rgb} from "../../../config/client.js"
 import Tool from "../feature/Tool.js"
 
 //app
-const { Content } = Layout;
 const { TabPane } = Tabs;
 const { TextArea } = Input;
-const { Option } = Select;
 let toggle_show = true
 
 
@@ -45,26 +42,10 @@ export default class content extends Component {
     constructor(){
         super()
         this.state={
-            current_page: 1,
             show_material: false,
-            img_list:[
-                {
-                    url:"http://oy82lbvct.bkt.clouddn.com/material1.jpg",
-                    id:1
-                },{
-                    url:"http://oy82lbvct.bkt.clouddn.com/material2.jpg",
-                    id:2
-                },{
-                    url:"http://oy82lbvct.bkt.clouddn.com/material3.jpg",
-                    id:3
-                },{
-                    url:"http://oy82lbvct.bkt.clouddn.com/material4.jpg",
-                    id:4
-                },{
-                    url:"http://oy82lbvct.bkt.clouddn.com/bk1.jpg",
-                    id:5
-                }
-            ],
+            img_list:[],
+            current_class: 'marry',
+            new_img_list:{},
             text_font_props: {
                 size:"15px",
                 color: "rgb(0,0,0)",
@@ -76,13 +57,7 @@ export default class content extends Component {
     }
 
     handlePageChange = (e,f) =>{
-        const {
-            allHold
-        } = this.props.store
-        this.setState({
-            current_page:e
-        })
-        allHold("img_ref",this.refs)
+        this.props.store.allHold("current_page",e)
     }
         
     handleClick = (e) =>{
@@ -118,7 +93,7 @@ export default class content extends Component {
             this.setState({
                 show_material:false
             })
-        }else if(e.target.dataset.text){
+        } else if (e.target.dataset.text){
             let text = this.state.text_font_props
             //如果没有输入文字，则提示
             let content = document.getElementById("text-customization-input").value || document.getElementById("text-customization-input-pc").value
@@ -237,8 +212,6 @@ export default class content extends Component {
             document.getElementById("text-customization-input").value = ""            
         }
 
-        //点击完后，此处处理逻辑，如果
-        // 我的点击有图片就是图片，没有图片采用默认数据
     }
     
     show_material = (e) => {
@@ -254,10 +227,10 @@ export default class content extends Component {
     handleDownload = (e) =>{
         // const a = document.createElement("a")
         const image = document.createElement("img")
-        const canvas_layer = this.refs._canvas.wrappedInstance.refs.canvas_layer
+        const canvas_layer_dom = this.refs._canvas.wrappedInstance.refs.canvas_layer
         const canvas_background = this.refs._canvas.wrappedInstance.refs.canvas_background
         const ctx = canvas_background.getContext('2d');
-        const image_src = canvas_layer.toDataURL("image/png");
+        const image_src = canvas_layer_dom.toDataURL("image/png");
         image.src = image_src
         image.crossOrigin = "anonymous"
         setTimeout(() => {
@@ -268,18 +241,33 @@ export default class content extends Component {
                 screen.height-93 > 600 ? 600 : screen.height-93 
             )
             canvas_background.crossOrigin = "anonymous"
-            // a.href = canvas_background.toDataURL("image/png")
-            window.canvas_image_base64 = canvas_background.toDataURL("image/png")
             canvas_background.toBlob(function(blob){
                 window.canvas_image_blob = blob
             })
-            // a.download=true
-            // a.click()
         }, 0);
+
+        ////////这里画一张1.5宽度的图
+        ////////将白色画板内容转成image   
+        canvas_layer(
+            canvas_layer_dom,
+            this.props.store.images,
+            false,
+            true,
+            Object.assign({},this.props.store.block_props,{
+                width: this.props.store.block_props.width*1.5
+            })
+        )
+        canvas_layer_dom.toBlob(function(blob){
+            window.__canvas_image_blob__ = blob
+        })
     }
 
     handleUpload = (e) => {
-        const {img_list} = this.state
+        const {
+            allHold,
+            new_img_list,
+            current_class
+        } = this.props.store
         let data = new FormData()
 		data.append("smfile", e.target.files[0])
 		fetch('https://sm.ms/api/upload', {
@@ -289,12 +277,12 @@ export default class content extends Component {
 			response => response.json()
 		).then(
 			success => {
-                this.setState({
-                    img_list: [...img_list,{
-                        url:success.data.url,
-                        id:img_list.length
-                    }]
-                })
+                allHold(`new_img_list.${current_class}`,
+                    [
+                        success.data.url,
+                        ...new_img_list[current_class]
+                    ]
+                )
 			}
 		)
     }
@@ -327,24 +315,30 @@ export default class content extends Component {
             block_props,
         } = this.props.store
         this.props.store.allHold("is_edit",false)
-        const canvas_layer = this.refs._canvas.wrappedInstance.refs.canvas_layer
-        let width = (canvas_layer.width * block_props.width + 5) * Math.PI
-        let height = canvas_layer.height * block_props.height + 5
+        const __canvas_layer__ = this.refs._canvas.wrappedInstance.refs.canvas_layer
+        canvas_layer(
+            __canvas_layer__,
+            this.props.store.images,
+            false,
+            true,
+            this.props.store.block_props
+        )
+        let width = (__canvas_layer__.width * block_props.width + 5) * Math.PI
+        let height = __canvas_layer__.height * block_props.height + 5
         let image = document.createElement("img")
-        image.src = canvas_layer.toDataURL("image/png")
+        image.src = __canvas_layer__.toDataURL("image/png")
         image.crossOrigin = "anonymous"
         let canvas = document.createElement("canvas")
         canvas.width = width
         canvas.height = height
         let ctx = canvas.getContext("2d")
-
         setTimeout(() => {
             ctx.drawImage(
                 image,
-                -canvas_layer.width*(1-block_props.width)/2,
-                -canvas_layer.height*(1-block_props.y + 0.03),
-                canvas_layer.width,
-                canvas_layer.height
+                -__canvas_layer__.width*(1-block_props.width)/2,
+                -__canvas_layer__.height*(1-block_props.y + 0.03),
+                __canvas_layer__.width,
+                __canvas_layer__.height
             )
             const image_src = canvas.toDataURL("image/png");
             toggle_show = canvas_background_3d(
@@ -356,49 +350,65 @@ export default class content extends Component {
         }, 0);
     }
 
+    handleCurrentClassChange = e => {
+        this.props.store.allHold('current_class',e.target.value)
+    }
+
     render() {
         const {
             img_list,
-            current_page,
             show_material,
             show_text_customization,
-            text_font_props
+            text_font_props,
         }= this.state
         const {
+            allHold,
             images,
-            is_edit
+            is_edit,
+            current_page,
+            new_img_list,
+            current_class 
         } = this.props.store
         return (
-            <Content className="content" onClick={this.handleClick}>
+            <div className="content" onClick={this.handleClick}>
                 <div className="content-container">
                     <div className={`${show_material ? "active":""} content-container-material`}>
                         <Tabs type="card">
                             <TabPane className="material-customization" tab="定制素材" key="1">
                                 <div className="select">
                                     场景：
-                                    <Select defaultValue="婚庆" style={{ width: 120 }}>
-                                        <Option value="婚庆">婚庆</Option>
-                                        <Option value="生日聚会">生日聚会</Option>
-                                        <Option value="企业定制">企业定制</Option>
-                                        <Option value="节日/纪念日">节日/纪念日</Option>
-                                    </Select>
+                                    <select onChange={this.handleCurrentClassChange} ref="current_class" defaultValue="婚庆" >
+                                        <option value="marry">婚庆</option>
+                                        <option value="party">生日聚会</option>
+                                        <option value="company">企业定制</option>
+                                        <option value="festival">节日/纪念日</option>
+                                    </select>
                                 </div>
                                 <div className="material-container-image">
-                                    <span className="upload" onClick={()=>{
-                                        this.refs.upload_image.click()
-                                    }}>
-                                        +
-                                        <input onChange={this.handleUpload} type="file" ref="upload_image"/>
-                                    </span>
-                                    {img_list.filter((img)=> img.id>(current_page-1)*12 && img.id<=(current_page)*12 ).map((img,i)=>(
+                                    {current_page==1 && <span className="upload" onClick={()=>{this.refs.upload_image.click() }}>
+                                            +
+                                            <input onChange={this.handleUpload} type="file" ref="upload_image"/>
+                                        </span>
+                                    }
+                                    {new_img_list[current_class] && new_img_list[current_class].filter( img => {
+                                        let index_image = new_img_list[current_class].indexOf(img)
+                                        if(index_image == 8) return
+                                        return index_image >= (current_page-1) * 9 && index_image < (current_page) * 9
+                                    }).map((img,i) => (
                                         <img data-drag={true} 
-                                            crossOrigin="anonymous"
-                                            src={img.url} 
+                                            src={img} 
                                             key={i} 
-                                            alt={`图片素材${img.id}`}/>
+                                            crossOrigin="anonymous"
+                                            alt={`素材${i}`}/>
                                     ))}
                                 </div>
-                                <Pagination className="material-pagination" size="small"simple={true} total={img_list.length} onChange={this.handlePageChange} />
+                                <Pagination 
+                                    size="small"
+                                    simple={true} 
+                                    defaultPageSize={9}
+                                    className="material-pagination" 
+                                    total={new_img_list[current_class].length} 
+                                    onChange={this.handlePageChange} />
                             </TabPane>
                             {
                                 screen.width>768 && <TabPane className="text-customization" tab="文字定制" key="2">
@@ -408,16 +418,16 @@ export default class content extends Component {
                                     </div>
                                     <div className="text-customization text-customization-font">
                                         <span className="title">字体：</span>
-                                        <Select defaultValue={text_font_props.family} style={{ width: 120 }}>
-                                            <Option value="Pacifico">Pacifico</Option>
-                                            <Option value="Arial">Arial</Option>
-                                            <Option value="宋体">宋体</Option>
-                                            <Option value="流体">流体</Option>
-                                        </Select>
+                                        <select defaultValue={text_font_props.family}>
+                                            <option value="Pacifico">Pacifico</option>
+                                            <option value="Arial">Arial</option>
+                                            <option value="宋体">宋体</option>
+                                            <option value="流体">流体</option>
+                                        </select>
                                     </div>
                                     <div className="text-customization text-customization-size">
                                         <span className="title">大小：</span>
-                                        <InputNumber max = {30} min = {8}
+                                        <input type="number" max = {30} min = {8}
                                             defaultValue = {text_font_props.size.replace(/px/g,'')}
                                             formatter={value => `${value}px`}
                                             parser={value => value.replace(/[^\d]/g,'')}/>
@@ -452,17 +462,6 @@ export default class content extends Component {
                                     </div>
                                 </TabPane>
                             }
-                            {/* <TabPane tab="图片定制" key="3">
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                                <p>Content of Tab Pane 3</p>
-                            </TabPane> */}
                         </Tabs>
                     </div>
                     <Canvas 
@@ -477,9 +476,6 @@ export default class content extends Component {
                         <div className="text-customization-content">
                             <span>内容</span>
                             <input id="text-customization-input" type="text"/>
-                            <Icon type="close-circle-o" onClick={()=>{
-                                document.getElementById("text-customization-input").value=''
-                            }} />
                         </div>
                         <div className="text-customization-font">
                             <span className="text-customization-font-title">字体</span>
@@ -511,7 +507,9 @@ export default class content extends Component {
                     
                 </div>
                 <div className="content-footer">
-                    <span onClick={this.show_material}>素材<br/>📖</span>
+                    <span onClick={this.show_material}>
+                        素材<br/>📖
+                    </span>
                     <span onClick={this.show_text}> 
                         文字<br/>✏️
                     </span>
@@ -519,13 +517,13 @@ export default class content extends Component {
                         设计师<br/>🙋‍
                     </span> */}
                     <span onClick={this.handlePreview}>
-                        预览<br/>👊🏾
+                        预览<br/>🔎
                     </span>
                     <span onClick={this.handleDownload}>
-                        返回购买<br/>📷
+                        返回购买<br/>👊🏾
                     </span>
                 </div>
-            </Content>
+            </div>
         )
     }
 };

@@ -75,9 +75,12 @@
             
                         .material-container-image {
                             height: 440px;
+                            display: inline-flex;
+                            flex-wrap: wrap;
+                            align-content: flex-start;
             
                             .upload , img {
-                                float: left;
+                                // float: left;
                                 width: 116px;
                                 height: 116px;
                                 margin: 5px;
@@ -85,6 +88,7 @@
                             }
 
                             .upload{
+                                overflow: hidden;
                                 background: #ccc;
                                 color: #fff;
                                 font-size: 172px;

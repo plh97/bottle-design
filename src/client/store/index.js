@@ -1,12 +1,29 @@
 import io from 'socket.io-client';
 import { action, useStrict, computed, observable } from "mobx";
+const marryContext = require.context("../../../assets/images/material/marry", true, /^\.\/.*\.(jpg|png)$/);
+const marry = marryContext.keys().map(marryContext);
+const festivalContext = require.context("../../../assets/images/material/festival", true, /^\.\/.*\.(jpg|png)$/);
+const festival = festivalContext.keys().map(festivalContext);
+const partyContext = require.context("../../../assets/images/material/party", true, /^\.\/.*\.(jpg|png)$/);
+const party = partyContext.keys().map(partyContext);
+const companyContext = require.context("../../../assets/images/material/company", true, /^\.\/.*\.(jpg|png)$/);
+const company = companyContext.keys().map(companyContext);
 
+	
 // useStrict(true)
 class TodoStore {
 	//我的用户信息
 	@observable is_edit = false
 	@observable images = []
 	@observable texts = []
+	@observable current_page = 1
+	@observable current_class = 'marry'
+	@observable new_img_list = {
+		marry,
+		festival,
+		party,
+		company
+	}
 	//画板相关参数交给mobx处理，接受全局管理
 	@observable block_props = {
 		x: 0.505,

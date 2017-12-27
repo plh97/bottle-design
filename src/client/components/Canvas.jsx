@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Layout, Pagination, Tabs, Button } from 'antd'
 import { inject, observer } from "mobx-react"
 import {
     update_last_one,
@@ -22,10 +21,6 @@ import {
 import injectTapEventPlugin from "react-tap-event-plugin"
 injectTapEventPlugin()
 import isDblTouchTap from "../feature/isDblTouchTap.js"
-
-
-const { Content } = Layout
-const { TabPane } = Tabs;
 
 @inject("store")
 @observer

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Avatar, Spin, Icon, Layout, Row, Col } from 'antd'
+import { Layout } from 'antd'
 import { inject, observer } from "mobx-react"
 import { colorList } from '../../../config/client.js'
 const { Header } = Layout
