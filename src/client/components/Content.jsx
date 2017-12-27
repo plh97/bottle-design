@@ -400,57 +400,59 @@ export default class content extends Component {
                                 </div>
                                 <Pagination className="material-pagination" size="small"simple={true} total={img_list.length} onChange={this.handlePageChange} />
                             </TabPane>
-                            <TabPane className="text-customization" tab="文字定制" key="2">
-                                <div className="text-customization text-customization-content">
-                                    <span className="title">内容：</span>
-                                    <TextArea id="text-customization-input-pc" rows={4} />
-                                </div>
-                                <div className="text-customization text-customization-font">
-                                    <span className="title">字体：</span>
-                                    <Select defaultValue={text_font_props.family} style={{ width: 120 }}>
-                                        <Option value="Pacifico">Pacifico</Option>
-                                        <Option value="Arial">Arial</Option>
-                                        <Option value="宋体">宋体</Option>
-                                        <Option value="流体">流体</Option>
-                                    </Select>
-                                </div>
-                                <div className="text-customization text-customization-size">
-                                    <span className="title">大小：</span>
-                                    <InputNumber max = {30} min = {8}
-                                        defaultValue = {text_font_props.size.replace(/px/g,'')}
-                                        formatter={value => `${value}px`}
-                                        parser={value => value.replace(/[^\d]/g,'')}/>
-                                </div>
-                                <div className="text-customization text-customization-color">
-                                    <span className="title">颜色：</span>
-                                    <span className="choice">
-                                        {color_list_rgb.map((color,i) => (
-                                            <i style={{background:color}}
-                                                id="text-customization-color"
-                                                className={`${color==text_font_props.color ? "active":""}`}
-                                                key={i}/>
-                                        ))}
-                                    </span>
-                                </div>
-                                <div className="text-customization text-customization-type">
-                                    <span className="title">排版：</span>
-                                    <span className="choice">
-                                        <IconAlignLeft tittle="居左对齐"/>
-                                        <IconAlignCenter title="居中对齐" />
-                                        <IconAlignRight title="居右对齐" />
-                                        <span title="粗体">B</span>
-                                        <i title="斜体">I</i>
-                                        <span title="中划线" className="linethrough">D</span>
-                                        <span title="下划线" className="underline">U</span>
-                                    </span>
-                                </div>
-                                <div className="text-customization text-customization-submit">
-                                    <Button data-text={true} type="primary">
-                                        {(is_edit&&images[images.length-1].type=="text") ? "修改" : "添加"}
-                                    </Button>
-                                </div>
-                            </TabPane>
-                            <TabPane tab="图片定制" key="3">
+                            {
+                                screen.width>768 && <TabPane className="text-customization" tab="文字定制" key="2">
+                                    <div className="text-customization text-customization-content">
+                                        <span className="title">内容：</span>
+                                        <TextArea id="text-customization-input-pc" rows={4} />
+                                    </div>
+                                    <div className="text-customization text-customization-font">
+                                        <span className="title">字体：</span>
+                                        <Select defaultValue={text_font_props.family} style={{ width: 120 }}>
+                                            <Option value="Pacifico">Pacifico</Option>
+                                            <Option value="Arial">Arial</Option>
+                                            <Option value="宋体">宋体</Option>
+                                            <Option value="流体">流体</Option>
+                                        </Select>
+                                    </div>
+                                    <div className="text-customization text-customization-size">
+                                        <span className="title">大小：</span>
+                                        <InputNumber max = {30} min = {8}
+                                            defaultValue = {text_font_props.size.replace(/px/g,'')}
+                                            formatter={value => `${value}px`}
+                                            parser={value => value.replace(/[^\d]/g,'')}/>
+                                    </div>
+                                    <div className="text-customization text-customization-color">
+                                        <span className="title">颜色：</span>
+                                        <span className="choice">
+                                            {color_list_rgb.map((color,i) => (
+                                                <i style={{background:color}}
+                                                    id="text-customization-color"
+                                                    className={`${color==text_font_props.color ? "active":""}`}
+                                                    key={i}/>
+                                            ))}
+                                        </span>
+                                    </div>
+                                    <div className="text-customization text-customization-type">
+                                        <span className="title">排版：</span>
+                                        <span className="choice">
+                                            <IconAlignLeft tittle="居左对齐"/>
+                                            <IconAlignCenter title="居中对齐" />
+                                            <IconAlignRight title="居右对齐" />
+                                            <span title="粗体">B</span>
+                                            <i title="斜体">I</i>
+                                            <span title="中划线" className="linethrough">D</span>
+                                            <span title="下划线" className="underline">U</span>
+                                        </span>
+                                    </div>
+                                    <div className="text-customization text-customization-submit">
+                                        <Button data-text={true} type="primary">
+                                            {(is_edit&&images[images.length-1].type=="text") ? "修改" : "添加"}
+                                        </Button>
+                                    </div>
+                                </TabPane>
+                            }
+                            {/* <TabPane tab="图片定制" key="3">
                                 <p>Content of Tab Pane 3</p>
                                 <p>Content of Tab Pane 3</p>
                                 <p>Content of Tab Pane 3</p>
@@ -460,7 +462,7 @@ export default class content extends Component {
                                 <p>Content of Tab Pane 3</p>
                                 <p>Content of Tab Pane 3</p>
                                 <p>Content of Tab Pane 3</p>
-                            </TabPane>
+                            </TabPane> */}
                         </Tabs>
                     </div>
                     <Canvas 
@@ -520,7 +522,7 @@ export default class content extends Component {
                         预览<br/>👊🏾
                     </span>
                     <span onClick={this.handleDownload}>
-                        返回定制<br/>📷
+                        返回购买<br/>📷
                     </span>
                 </div>
             </Content>
