@@ -157,6 +157,18 @@ export default class content extends Component {
             })
             document.getElementById("text-customization-input").value = ""
             document.getElementById("text-customization-input-pc").value = ""
+        }else if (e.target.dataset.bottle){
+            canvas_background(
+                this.refs._canvas.wrappedInstance.refs.canvas_background,
+                e.target, {
+                    height: screen.height-93 > 600 ? 600 : screen.height-93 ,
+                    width: screen.width > 400 ? 400 : screen.width,
+                }, {
+                    fill:"height",
+                    width: 500,
+                    height: 670,
+                }
+            )
         }
         
         switch (e.target.id) {
@@ -367,7 +379,8 @@ export default class content extends Component {
             is_edit,
             current_page,
             new_img_list,
-            current_class 
+            current_class ,
+            bottle_list
         } = this.props.store
         return (
             <div className="content" onClick={this.handleClick}>
@@ -396,7 +409,7 @@ export default class content extends Component {
                                         return index_image >= (current_page-1) * 9 && index_image < (current_page) * 9
                                     }).map((img,i) => (
                                         <img data-drag={true} 
-                                            src={img} 
+                                            src={window.ctx ? ctx.split('/a')[0]+"/static/embed/react-canvas"+img : img} 
                                             key={i} 
                                             crossOrigin="anonymous"
                                             alt={`素材${i}`}/>
@@ -429,8 +442,9 @@ export default class content extends Component {
                                         <span className="title">大小：</span>
                                         <input type="number" max = {30} min = {8}
                                             defaultValue = {text_font_props.size.replace(/px/g,'')}
-                                            formatter={value => `${value}px`}
-                                            parser={value => value.replace(/[^\d]/g,'')}/>
+                                            // formatter={value => `${value}px`}
+                                            // parser={value => value.replace(/[^\d]/g,'')}
+                                            />
                                     </div>
                                     <div className="text-customization text-customization-color">
                                         <span className="title">颜色：</span>
@@ -462,6 +476,21 @@ export default class content extends Component {
                                     </div>
                                 </TabPane>
                             }
+                            <TabPane className="bottle-customization" tab="酒瓶定制" key="3">
+                                <div className="bottle-container-image">
+                                    <span className="upload" onClick={()=>{this.refs.upload_image.click() }}>
+                                        +
+                                        <input onChange={this.handleUpload} type="file" ref="upload_image"/>
+                                    </span>
+                                    {bottle_list['wine'] && bottle_list['wine'].map((bottle, i) => (
+                                        <img data-bottle={true}
+                                            src={bottle}
+                                            key={i}
+                                            crossOrigin="anonymous"
+                                            alt={`酒瓶${i}`} />
+                                    ))}
+                                </div>
+                            </TabPane>
                         </Tabs>
                     </div>
                     <Canvas 

@@ -156,6 +156,68 @@ class Tool{
         },2000)
     }
 
+    static to_image_rgba(data,w,h){
+        window.data = data;
+        window.w = w;
+        window.h = h;
+        var _data_ = data
+        var new_arr = []
+        for (let i = 0; i < h; i++) {
+            var __data__ = _data_.slice(w*4*i, w*4*(i+1))
+            new_arr.push(__data__)
+        }
+        return new_arr.map((arr,i) => {
+            var _arr_ = [];
+            for (let i = 0; i < w; i++) {
+                arr.slice(w*4*i, w*4*(i+1))
+                _arr_.push( arr.slice( 4*i, 4*(i+1)) )
+            }
+            return _arr_
+        })
+    }
+
+    static get_black_area(data,rgba,canvas){
+        var _x;
+        var __x;
+        var first=true;
+        data[300].map((r,i) => {
+            if(
+                r[0]<rgba.r &&
+                r[1]<rgba.g &&
+                r[2]<rgba.b 
+            ){
+                if(first) {
+                    _x = i/canvas.width
+                }
+                first=false
+                __x = i/canvas.width
+            }
+        })
+        // 边距
+        var _y;
+        var __y;
+        first = true;
+        data.map((r,i)=>{
+            if(
+                r[_x*400+5][0]<rgba.r &&
+                r[_x*400+5][1]<rgba.g &&
+                r[_x*400+5][2]<rgba.b
+            ){
+                if(first) {
+                    _y = i/canvas.height
+                }
+                first=false
+                __y = i/canvas.height
+            }
+        })
+        return {
+            _x: _x + 0.01 ,
+            __x: __x - 0.01 ,
+            _y: _y + 0.04 ,
+            __y: __y - 0.01
+        }
+    }
+
     
     //禁止微信拖动原生事件
     //有问题！！！

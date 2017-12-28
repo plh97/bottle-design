@@ -7,7 +7,7 @@ import {
     is_close_btn,
     mouse_debug,
     is_scale_btn,
-    prevent_wx_scroll
+    prevent_wx_scroll,
 } from '../feature/Tool.js'
 
 import {
@@ -43,6 +43,10 @@ export default class canvas extends Component {
 
     componentDidMount() {
         const { background } = this.state
+        const { 
+            block_props,
+            allHold
+         } = this.props.store
         const background_image = document.createElement("img")
         background_image.src = background
         background_image.crossOrigin="anonymous"

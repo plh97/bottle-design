@@ -1,5 +1,9 @@
 'use strict';
 import * as THREE from 'three';
+import {
+    to_image_rgba,
+    get_black_area
+} from "../feature/Tool.js"
 
 class Canvas {
 	static canvas_background(
@@ -13,7 +17,8 @@ class Canvas {
 			fill:"height",
 			width: 500,
 			height: 670,
-		}
+		},
+		
 	) {
         /**
          * @param  		{canvas} 
@@ -27,6 +32,7 @@ class Canvas {
          */
 		
 		const ctx = canvas.getContext('2d');
+		Canvas.canvas = canvas
 		//重绘背景
 		ctx.clearRect(0, 0, canvas_prop.width, canvas_prop.height);
 		//背景图坐标系
@@ -59,11 +65,45 @@ class Canvas {
 			)
 		}
 		ctx.restore()
-
+		Canvas.realize_picture()
 	}
 
 
-
+	static realize_picture(){
+		const {
+			canvas
+		} = Canvas
+		const {
+			block_props
+		} = this.props.store
+		//////////realize rgba
+		let _ctx = canvas.getContext('2d');
+		let data = _ctx.getImageData(
+			0, 
+			0, 
+			canvas.width, 
+			canvas.height
+		).data;
+		data = Tool.to_image_rgba(
+			data,
+			canvas.width, 
+			canvas.height
+		)
+		let area = Tool.get_black_area(data,{
+			r:20,
+			g:20,
+			b:20,
+			a:255
+		},canvas)
+		//////////realize rgba
+		const { _x, __x, _y, __y } = area
+		allHold('block_props',Object.assign({},block_props,{
+			x: (_x + __x) / 2,
+			y: (_y + __y) / 2,
+			width: (__x - _x),
+			height: (__y - _y)
+		}))
+	}
 
 
 

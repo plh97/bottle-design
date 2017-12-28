@@ -1,5 +1,7 @@
 import io from 'socket.io-client';
 import { action, useStrict, computed, observable } from "mobx";
+
+// material //
 const marryContext = require.context("../../../assets/images/material/marry", true, /^\.\/.*\.(jpg|png)$/);
 const marry = marryContext.keys().map(marryContext);
 const festivalContext = require.context("../../../assets/images/material/festival", true, /^\.\/.*\.(jpg|png)$/);
@@ -8,7 +10,12 @@ const partyContext = require.context("../../../assets/images/material/party", tr
 const party = partyContext.keys().map(partyContext);
 const companyContext = require.context("../../../assets/images/material/company", true, /^\.\/.*\.(jpg|png)$/);
 const company = companyContext.keys().map(companyContext);
+// material //
 
+// bottle //
+const wineContext = require.context("../../../assets/images/bottle/wine", true, /^\.\/.*\.(jpg|png)$/);
+const wine = wineContext.keys().map(wineContext);
+// bottle //
 	
 // useStrict(true)
 class TodoStore {
@@ -18,6 +25,9 @@ class TodoStore {
 	@observable texts = []
 	@observable current_page = 1
 	@observable current_class = 'marry'
+	@observable bottle_list = {
+		wine
+	}
 	@observable new_img_list = {
 		marry,
 		festival,
