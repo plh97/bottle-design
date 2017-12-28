@@ -25,6 +25,9 @@ class TodoStore {
 	@observable texts = []
 	@observable current_page = 1
 	@observable current_class = 'marry'
+	@observable bottle_rgba = {
+		r:126,g:126,b:126,a:255
+	}
 	@observable bottle_list = {
 		wine
 	}

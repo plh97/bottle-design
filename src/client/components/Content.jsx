@@ -10,9 +10,6 @@ import { inject, observer } from "mobx-react"
 import IconAlignLeft from 'react-icons/lib/fa/align-left';
 import IconAlignRight from 'react-icons/lib/fa/align-right';
 import IconAlignCenter from 'react-icons/lib/fa/align-center';
-// import VConsole from 'vconsole'
-// var vConsole = new VConsole();
-//   console.log('Hello world');
 
 //local
 import Canvas from './Canvas.jsx'
@@ -85,10 +82,7 @@ export default class content extends Component {
             allHold("is_edit",true)
             canvas_layer(
                 this.refs._canvas.wrappedInstance.refs.canvas_layer,
-                a,
-                true,
-                true,
-                this.props.store.block_props
+                this.props.store,
             )
             this.setState({
                 show_material:false
@@ -147,10 +141,9 @@ export default class content extends Component {
             allHold("is_edit",true)
             canvas_layer(
                 this.refs._canvas.wrappedInstance.refs.canvas_layer,
-                this.props.store.images,
+                this.props.store,
                 true,
                 true,
-                this.props.store.block_props
             )
             this.setState({
                 show_text_customization: false
@@ -158,16 +151,15 @@ export default class content extends Component {
             document.getElementById("text-customization-input").value = ""
             document.getElementById("text-customization-input-pc").value = ""
         }else if (e.target.dataset.bottle){
+            //换了酒瓶，背景要换，图框也要换
             canvas_background(
                 this.refs._canvas.wrappedInstance.refs.canvas_background,
-                e.target, {
-                    height: screen.height-93 > 600 ? 600 : screen.height-93 ,
-                    width: screen.width > 400 ? 400 : screen.width,
-                }, {
-                    fill:"height",
-                    width: 500,
-                    height: 670,
-                }
+                e.target, 
+                this.props.store
+            )
+            canvas_layer(
+                this.refs._canvas.wrappedInstance.refs.canvas_layer,
+                this.props.store
             )
         }
         
@@ -223,7 +215,6 @@ export default class content extends Component {
             })
             document.getElementById("text-customization-input").value = ""            
         }
-
     }
     
     show_material = (e) => {
@@ -237,7 +228,10 @@ export default class content extends Component {
     }
 
     handleDownload = (e) =>{
-        // const a = document.createElement("a")
+        const {
+            allHold,
+            block_props
+        } = this.props.store
         const image = document.createElement("img")
         const canvas_layer_dom = this.refs._canvas.wrappedInstance.refs.canvas_layer
         const canvas_background = this.refs._canvas.wrappedInstance.refs.canvas_background
@@ -260,14 +254,11 @@ export default class content extends Component {
 
         ////////这里画一张1.5宽度的图
         ////////将白色画板内容转成image   
+        allHold('block_props.width', block_props.width*1.5)
         canvas_layer(
             canvas_layer_dom,
-            this.props.store.images,
-            false,
-            true,
-            Object.assign({},this.props.store.block_props,{
-                width: this.props.store.block_props.width*1.5
-            })
+            this.props.store,
+            false
         )
         canvas_layer_dom.toBlob(function(blob){
             window.__canvas_image_blob__ = blob
@@ -299,27 +290,29 @@ export default class content extends Component {
 		)
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    handleBottleUpload = e => {
+        const {
+            allHold,
+            bottle_list,
+        } = this.props.store
+        let data = new FormData()
+		data.append("smfile", e.target.files[0])
+		fetch('https://sm.ms/api/upload', {
+		  method: 'POST',
+		  body: data
+		}).then(
+			response => response.json()
+		).then(
+			success => {
+                allHold(`bottle_list.wine`,
+                    [
+                        success.data.url,
+                        ...bottle_list['wine']
+                    ]
+                )
+			}
+		)
+    }
 
 
     handlePreview = (e) => {
@@ -330,10 +323,9 @@ export default class content extends Component {
         const __canvas_layer__ = this.refs._canvas.wrappedInstance.refs.canvas_layer
         canvas_layer(
             __canvas_layer__,
-            this.props.store.images,
+            this.props.store,
             false,
-            true,
-            this.props.store.block_props
+            true
         )
         let width = (__canvas_layer__.width * block_props.width + 5) * Math.PI
         let height = __canvas_layer__.height * block_props.height + 5
@@ -364,6 +356,26 @@ export default class content extends Component {
 
     handleCurrentClassChange = e => {
         this.props.store.allHold('current_class',e.target.value)
+    }
+
+    handleBottleRange = e =>{
+        let color = e.target.value/100*255;
+        this.props.store.allHold('bottle_rgba',{
+            r:color,
+            g:color,
+            b:color,
+            a:255
+        })
+        //换了酒瓶，背景要换，图框也要换
+        canvas_background(
+            this.refs._canvas.wrappedInstance.refs.canvas_background,
+            image, 
+            this.props.store
+        )
+        canvas_layer(
+            this.refs._canvas.wrappedInstance.refs.canvas_layer,
+            this.props.store
+        )
     }
 
     render() {
@@ -477,10 +489,14 @@ export default class content extends Component {
                                 </TabPane>
                             }
                             <TabPane className="bottle-customization" tab="酒瓶定制" key="3">
+                                <div className="select">
+                                    阔值：
+                                    <input defaultValue={this.props.store.bottle_rgba.r} onChange={this.handleBottleRange} type="range"/>
+                                </div>
                                 <div className="bottle-container-image">
-                                    <span className="upload" onClick={()=>{this.refs.upload_image.click() }}>
+                                    <span className="upload" onClick={()=>{this.refs.upload_buttle.click() }}>
                                         +
-                                        <input onChange={this.handleUpload} type="file" ref="upload_image"/>
+                                        <input onChange={this.handleBottleUpload} type="file" ref="upload_buttle"/>
                                     </span>
                                     {bottle_list['wine'] && bottle_list['wine'].map((bottle, i) => (
                                         <img data-bottle={true}

@@ -180,7 +180,7 @@ class Tool{
         var _x;
         var __x;
         var first=true;
-        data[300].map((r,i) => {
+        data[400].map((r,i) => {
             if(
                 r[0]<rgba.r &&
                 r[1]<rgba.g &&

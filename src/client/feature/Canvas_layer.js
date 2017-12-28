@@ -2,29 +2,23 @@
 
 class Canvas {
 	//绘制图层
-	//...这个函数应该是不要静态属性，提供暴露给外部使用
 	static canvas_layer(
 		canvas,
-		images,
+		store,
 		is_edit=true,
 		block_show=true,
-		block_props = {
-			x: 0.505,
-			y: 0.65,
-			width: 0.28,
-			height: 0.53,
-			color: "white",
-			border: {
-				color:"white"
-			}
-		},
 		canvas_props = {
 			height: screen.height-93 > 600 ? 600 : screen.height-93 ,
 			width: screen.width > 400 ? 400 : screen.width,
 		}
 	) {
+		const {
+			images,
+			block_props
+		} = store
 		const ctx = canvas.getContext('2d');
 		Canvas.ctx = ctx
+		Canvas.images = images
 		Canvas.canvas = canvas
 		Canvas.block_props = block_props
 		Canvas.canvas_props = canvas_props
@@ -59,7 +53,6 @@ class Canvas {
 			images ,
 			is_edit
 		)
-
 	}
 
 
@@ -223,35 +216,6 @@ class Canvas {
 		ctx.restore()
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	static measureText(text){
 		const {
 			canvas_props,
@@ -266,8 +230,6 @@ class Canvas {
 	}
 
 
-
-
 	static isMouseInGraph(mouse){
 		let ctx = Canvas.canvas.getContext("2d")
 		let image = Canvas.images
@@ -278,16 +240,6 @@ class Canvas {
 	}
 
 
-
-
-
-
-
-
-
-
-
-	//静态属性，只提供内部
 	//清除既定白板以外的区域
 	static canvas_clear_reserve(){
 		const {

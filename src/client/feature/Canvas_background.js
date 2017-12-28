@@ -9,6 +9,7 @@ class Canvas {
 	static canvas_background(
 		canvas,
 		image,
+		store,
 		canvas_prop = {
 			height: screen.height-93 > 600 ? 600 : screen.height-93 ,
 			width: screen.width > 400 ? 400 : screen.width,
@@ -17,22 +18,22 @@ class Canvas {
 			fill:"height",
 			width: 500,
 			height: 670,
-		},
-		
+		}
 	) {
         /**
          * @param  		{canvas} 
          * @argument  	{
-		 * 					canvas元素	必要参数
-		 * 					image元素,	必要参数
-		 * 					canvas_prop,  非必要参数
+		 * 					canvas元素	  必要参数
+		 * 					store,			必要参数
+		 * 					canvas_prop,  	非必要参数
 		 * 					image_prop,		非必要参数
 		 * 				} 
          * @return 		{string|json} canvas auto to draw background 
          */
-		
+		window.image = image
 		const ctx = canvas.getContext('2d');
 		Canvas.canvas = canvas
+		Canvas.store = store
 		//重绘背景
 		ctx.clearRect(0, 0, canvas_prop.width, canvas_prop.height);
 		//背景图坐标系
@@ -71,11 +72,14 @@ class Canvas {
 
 	static realize_picture(){
 		const {
-			canvas
+			canvas,
+			store
 		} = Canvas
 		const {
-			block_props
-		} = this.props.store
+			allHold,
+			block_props,
+			bottle_rgba
+		} = store
 		//////////realize rgba
 		let _ctx = canvas.getContext('2d');
 		let data = _ctx.getImageData(
@@ -84,17 +88,12 @@ class Canvas {
 			canvas.width, 
 			canvas.height
 		).data;
-		data = Tool.to_image_rgba(
+		data = to_image_rgba(
 			data,
 			canvas.width, 
 			canvas.height
 		)
-		let area = Tool.get_black_area(data,{
-			r:20,
-			g:20,
-			b:20,
-			a:255
-		},canvas)
+		let area = get_black_area(data,bottle_rgba,canvas)
 		//////////realize rgba
 		const { _x, __x, _y, __y } = area
 		allHold('block_props',Object.assign({},block_props,{

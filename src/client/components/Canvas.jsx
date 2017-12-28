@@ -53,14 +53,12 @@ export default class canvas extends Component {
         background_image.onload = () => {
             canvas_background(
                 this.refs.canvas_background,
-                background_image
+                background_image,
+                this.props.store
             )
             canvas_layer(
                 this.refs.canvas_layer,
-                this.props.store.images,
-                true,
-                true,
-                this.props.store.block_props
+                this.props.store
             )
         }
     }
@@ -124,10 +122,6 @@ export default class canvas extends Component {
             mouse,
             image_last_one
         )
-        // let is_inner = isMouseInGraph(mouse)
-        // console.log(
-        //     'is_inner',is_inner
-        // );
         if (is_edit && close_btn) {
             let new_arr = images;
             new_arr.pop()
@@ -135,7 +129,7 @@ export default class canvas extends Component {
             allHold("images",new_arr)
             canvas_layer(
                 canvas,
-                images
+                this.props.store
             )
             return
         }
@@ -156,7 +150,12 @@ export default class canvas extends Component {
             })
             return
         }
+        
         //判断你是否点击的某个图片
+        let is_inner = isMouseInGraph(mouse)
+        console.log(
+            'is_inner',is_inner
+        );
         let new_arr = is_buttom_array(
             _mouse,
             images
@@ -174,16 +173,13 @@ export default class canvas extends Component {
             allHold("is_edit",true)
             canvas_layer(
                 canvas,
-                images,
-                true,
-                true,
-                block_props
+                this.props.store
             )
         }else if(new_arr == "not click image"){
             allHold("is_edit",false)
             canvas_layer(
                 canvas,
-                images,
+                this.props.store,
                 false
             )
             return
@@ -192,10 +188,7 @@ export default class canvas extends Component {
             allHold("is_edit",true)
             canvas_layer(
                 canvas,
-                new_arr,
-                true,
-                true,
-                block_props
+                this.props.store
             )
             return
         }
@@ -258,10 +251,7 @@ export default class canvas extends Component {
             allHold("is_edit",true)
             canvas_layer(
                 canvas,
-                images,
-                true,
-                true,
-                block_props
+                this.props.store
             )
         }else if(this.state.scale){
             //鼠标  》》》》   图片位置
@@ -285,10 +275,7 @@ export default class canvas extends Component {
             allHold("is_edit",true)
             canvas_layer(
                 canvas,
-                images,
-                true,
-                true,
-                block_props
+                this.props.store
             )
         }
 
