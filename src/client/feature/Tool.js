@@ -177,8 +177,8 @@ class Tool{
     }
 
     static get_black_area(data,rgba,canvas){
-        var _x;
-        var __x;
+        var _x=0;
+        var __x=1;
         var first=true;
         data[400].map((r,i) => {
             if(
@@ -194,8 +194,8 @@ class Tool{
             }
         })
         // 边距
-        var _y;
-        var __y;
+        var _y=0;
+        var __y=1;
         first = true;
         data.map((r,i)=>{
             if(
