@@ -498,9 +498,9 @@ export default class content extends Component {
                                         +
                                         <input onChange={this.handleBottleUpload} type="file" ref="upload_buttle"/>
                                     </span>
-                                    {bottle_list['wine'] && bottle_list['wine'].map((bottle, i) => (
+                                    {bottle_list['wine'] && bottle_list['wine'].map((img, i) => (
                                         <img data-bottle={true}
-                                            src={bottle}
+                                            src={window.ctx ? ctx.split('/a')[0]+"/static/embed/react-canvas"+img : img}
                                             key={i}
                                             crossOrigin="anonymous"
                                             alt={`酒瓶${i}`} />

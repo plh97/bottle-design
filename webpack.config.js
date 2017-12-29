@@ -36,9 +36,9 @@ module.exports = (env)=> {
 			filename: "[name].[hash].js",
 			chunkFilename: '[name].[chunkhash].js',
 			//打包到公司项目
-			// path: _path_,
+			path: _path_,
 			//打包到dist
-			path: path.join(__dirname, "dist"),
+			// path: path.join(__dirname, "dist"),
 			publicPath: "/",
 		},
 		module: {
