@@ -1,7 +1,7 @@
 module.exports = {
 	apps: [
 		{
-			name: "taobao",
+			name: "canvas",
 			script: "./src/server/index.js",
 			watch: true,
 			env: {
