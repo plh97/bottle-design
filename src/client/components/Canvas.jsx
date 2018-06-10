@@ -30,7 +30,7 @@ export default class canvas extends Component {
         this.state = {
             spin: "http://oy82lbvct.bkt.clouddn.com/spin.png",
             scale: "http://oy82lbvct.bkt.clouddn.com/scale.png",
-            background: "http://oy82lbvct.bkt.clouddn.com/wine.jpg",
+            background: "https://static.pipk.top/api/public/images/bottle/wine/8.jpg",
             mouse:{
                 x:0,
                 y:0
@@ -331,6 +331,7 @@ export default class canvas extends Component {
             clientX : e.touches[0].clientX ,
             clientY : e.touches[0].clientY
         },this.refs.canvas_layer)
+        e.preventDefault();
     }
 
     onTouchEnd = (e) => {

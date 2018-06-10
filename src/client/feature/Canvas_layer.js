@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 class Canvas {
 	//绘制图层
@@ -15,20 +15,20 @@ class Canvas {
 		const {
 			images,
 			block_props
-		} = store
-		const ctx = canvas.getContext('2d');
-		Canvas.ctx = ctx
-		Canvas.images = images
-		Canvas.canvas = canvas
-		Canvas.block_props = block_props
-		Canvas.canvas_props = canvas_props
+		} = store;
+		const ctx = canvas.getContext("2d");
+		Canvas.ctx = ctx;
+		Canvas.images = images;
+		Canvas.canvas = canvas;
+		Canvas.block_props = block_props;
+		Canvas.canvas_props = canvas_props;
 		//init background
 		ctx.clearRect(0, 0, canvas_props.width, canvas_props.height);
-		ctx.save()
+		ctx.save();
 		ctx.translate(
 			canvas_props.width*block_props.x,
 			canvas_props.height*block_props.y
-		) 
+		); 
 		//draw block
 		if (block_show) {
 			//白色填充块坐标系
@@ -47,12 +47,12 @@ class Canvas {
 				canvas_props.height*(block_props.height)
 			);
 		}
-		ctx.restore()
+		ctx.restore();
 		//如果最后一个元素图片 image
 		Canvas.canvas_draw_ele (
 			images ,
 			is_edit
-		)
+		);
 	}
 
 
@@ -75,7 +75,7 @@ class Canvas {
 			canvas_props,
 			block_props,
 			ctx
-		} = Canvas
+		} = Canvas;
 		//draw images
 		elements.map((image,i)=>{
 			const {
@@ -88,60 +88,57 @@ class Canvas {
 				type,
 				content,
 				font
-			} = image
-			const rad = angle * Math.PI / 180
+			} = image;
+			const rad = angle * Math.PI / 180;
 			//坐标系转换
-			ctx.save()
+			ctx.save();
 			ctx.translate(
 				canvas_props.width*block_props.x + x,
 				canvas_props.height*block_props.y + y
-			) 
-			ctx.scale(scale, scale)
-			ctx.rotate(rad)
-
-
+			); 
+			ctx.scale(scale, scale);
+			ctx.rotate(rad);
 			switch (type) {
-				case "image":
-					//画图
-					ctx.drawImage(
-						element, 
-						-width/2 ,
-						-height/2 ,
-						width,
-						height
-					)
-					break;
-				case "text":
-					//draw text
-					ctx.textAlign = "center"
-					ctx.textBaseline = "middle"
-					ctx.font = `${font.weight} ${font.size} ${font.family}`
-					ctx.fillStyle = font.color;
-					ctx.fillText(
-						content,
-						0,0
-					);
-					break;
-				default:
-					break;
+			case "image":
+				//画图
+				ctx.drawImage(
+					element, 
+					-width/2 ,
+					-height/2 ,
+					width,
+					height
+				);
+				break;
+			case "text":
+				//draw text
+				ctx.textAlign = "center";
+				ctx.textBaseline = "middle";
+				ctx.font = `${font.weight} ${font.size} ${font.family}`;
+				ctx.fillStyle = font.color;
+				ctx.fillText(
+					content,
+					0,0
+				);
+				break;
+			default:
+				break;
 			}
-
-			ctx.restore()
+			ctx.restore();
 			if(i==elements.length-1){
 				//清空图像边框以外
 				Canvas.canvas_clear_reserve(
 					canvas_props,
 					block_props
-				)
+				);
 			}
 			
 			if( i==elements.length-1 && is_edit ){
 				//绘制编辑器
 				Canvas.canvas_draw_edit(
 					image
-				)
+				);
 			}
-		})
+		});
 	}
 
 
@@ -162,21 +159,21 @@ class Canvas {
 			ctx,
 			canvas_props,
 			block_props
-		} = Canvas
+		} = Canvas;
 		const {
 			x,y,width,height,angle,scale
-		} = element
-		const rad = angle * Math.PI / 180
+		} = element;
+		const rad = angle * Math.PI / 180;
 		//坐标系转换
-		ctx.save()
+		ctx.save();
 		ctx.translate(
 			canvas_props.width*block_props.x + x,
 			canvas_props.height*block_props.y + y
-		) 
-		ctx.scale(scale, scale)
-		ctx.rotate(rad)
+		); 
+		ctx.scale(scale, scale);
+		ctx.rotate(rad);
 		//draw outside border
-		ctx.strokeStyle = 'blue';
+		ctx.strokeStyle = "blue";
 		ctx.strokeRect(
 			-width / 2,  
 			-height / 2, 
@@ -184,7 +181,7 @@ class Canvas {
 			height
 		);
 		//draw close button
-		ctx.fillStyle = "rgba(25, 25, 21,0.2)";;
+		ctx.fillStyle = "rgba(25, 25, 21,0.2)";
 		ctx.fillRect( 
 			width/2 - 6.5,
 			-height/2 -8 ,
@@ -192,14 +189,14 @@ class Canvas {
 			16
 		);
 		ctx.font="20px Arial";
-		ctx.fillStyle = 'black';
+		ctx.fillStyle = "black";
 		ctx.fillText(
 			"X",
 			width/2 - 6.5,
 			-height/2 +8
 		);
 		//draw scale_spin button
-		ctx.fillStyle = "rgba(25, 25, 21,0.2)";;
+		ctx.fillStyle = "rgba(25, 25, 21,0.2)";
 		ctx.fillRect( 
 			width/2 - 6.5,
 			height/2 -8 ,
@@ -207,13 +204,13 @@ class Canvas {
 			16
 		);
 		ctx.font="17px Arial";
-		ctx.fillStyle = 'black';
+		ctx.fillStyle = "black";
 		ctx.fillText(
 			"🔎",
 			width/2 -8,
 			height/2 +8
 		);
-		ctx.restore()
+		ctx.restore();
 	}
 
 	static measureText(text){
@@ -221,22 +218,22 @@ class Canvas {
 			canvas_props,
 			block_props,
 			ctx
-		} = Canvas
-        let area = {
-            width: ctx.measureText(text.content, `${text.size}/1.6 ${text.font_family}`).width*1.86,
-            height: text.size.substring(0,2) *1.3
-		}
-		return area
+		} = Canvas;
+		let area = {
+			width: ctx.measureText(text.content, `${text.size}/1.6 ${text.font_family}`).width*1.86,
+			height: text.size.substring(0,2) *1.3
+		};
+		return area;
 	}
 
 
 	static isMouseInGraph(mouse){
-		let ctx = Canvas.canvas.getContext("2d")
-		let image = Canvas.images
+		let ctx = Canvas.canvas.getContext("2d");
+		let image = Canvas.images;
 		// ctx.rect()
 		//重新话一次图形不就有path咯。真蛋疼
 		console.log("我的鼠标到底在不在图形范围以内呢？？？",image);
-		return true
+		return true;
 	}
 
 
@@ -246,33 +243,33 @@ class Canvas {
 			ctx,
 			block_props,
 			canvas_props
-		} = Canvas
+		} = Canvas;
 
 		ctx.clearRect(
 			0,
 			0,
 			canvas_props.width*(block_props.x-block_props.width/2),
 			canvas_props.height
-		)
+		);
 		ctx.clearRect(
 			0,
 			0,
 			canvas_props.width,
 			canvas_props.height*(block_props.y-block_props.height/2)
-		)
+		);
 
 		ctx.clearRect(
 			canvas_props.width*(0.5+block_props.width/2),
 			0,
 			canvas_props.width*(0.5-block_props.width/2),
 			canvas_props.height
-		)
+		);
 		ctx.clearRect(
 			0,
 			canvas_props.height*(block_props.y + block_props.height/2),
 			canvas_props.width,
 			canvas_props.height*(1 - block_props.y + block_props.height/2)
-		)
+		);
 	}
 }
 
