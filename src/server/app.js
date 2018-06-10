@@ -1,11 +1,12 @@
 //package
 const Koa = require('koa');
 const path = require('path');
-const json = require('koa-json');
-const cors = require('koa2-cors');
+const cors = require('@koa/cors');
+const json = require ('koa-json')
+const logger = require ('koa-logger')
+// const cors = require('koa2-cors');
 const koaSend = require('koa-send');
-const logger = require('koa-logger');
-const static = require('koa-static');
+const koaStatic = require('koa-static');
 const bodyparser = require('koa-bodyparser');
 
 //local
@@ -19,7 +20,7 @@ app
     .use(cors())
     .use(json())
     .use(logger())
-    .use(static(path.resolve('./dist'), {
+    .use(koaStatic(path.resolve('./dist'), {
         // maxAge: 1000 * 60 * 60 * 24 * 7,
         gzip: true,
     }))

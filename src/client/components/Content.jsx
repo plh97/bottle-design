@@ -271,23 +271,26 @@ export default class content extends Component {
             new_img_list,
             current_class
         } = this.props.store
-        let data = new FormData()
-		data.append("smfile", e.target.files[0])
-		fetch('https://sm.ms/api/upload', {
-		  method: 'POST',
-		  body: data
-		}).then(
-			response => response.json()
-		).then(
-			success => {
-                allHold(`new_img_list.${current_class}`,
-                    [
-                        success.data.url,
-                        ...new_img_list[current_class]
-                    ]
-                )
-			}
-		)
+
+        const form = new FormData();
+        Array.from(e.target.files)
+            .filter(file => file.type && file.type.split('/')[0] === 'image')
+            .forEach((file) => {
+                form.append('file', file, file.name);
+            });
+        fetch('https://api.pipk.top/upload', {
+            method: 'POST',
+            body: form,
+        })
+        .then(res => res.json())
+        .then((rep) => {
+            allHold(`new_img_list.${current_class}`,
+                [
+                    [...rep.map(e=>e.url)],
+                    ...new_img_list[current_class]
+                ]
+            )
+        });
     }
 
     handleBottleUpload = e => {
@@ -295,23 +298,26 @@ export default class content extends Component {
             allHold,
             bottle_list,
         } = this.props.store
-        let data = new FormData()
-		data.append("smfile", e.target.files[0])
-		fetch('https://sm.ms/api/upload', {
-		  method: 'POST',
-		  body: data
-		}).then(
-			response => response.json()
-		).then(
-			success => {
-                allHold(`bottle_list.wine`,
-                    [
-                        success.data.url,
-                        ...bottle_list['wine']
-                    ]
-                )
-			}
-		)
+        const form = new FormData();
+        Array.from(e.target.files)
+            .filter(file => file.type && file.type.split('/')[0] === 'image')
+            .forEach((file) => {
+                form.append('file', file, file.name);
+            });
+        fetch('https://api.pipk.top/upload', {
+            method: 'POST',
+            body: form,
+        })
+        .then(res => res.json())
+        .then((rep) => {
+            allHold(
+                `new_img_list.${current_class}`,
+                [
+                    [...rep.map(e=>e.url)],
+                    ...new_img_list[current_class]
+                ]
+            )
+        });
     }
 
 
@@ -397,6 +403,7 @@ export default class content extends Component {
         return (
             <div className="content" onClick={this.handleClick}>
                 <iframe
+                    style={{position: "fixed",top: '10px',right: '10px'}}
                     frameBorder="0" scrolling="0" width="91px" height="20px"
                     src="https://ghbtns.com/github-btn.html?user=pengliheng&repo=taobao&type=star&count=true" >
                 </iframe>

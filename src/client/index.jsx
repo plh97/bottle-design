@@ -1,7 +1,6 @@
 //package
 import React, { Component } from 'react'
 import { render } from 'react-dom'
-import { Route, Redirect, } from 'react-router'
 import { Provider, observer } from "mobx-react"
 
 //local
@@ -22,5 +21,5 @@ export default class Root extends Component {
 
 render(
 	<Root />,
-	document.getElementById('react-root-canvas')
+	document.querySelector('#root')
 )

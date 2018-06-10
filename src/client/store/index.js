@@ -1,22 +1,13 @@
 import io from 'socket.io-client';
 import { action, useStrict, computed, observable } from "mobx";
 
-// material //
-const marryContext = require.context("../../../assets/images/material/marry", true, /^\.\/.*\.(jpg|png)$/);
-const marry = marryContext.keys().map(marryContext);
-const festivalContext = require.context("../../../assets/images/material/festival", true, /^\.\/.*\.(jpg|png)$/);
-const festival = festivalContext.keys().map(festivalContext);
-const partyContext = require.context("../../../assets/images/material/party", true, /^\.\/.*\.(jpg|png)$/);
-const party = partyContext.keys().map(partyContext);
-const companyContext = require.context("../../../assets/images/material/company", true, /^\.\/.*\.(jpg|png)$/);
-const company = companyContext.keys().map(companyContext);
-// material //
+const marry = (new Array(29)).fill(0).map((e,i) => `https://static.pipk.top/api/public/images/material/marry/m${i+1}.jpg`);
+const festival = (new Array(42)).fill(0).map((e,i) => `https://static.pipk.top/api/public/images/material/festival/f${i+1}.jpg`);
+const party = (new Array(22)).fill(0).map((e,i) => `https://static.pipk.top/api/public/images/material/party/h${i+1}.jpg`);
+const company = (new Array(15)).fill(0).map((e,i) => `https://static.pipk.top/api/public/images/material/company/c${i+1}.jpg`);
+const wine = (new Array(8)).fill(0).map((e,i) => `https://static.pipk.top/api/public/images/bottle/wine/${i+1}.jpg`);
 
-// bottle //
-const wineContext = require.context("../../../assets/images/bottle/wine", true, /^\.\/.*\.(jpg|png)$/);
-const wine = wineContext.keys().map(wineContext);
-// bottle //
-	
+
 // useStrict(true)
 class TodoStore {
 	//我的用户信息

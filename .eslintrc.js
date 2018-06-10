@@ -23,5 +23,10 @@ module.exports = {
       "error", "double"
     ],
     "semi": ["error", "always"]
+  },
+  "globals": {
+    "document": true,
+    "screen": true,
+    "window": true
   }
 };

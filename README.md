@@ -1,21 +1,16 @@
-# Company's challenge for me
+### 前言
+灵感源于公司让我做的
 
-## it is an website about mall for red Wine.
+### 技术栈
+- [x] react
+- [x] mobx.js
+- [x] canvas
+- [x] three.js
 
-### 2d canvas with drag_scale_spin material to draw image.
+### bug
+- 跨域问题
 
-### 3d with three.js show wine model
-
-### Convert 2d canvas to image url , make the image as 3d wine material with three.js.
-
-### show this demo to my boss wei
-
-### half of me always thoughts that why not fire me, i can't do this demo with canvas
-
-### canvas is not as easy to use as dom .
-
-### but another half of me want to learn to use canvas to draw somethings such as an piano music player demo
-
-#Todo List
-- write the pc text customization
-- rewrite the ispointinpath 
+### Todo List
+- 完成文字定制
+- 解决 ispointinpath 问题 
+- 跨域问题
