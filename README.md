@@ -7,9 +7,6 @@
 - [x] canvas
 - [x] three.js
 
-### bug
-- 跨域问题
-
 ### Todo List
 - [ ] 完成文字定制
 - [ ] 解决 ispointinpath 问题 
